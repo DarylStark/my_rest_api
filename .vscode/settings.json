@@ -1,0 +1,21 @@
+{
+    // Python configuration
+    "python.analysis.typeCheckingMode": "strict",
+    "python.analysis.autoImportCompletions": true,
+    // Python linting
+    "python.analysis.extraPaths": [
+        "src"
+    ],
+    // Python formatting
+    "editor.formatOnSave": true,
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    // Python unit testing
+    "python.testing.pytestEnabled": true,
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestArgs": [
+        "--no-cov",
+        "tests"
+    ],
+}
