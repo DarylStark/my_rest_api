@@ -41,4 +41,5 @@ def config() -> Settings:
     Returns:
         A `Settings` object containing the configuration settings.
     """
+    # TODO: Make sure this endpoint is only available in development mode.
     return Settings()
