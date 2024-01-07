@@ -2,6 +2,7 @@
 
 from fastapi.testclient import TestClient
 from my_rest_api import __version__ as api_version
+from my_rest_api.config import Settings
 
 
 def test_version(api_client: TestClient):
@@ -17,3 +18,18 @@ def test_version(api_client: TestClient):
     contents = response.json()
     assert response.status_code == 200
     assert contents['version'] == api_version
+
+
+def test_config(api_client: TestClient):
+    """Test the config endpoint.
+
+    This function sends a GET request to the '/api/config' endpoint
+    and asserts that the response status code is 200.
+
+    Args:
+        api_client: a testclient for the application.
+    """
+    response = api_client.get('/config')
+    contents = response.json()
+    assert response.status_code == 200
+    assert contents == Settings().model_dump()

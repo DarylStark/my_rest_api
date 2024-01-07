@@ -7,6 +7,7 @@ from pydantic import __version__ as pydantic_version
 
 from . import __version__ as rest_api_version
 from .model import Version
+from .config import Settings
 
 api_router = APIRouter()
 
@@ -28,3 +29,8 @@ def version() -> Version:
             'pydantic': pydantic_version
         }
     )
+
+
+@api_router.get('/config')
+def config() -> Settings:
+    return Settings()
