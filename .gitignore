@@ -23,4 +23,9 @@ dist/
 
 # Files for mypy
 .mypy_cache
+
+# Coverage reports
+.coverage*
+coverage.*
+htmlcov
 #------------------------------------------------------------------------------
