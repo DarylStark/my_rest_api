@@ -12,7 +12,7 @@ from my_rest_api.app import app
 
 @pytest.fixture(scope='session')
 def api_client() -> TestClient:
-    """Returns a TestClient instance for the FastAPI application.
+    """Return a TestClient instance for the FastAPI application.
 
     Returns:
         TestClient: A TestClient instance for the FastAPI application.

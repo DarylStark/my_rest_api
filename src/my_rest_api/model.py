@@ -16,6 +16,7 @@ class Version(BaseModel):
             where the key is the name of the dependency and the value is the
             corresponding version.
     """
+
     version: str
     python_version: str | None = None
     internal_dependencies: dict[str, str] | None = None
