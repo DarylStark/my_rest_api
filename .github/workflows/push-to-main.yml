@@ -1,0 +1,34 @@
+name: Test and deploy (main)
+run-name: Test and deploy (main)
+on:
+  push:
+    branches:
+      main
+permissions: 
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  check-version:
+    name: Check version tag
+    uses: ./.github/workflows/_check-version-tag.yml
+    with:
+      tag-name: final
+  integration:
+    name: Integration testing
+    uses: ./.github/workflows/_integration.yml
+    needs: check-version
+    with:
+      code-quality-may-fail: false
+      versions-may-be-invalid: false
+  build-and-deploy:
+    name: Deployment
+    uses: ./.github/workflows/_deploy.yml
+    needs: integration
+    secrets:
+      pypi_token: ${{ secrets.PYPI_TOKEN }}
+  publish-docs:
+    name: Publish docs
+    needs: build-and-deploy
+    uses: ./.github/workflows/_publish_docs.yml

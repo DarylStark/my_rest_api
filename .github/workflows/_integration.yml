@@ -1,0 +1,116 @@
+name: Test
+run-name: Test
+on:
+  workflow_call:
+    inputs:
+      code-quality-may-fail:
+        type: boolean
+        default: false
+        description: Determines if the workflow should continue when the Code Quality check fails
+      versions-may-be-invalid:
+        type: boolean
+        default: false
+        description: Determines if the workflow should continue when there are invalid versions
+  
+jobs:
+  test-poetry-lock-file:
+    name: Test `poetry` lock file
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Check `lock` file for inconsistensies
+        run: poetry lock --check
+  test-dependency-versions:
+    name: Test dependency versions
+    runs-on: ubuntu-latest
+    continue-on-error: ${{ inputs.versions-may-be-invalid }}
+    needs: test-poetry-lock-file
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install main and dev requirements
+        run: poetry install --with dev
+      - name: Check versions
+        run: poetry run python3 tools/check-dependency-versions.py
+  unit-tests:
+    name: Unit tests
+    runs-on: ubuntu-latest
+    needs: test-dependency-versions
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install main and dev requirements
+        run: poetry install --with dev
+      - name: Run unit tests
+        run: poetry run pytest
+  code-quality-src:
+    name: Code quality - src
+    runs-on: ubuntu-latest
+    needs: test-poetry-lock-file
+    continue-on-error: ${{ inputs.code-quality-may-fail }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install main and dev requirements
+        run: poetry install --with dev
+      - name: PyCodeStyle (source code)
+        run: poetry run pycodestyle --show-pep8 src/
+      - name: PyLint (source code)
+        run: poetry run pylint src/
+      - name: Flake8 (source code)
+        run: poetry run flake8 src/
+      - name: PyDocStyle (source code)
+        run: poetry run pydocstyle src/
+      - name: MyPy (source code)
+        run: poetry run mypy src/
+  code-quality-tests:
+    name: Code quality - tests
+    runs-on: ubuntu-latest
+    needs: test-poetry-lock-file
+    continue-on-error: ${{ inputs.code-quality-may-fail }}
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.11"
+      - name: Install Poetry
+        run: pip install poetry
+      - name: Install main and dev requirements
+        run: poetry install --with dev
+      - name: PyCodeStyle (tests)
+        run: poetry run pycodestyle --show-pep8 tests/
+      - name: PyLint (tests)
+        run: poetry run pylint tests/
+      - name: Flake8 (tests)
+        run: poetry run flake8 tests/
+      - name: PyDocStyle (tests)
+        run: poetry run pydocstyle tests/
+      - name: MyPy (tests)
+        run: poetry run mypy tests/

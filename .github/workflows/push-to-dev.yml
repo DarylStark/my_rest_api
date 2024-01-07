@@ -1,0 +1,20 @@
+name: Test (dev)
+run-name: Test (dev)
+on:
+  push:
+    branches:
+      dev*
+
+jobs:
+  check-version:
+    name: Check version tag
+    uses: ./.github/workflows/_check-version-tag.yml
+    with:
+      tag-name: dev
+  integration:
+    name: Integration testing
+    uses: ./.github/workflows/_integration.yml
+    needs: check-version
+    with:
+      code-quality-may-fail: false
+      versions-may-be-invalid: true

@@ -1,0 +1,20 @@
+name: Check version tag
+run-name: Check version tag
+on:
+  workflow_call:
+    inputs:
+      tag-name:
+        type: string
+        required: true
+jobs:
+  build-and-deploy:
+    name: Check version tag
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v3
+      - name: Install `bumpver`
+        run: pip3 install bumpver
+      - name: Get the version
+        shell: bash
+        run: eval $(python3 -m bumpver show --no-fetch --env); echo $TAG | grep ${{ inputs.tag-name }}

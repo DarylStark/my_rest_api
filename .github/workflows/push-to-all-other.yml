@@ -1,0 +1,15 @@
+name: Test (non-dev and non-main)
+run-name: Test (non-dev and non-main)
+on:
+  push:
+    branches-ignore:
+    - dev*
+    - main
+
+jobs:
+  integration:
+    name: Integration testing
+    uses: ./.github/workflows/_integration.yml
+    with:
+      code-quality-may-fail: true
+      versions-may-be-invalid: true

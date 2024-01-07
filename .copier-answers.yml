@@ -1,0 +1,18 @@
+# Changes here will be overwritten by Copier
+_commit: 07dfeed
+_src_path: git@github.com:DarylStark/copier_templates.git
+devcontainer: true
+github_workflow: true
+license: MIT
+package_name: my_rest_api
+project_description: 'REST API service for the My Project.
+
+    '
+project_description_short: 'REST API service for the My Project.
+
+
+    '
+project_name: My REST API
+pypi_package_description: REST API service for the My Project
+pypi_package_name: ds-my-rest-api
+sphinx_docs: true
