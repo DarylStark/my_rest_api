@@ -4,10 +4,11 @@ from sys import version_info as py_version_info
 from fastapi import APIRouter
 from fastapi import __version__ as fastapi_version
 from pydantic import __version__ as pydantic_version
+from pydantic_settings import __version__ as pydantic_settings_version
 
 from . import __version__ as rest_api_version
-from .model import Version
 from .config import Settings
+from .model import Version
 
 api_router = APIRouter()
 
@@ -26,11 +27,18 @@ def version() -> Version:
                         f'{py_version_info.micro}'),
         external_dependencies={
             'fastapi': fastapi_version,
-            'pydantic': pydantic_version
+            'pydantic': pydantic_version,
+            'pydantic_settings': pydantic_settings_version
         }
     )
 
 
 @api_router.get('/config')
 def config() -> Settings:
+    """
+    Retrieves the configuration settings for the REST API.
+
+    Returns:
+        A `Settings` object containing the configuration settings.
+    """
     return Settings()
