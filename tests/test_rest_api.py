@@ -2,7 +2,6 @@
 
 from fastapi.testclient import TestClient
 from my_rest_api import __version__ as api_version
-from my_rest_api.config import Settings
 
 
 def test_version(api_client: TestClient):
