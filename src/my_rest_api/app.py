@@ -17,6 +17,7 @@ the `app` object. This allows the application to be run from a single module.
 from fastapi import FastAPI
 
 from .rest_api import api_router as rest_api_router
+from .auth import api_router as auth_api_router
 from .app_config import AppConfig
 
 # Get the configuration
@@ -29,3 +30,4 @@ app = FastAPI(
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
+app.include_router(auth_api_router, tags=['Authentication'], prefix='/auth')

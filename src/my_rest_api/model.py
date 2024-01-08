@@ -21,3 +21,17 @@ class Version(BaseModel):
     python_version: str | None = None
     internal_dependencies: dict[str, str] | None = None
     external_dependencies: dict[str, str] | None = None
+
+
+class AuthenticationDetails(BaseModel):
+    """Authentication details for the REST API.
+
+    Attributes:
+        username: The username for the user.
+        password: The password for the user.
+        second_factor: The second factor for authentication, if applicable.
+    """
+
+    username: str
+    password: str
+    second_factor: str | None = None
