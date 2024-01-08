@@ -7,7 +7,6 @@ from pydantic import __version__ as pydantic_version
 from pydantic_settings import __version__ as pydantic_settings_version
 
 from . import __version__ as rest_api_version
-from .config import Settings
 from .model import Version
 
 api_router = APIRouter()
