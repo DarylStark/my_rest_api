@@ -7,17 +7,14 @@ can be started.
 from my_rest_api.app_config import AppConfig
 
 
-def test_app_config() -> None:
+def test_app_config(app_config: AppConfig) -> None:
     """ Test case for AppConfig class.
 
     This test verifies that the default values of AppConfig are set correctly
     and that the class can be instantiated without errors.
     """
-    # Create an instance of AppConfig
-    config = AppConfig()
-
     # Assert that the default values are set correctly
-    assert not config.debug
-    assert config.database_str == 'sqlite:///:memory:/'
-    assert config.service_user == 'service.user'
-    assert config.service_password == 'service_password'
+    assert not app_config.debug
+    assert app_config.database_str == 'sqlite:///database.sqlite'
+    assert app_config.service_user == 'service.user'
+    assert app_config.service_password == 'service_password'
