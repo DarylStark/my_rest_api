@@ -23,7 +23,9 @@ from .app_config import AppConfig
 config = AppConfig()
 
 # Create the FastAPI application.
-app = FastAPI(debug=True)
+app = FastAPI(
+    debug=config.debug,
+    title='My REST API')
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
