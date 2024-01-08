@@ -10,6 +10,9 @@ from my_rest_api.app_config import AppConfig
 def test_app_config(app_config: AppConfig) -> None:
     """ Test case for AppConfig class.
 
+    Args:
+        app_config: An instance of the AppConfig class.
+
     This test verifies that the default values of AppConfig are set correctly
     and that the class can be instantiated without errors.
     """

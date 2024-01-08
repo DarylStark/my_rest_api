@@ -11,9 +11,6 @@ def test_my_data(app_config: AppConfig, my_data: MyData) -> None:
     Args:
         app_config: An instance of the AppConfig class.
         my_data: An instance of the MyData class.
-
-    Returns:
-        None
     """
     # pylint: disable=protected-access
     assert my_data._database_str == app_config.database_str
