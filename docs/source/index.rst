@@ -20,6 +20,7 @@ This documentation describes the REST API for My REST API. The API is divided in
    :maxdepth: 2
 
    api_documentation/app
+   api_documentation/config
    api_documentation/model
    api_documentation/rest_api
 
