@@ -14,5 +14,5 @@ class AppConfig(BaseSettings):
 
     # Database configuration
     database_str: str = 'sqlite:///:memory:/'
-    service_user: str = Field(default=...)
-    service_password: str = Field(default=...)
+    service_user: str = Field(default='service.user')
+    service_password: str = Field(default='service_password')
