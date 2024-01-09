@@ -13,19 +13,7 @@ from my_rest_api.app_config import AppConfig
 from my_rest_api.dependencies import my_data_object
 
 
-@pytest.fixture(scope='function')
-def my_data() -> MyData:
-    """Return the MyData object.
-
-    The MyData object is used to communicate with the persistent data store.
-
-    Returns:
-        The global My Data object.
-    """
-    return my_data_object()
-
-
-@pytest.fixture(scope='function')
+@pytest.fixture(scope='session')
 def app_config() -> AppConfig:
     """Fixture for AppConfig class.
 
