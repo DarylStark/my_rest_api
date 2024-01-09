@@ -9,19 +9,25 @@ as arguments to the endpoint function. For example:
 """
 
 from my_data.my_data import MyData
+
 from .app_config import AppConfig
 
 global_my_data = MyData()
-global_my_data.configure(db_connection_str=AppConfig().database_str)
-global_my_data.create_engine(force=False)
 
 
-def my_data_object() -> MyData:
+def my_data_object(configure: bool = True) -> MyData:
     """Return the MyData object.
 
     The MyData object is used to communicate with the persistent data store.
 
+    Args:
+        configure: specifies if the engine has to be configured if it is not
+            yet configured.
+
     Returns:
         The global My Data object.
     """
+    if not global_my_data.database_engine and configure:
+        global_my_data.configure(db_connection_str=AppConfig().database_str)
+        global_my_data.create_engine(force=False)
     return global_my_data
