@@ -1,12 +1,11 @@
 """Test the authentication of the REST API."""
 
-
 import pytest
 from fastapi.testclient import TestClient
 
 
 @pytest.mark.parametrize('login_json', [
-    {'username': 'service.user.1', 'password': 'normal_user_1_pw'},
+    {'username': 'normal.user.1', 'password': 'normal_user_1_pw'},
     {'username': 'root', 'password': 'root_pw'}
 ])
 def test_login_with_correct_credentials_no_2fa(
@@ -18,7 +17,7 @@ def test_login_with_correct_credentials_no_2fa(
 
     Args:
         api_client: the test client for making API requests.
-        login_json: a 
+        login_json: the dict to send to test.
     """
     result = api_client.post(
         '/auth/login',
@@ -34,8 +33,18 @@ def test_login_with_correct_credentials_needed_2fa(api_client: TestClient) -> No
     Args:
         api_client: the test client for making API requests.
     """
-    result = api_client.post('/auth/login')
-    assert result.status_code == 200
+    result = api_client.post(
+        '/auth/login',
+        json={
+            'username': 'normal.user.1',
+            'password': 'normal_user_2_pw'
+        })
+    response = result.json()
+    assert response == {
+        'status': 'correct',
+        'api_key': None
+    }
+    assert result.status_code == 412
 
 
 def test_login_with_correct_credentials_and_2fa(api_client: TestClient) -> None:
