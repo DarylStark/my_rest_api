@@ -8,6 +8,7 @@ from .dependencies import my_data_object
 from .model import AuthenticationDetails, AuthenticationResult
 
 from my_model.user_scoped_models import User, APIToken, UserRole
+from datetime import datetime, timedelta
 
 api_router = APIRouter()
 
@@ -23,9 +24,12 @@ def create_api_token_for_valid_user(user: User) -> str:
     Returns:
         The created API token.
     """
+    app_config = AppConfig()
     new_api_token = APIToken(
         api_client_id=None,
-        title='Interactive API token')  # TODO: different title
+        title='Interactive API token',
+        expires=datetime.now() + timedelta(
+            seconds=app_config.session_timeout_in_seconds))
     token = new_api_token.set_random_token()
     my_data = my_data_object()
     with my_data.get_context(user=user) as context:

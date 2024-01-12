@@ -16,3 +16,6 @@ class AppConfig(BaseSettings):
     database_str: str = 'sqlite:///database.sqlite'
     service_user: str = Field(default='service.user')
     service_password: str = Field(default='service_password')
+
+    # Authentication-session configuration
+    session_timeout_in_seconds: int = Field(default=3600 * 24 * 7)
