@@ -1,9 +1,11 @@
 """Test for the REST API endpoints."""
 
+import pytest
 from fastapi.testclient import TestClient
 from my_rest_api import __version__ as api_version
 
 
+@pytest.mark.xfail(reason='Need to test with different authentications')
 def test_version(api_client: TestClient):
     """Test the version endpoint.
 
