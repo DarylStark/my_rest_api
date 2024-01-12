@@ -32,8 +32,7 @@ def create_api_token_for_valid_user(user: User) -> str:
 
 @api_router.post('/login')
 def login(
-    authentication: AuthenticationDetails,
-    my_data: MyData = Depends(my_data_object)
+    authentication: AuthenticationDetails
 ) -> AuthenticationResult:
     """Login to the REST API.
 
@@ -42,7 +41,13 @@ def login(
 
     Returns:
         A dictionary containing the authentication token.
+
+    Raises:
+        HTTPException: if the authentication details are incorrect or
+            incomplete.
     """
+    my_data = my_data_object()
+
     # Defaults
     valid_user = False
     second_factor_required = False
