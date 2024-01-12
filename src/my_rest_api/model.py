@@ -1,6 +1,6 @@
 """Module that contains extra models for the REST API."""
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 
 class Version(BaseModel):
@@ -35,3 +35,15 @@ class AuthenticationDetails(BaseModel):
     username: str
     password: str
     second_factor: str | None = None
+
+
+class AuthenticationResult(BaseModel):
+    """Result of authentication.
+
+    Attributes:
+        status: The status of the authentication.
+        api_key: The API key for the user, if applicable.
+    """
+
+    status: str
+    api_key: str | None = Field(pattern=r'^[a-zA-Z0-9]{32}$')
