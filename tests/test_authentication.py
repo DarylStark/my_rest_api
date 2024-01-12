@@ -7,8 +7,8 @@ from pyotp import TOTP
 
 @pytest.mark.parametrize('login_json', [
     {'username': 'normal.user.1', 'password': 'normal_user_1_pw'},
-    {'username': 'root', 'password': 'root_pw'}
-])
+    {'username': 'root', 'password': 'root_pw'}],
+    ids=['normal_user_1', 'root'])
 def test_login_with_correct_credentials_no_2fa(
         api_client: TestClient,
         login_json: dict[str, str]) -> None:
@@ -64,7 +64,7 @@ def test_login_with_correct_credentials_and_2fa(
     result = api_client.post(
         '/auth/login',
         json={
-            'username': 'normal.user.1',
+            'username': 'normal.user.2',
             'password': 'normal_user_2_pw',
             'second_factor': TOTP(random_second_factor).now()
         })
@@ -79,8 +79,9 @@ def test_login_with_correct_credentials_and_2fa(
     {'username': 'normal.user.4', 'password': 'normal_user_4_pw'},
     {'username': 'normal.user.5', 'password': 'normal_user_5_pw'},
     {'username': 'normal.user.6', 'password': 'normal_user_6_pw'},
-    {'username': 'normal.user.7', 'password': 'normal_user_7_pw'},
-])
+    {'username': 'normal.user.7', 'password': 'normal_user_7_pw'}],
+    ids=['normal_user_3', 'normal_user_4', 'normal_user_5',
+         'normal_user 6', 'normal_user_7'])
 def test_login_with_incorrect_username(
         api_client: TestClient, login_json: dict[str, str]) -> None:
     """Test logging in with incorrect username.
@@ -104,8 +105,8 @@ def test_login_with_incorrect_username(
 
 @pytest.mark.parametrize('login_json', [
     {'username': 'normal.user.1', 'password': 'wrong_pw'},
-    {'username': 'root', 'password': 'wrong_root_pw'}
-])
+    {'username': 'root', 'password': 'wrong_root_pw'}],
+    ids=['normal_user_1', 'root'])
 def test_login_with_incorrect_password(
         api_client: TestClient, login_json: dict[str, str]) -> None:
     """Test logging in with incorrect password.
@@ -163,8 +164,8 @@ def test_login_with_service_account(api_client: TestClient) -> None:
     result = api_client.post(
         '/auth/login',
         json={
-            'username': 'normal.user.1',
-            'password': 'normal_user_2_pw'})
+            'username': 'service.user',
+            'password': 'service_password'})
     response = result.json()
     assert response == {
         'status': 'incorrect',
