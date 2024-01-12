@@ -4,6 +4,7 @@ Contains globally used fixtures for the unit testing.
 """
 
 
+from pathlib import Path
 import pytest
 from fastapi.testclient import TestClient
 
@@ -12,6 +13,19 @@ from my_rest_api.app_config import AppConfig
 from my_rest_api.dependencies import my_data_object
 
 from pyotp import random_base32
+
+
+@pytest.fixture(scope='session')
+def temp_data_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Create a temporary directory for storing temporary data.
+
+    Args:
+        tmp_path_factory: The pytest fixture for creating temporary paths.
+
+    Returns:
+        The path to the created temporary directory.
+    """
+    return tmp_path_factory.mktemp("temp_dir")
 
 
 @pytest.fixture(scope='session')
@@ -35,17 +49,18 @@ def random_second_factor() -> str:
 
 
 @pytest.fixture(scope='session')
-def api_client(random_second_factor: str) -> TestClient:
+def api_client(random_second_factor: str, temp_data_dir: Path) -> TestClient:
     """Return a TestClient instance for the FastAPI application.
 
     Args:
         random_second_factor: a random second factor.
+        temp_data_dir: a temporary data directory.
 
     Returns:
         TestClient: A TestClient instance for the FastAPI application.
     """
     my_data_obj = my_data_object(configure=False)
-    my_data_obj.configure('sqlite:///:memory:')
+    my_data_obj.configure(f'sqlite:///{temp_data_dir}test.sqlite')
     my_data_obj.create_engine()
     my_data_obj.create_db_tables()
     my_data_obj.create_init_data()
