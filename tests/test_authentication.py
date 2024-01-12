@@ -45,7 +45,7 @@ def test_login_with_correct_credentials_needed_2fa(
         json=login_json)
     response = result.json()
     assert response == {
-        'status': 'incorrect',
+        'status': 'failure',
         'api_key': None
     }
     assert result.status_code == 401
@@ -71,7 +71,7 @@ def test_login_with_correct_credentials_and_2fa(
             'second_factor': TOTP(random_second_factor).now()
         })
     response = result.json()
-    assert response['status'] == 'correct'
+    assert response['status'] == 'success'
     assert response['api_key'] is not None
     assert result.status_code == 200
 
@@ -99,7 +99,7 @@ def test_login_with_incorrect_username(
         json=login_json)
     response = result.json()
     assert response == {
-        'status': 'incorrect',
+        'status': 'failure',
         'api_key': None
     }
     assert result.status_code == 401
@@ -125,7 +125,7 @@ def test_login_with_incorrect_password(
         json=login_json)
     response = result.json()
     assert response == {
-        'status': 'incorrect',
+        'status': 'failure',
         'api_key': None
     }
     assert result.status_code == 401
@@ -149,7 +149,7 @@ def test_login_with_incorrect_2fa(api_client: TestClient) -> None:
         })
     response = result.json()
     assert response == {
-        'status': 'incorrect',
+        'status': 'failure',
         'api_key': None
     }
     assert result.status_code == 401
@@ -171,7 +171,7 @@ def test_login_with_service_account(api_client: TestClient) -> None:
             'password': 'service_password'})
     response = result.json()
     assert response == {
-        'status': 'incorrect',
+        'status': 'failure',
         'api_key': None
     }
     assert result.status_code == 401

@@ -5,14 +5,14 @@ Contains globally used fixtures for the unit testing.
 
 
 from pathlib import Path
+
 import pytest
 from fastapi.testclient import TestClient
+from pyotp import random_base32
 
 from my_rest_api.app import app
 from my_rest_api.app_config import AppConfig
 from my_rest_api.dependencies import my_data_object
-
-from pyotp import random_base32
 
 
 @pytest.fixture(scope='session')
@@ -49,7 +49,10 @@ def random_second_factor() -> str:
 
 
 @pytest.fixture(scope='session')
-def api_client(random_second_factor: str, temp_data_dir: Path) -> TestClient:
+def api_client(
+        random_second_factor: str,  # pylint: disable=redefined-outer-name
+        temp_data_dir: Path  # pylint: disable=redefined-outer-name
+) -> TestClient:
     """Return a TestClient instance for the FastAPI application.
 
     Args:

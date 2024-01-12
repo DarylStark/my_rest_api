@@ -1,5 +1,6 @@
 """Module that contains extra models for the REST API."""
 
+from enum import Enum
 from pydantic import BaseModel, Field
 
 
@@ -37,6 +38,13 @@ class AuthenticationDetails(BaseModel):
     second_factor: str | None = None
 
 
+class AuthenticationResultStatus(str, Enum):
+    """Enum for the status of the authentication result."""
+
+    SUCCESS = 'success'
+    FAILURE = 'failure'
+
+
 class AuthenticationResult(BaseModel):
     """Result of authentication.
 
@@ -45,7 +53,7 @@ class AuthenticationResult(BaseModel):
         api_key: The API key for the user, if applicable.
     """
 
-    status: str  # TODO: make this a Enum
+    status: AuthenticationResultStatus
     api_key: str | None = Field(pattern=r'^[a-zA-Z0-9]{32}$')
 
 
