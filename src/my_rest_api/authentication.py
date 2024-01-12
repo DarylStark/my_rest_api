@@ -22,7 +22,7 @@ def create_api_token_for_valid_user(user: User) -> str:
     """
     new_api_token = APIToken(
         api_client_id=None,
-        title='Interactive API token')
+        title='Interactive API token')  # TODO: different title
     token = new_api_token.set_random_token()
     my_data = my_data_object()
     with my_data.get_context(user=user) as context:
