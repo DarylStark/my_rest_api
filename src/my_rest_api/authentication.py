@@ -19,6 +19,9 @@ def create_api_token_for_valid_user(user: User) -> str:
 
     Args:
         user: the user for which to create the API token.
+
+    Returns:
+        The created API token.
     """
     new_api_token = APIToken(
         api_client_id=None,
@@ -44,51 +47,33 @@ def login(
 
     Raises:
         HTTPException: if the authentication details are incorrect or
-            incomplete.
+            incomplete. This can also mean that the username and password are
+            correct, but that the user needs to provide a second factor.
     """
     my_data = my_data_object()
-
-    # Defaults
-    valid_user = False
-    second_factor_required = False
+    service_user = AppConfig().service_user
+    service_password = AppConfig().service_password
 
     # Log in with a service user to retrieve the user.
     with my_data.get_context_for_service_user(
-            username=AppConfig().service_user,
-            password=AppConfig().service_password) as context:
-        # Retrieve the user.
+            username=service_user,
+            password=service_password) as context:
         try:
             user = context.get_user_account_by_username(
                 username=authentication.username)
-
-            interactive_user = user.role is not UserRole.SERVICE
 
             valid_credentials = user.verify_credentials(
                 username=authentication.username,
                 password=authentication.password,
                 second_factor=authentication.second_factor)
 
-            valid_user = interactive_user and valid_credentials
-
-            if (user.second_factor is not None and
-                    authentication.second_factor is None):
-                second_factor_required = True
+            if valid_credentials and (user.role is not UserRole.SERVICE):
+                token = create_api_token_for_valid_user(user=user)
+                return AuthenticationResult(
+                    status='correct',
+                    api_key=token)
         except UnknownUserAccountException:
             pass
-
-    if second_factor_required:
-        raise HTTPException(
-            status_code=412,
-            detail=AuthenticationResult(
-                status='correct',
-                api_key=None)
-        )
-
-    if valid_user:
-        token = create_api_token_for_valid_user(user=user)
-        return AuthenticationResult(
-            status='correct',
-            api_key=token)
 
     raise HTTPException(
         status_code=401,

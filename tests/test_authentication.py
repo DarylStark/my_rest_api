@@ -8,7 +8,7 @@ from pyotp import TOTP
 @pytest.mark.parametrize('login_json', [
     {'username': 'normal.user.1', 'password': 'normal_user_1_pw'},
     {'username': 'root', 'password': 'root_pw'}],
-    ids=['normal_user_1', 'root'])
+    ids=['normal.user.1', 'root'])
 def test_login_with_correct_credentials_no_2fa(
         api_client: TestClient,
         login_json: dict[str, str]) -> None:
@@ -26,27 +26,29 @@ def test_login_with_correct_credentials_no_2fa(
     assert result.status_code == 200
 
 
+@pytest.mark.parametrize('login_json', [
+    {'username': 'normal.user.2', 'password': 'wrong_pw'}],
+    ids=['normal.user.2'])
 def test_login_with_correct_credentials_needed_2fa(
-        api_client: TestClient) -> None:
+        api_client: TestClient,
+        login_json: dict[str, str]) -> None:
     """Test logging in with correct credentials for a account that needs 2FA.
 
-    Should result in a response that indicates that 2FA is needed.
+    Should result in a error response.
 
     Args:
         api_client: the test client for making API requests.
+        login_json: the dict to send to test.
     """
     result = api_client.post(
         '/auth/login',
-        json={
-            'username': 'normal.user.2',
-            'password': 'normal_user_2_pw'
-        })
+        json=login_json)
     response = result.json()
     assert response == {
-        'status': 'correct',
+        'status': 'incorrect',
         'api_key': None
     }
-    assert result.status_code == 412
+    assert result.status_code == 401
 
 
 def test_login_with_correct_credentials_and_2fa(
@@ -105,8 +107,9 @@ def test_login_with_incorrect_username(
 
 @pytest.mark.parametrize('login_json', [
     {'username': 'normal.user.1', 'password': 'wrong_pw'},
+    {'username': 'normal.user.2', 'password': 'wrong_pw'},
     {'username': 'root', 'password': 'wrong_root_pw'}],
-    ids=['normal_user_1', 'root'])
+    ids=['normal.user.1', 'normal.user.2', 'root'])
 def test_login_with_incorrect_password(
         api_client: TestClient, login_json: dict[str, str]) -> None:
     """Test logging in with incorrect password.
