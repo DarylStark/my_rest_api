@@ -6,7 +6,8 @@ from my_model.user_scoped_models import UserRole
 from .app_config import AppConfig
 from .authentication import create_api_token_for_valid_user
 from .dependencies import my_data_object
-from .model import AuthenticationDetails, AuthenticationResult, AuthenticationResultStatus
+from .model import (AuthenticationDetails, AuthenticationResult,
+                    AuthenticationResultStatus)
 
 api_router = APIRouter()
 

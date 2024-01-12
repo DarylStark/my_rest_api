@@ -23,9 +23,15 @@ api_router = APIRouter()
 def version(x_api_key: Annotated[str | None, Header()] = None) -> Version:
     """Get version information for the REST API.
 
+    Args:
+        x_api_key: The API key to use for authentication.
+
     Returns:
         Version: An instance of the Version class representing the version
             information.
+
+    Raises:
+        HTTPException: when the user has no access to the version information.
     """
     version_object = Version(
         version=rest_api_version,

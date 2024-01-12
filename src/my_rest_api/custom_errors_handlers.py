@@ -1,3 +1,4 @@
+"""Module with custom error handlers for the REST API."""""
 from fastapi import Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
@@ -7,7 +8,7 @@ from pydantic import BaseModel
 async def custom_http_exception_handler(
         request: Request,  # pylint: disable=unused-argument
         exc: HTTPException) -> JSONResponse:
-    """Custom exception handler for HTTP exceptions.
+    """Exception handler for HTTP exceptions.
 
     If the `detail` in `exc` is a Pydantic basemodel, it will be converted to
     a dict using the `model_dump` method. Otherwise, the `detail` will be
