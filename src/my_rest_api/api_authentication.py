@@ -1,11 +1,12 @@
 """API endpoints for authentication."""
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException
 from my_data.exceptions import UnknownUserAccountException
+from my_data.my_data import MyData
 from my_model.user_scoped_models import UserRole
 
 from .app_config import AppConfig
 from .authentication import create_api_token_for_valid_user
-from .dependencies import my_data_object
+from .dependencies import app_config_object, my_data_object
 from .model import (AuthenticationDetails, AuthenticationResult,
                     AuthenticationResultStatus)
 
@@ -14,12 +15,16 @@ api_router = APIRouter()
 
 @api_router.post('/login')
 def login(
-    authentication: AuthenticationDetails
+    authentication: AuthenticationDetails,
+    my_data: MyData = Depends(my_data_object),
+    app_config: AppConfig = Depends(app_config_object)
 ) -> AuthenticationResult:
     """Login to the REST API.
 
     Args:
         authentication: authentication details.
+        my_data: a global MyData object.
+        app_config: a global AppConfig object.
 
     Returns:
         A dictionary containing the authentication token.
@@ -29,8 +34,6 @@ def login(
             incomplete. This can also mean that the username and password are
             correct, but that the user needs to provide a second factor.
     """
-    my_data = my_data_object()
-    app_config = AppConfig()
     service_user = app_config.service_user
     service_password = app_config.service_password
 

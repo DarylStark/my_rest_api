@@ -5,7 +5,7 @@ from typing import Optional
 from my_model.user_scoped_models import APIToken, User
 
 from .app_config import AppConfig
-from .dependencies import my_data_object
+from .dependencies import my_data_object, app_config_object
 
 
 def create_api_token_for_valid_user(user: User) -> str:
@@ -19,7 +19,7 @@ def create_api_token_for_valid_user(user: User) -> str:
     Returns:
         The created API token.
     """
-    app_config = AppConfig()
+    app_config = app_config_object()
     new_api_token = APIToken(
         api_client_id=None,
         title='Interactive API token',
@@ -45,7 +45,7 @@ def get_user_for_api_key(api_key: str | None) -> Optional[User]:
         return None
 
     my_data = my_data_object()
-    app_config = AppConfig()
+    app_config = app_config_object()
     service_user = app_config.service_user
     service_password = app_config.service_password
 

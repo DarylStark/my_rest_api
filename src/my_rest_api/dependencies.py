@@ -11,23 +11,28 @@ as arguments to the endpoint function. For example:
 from my_data.my_data import MyData
 
 from .app_config import AppConfig
+from .my_rest_api import MyRESTAPI
 
 global_my_data = MyData()
 
 
-def my_data_object(configure: bool = True) -> MyData:
-    """Return the MyData object.
+def my_data_object() -> MyData:
+    """Return the MyData object from the global MyRESTAPI object.
 
     The MyData object is used to communicate with the persistent data store.
-
-    Args:
-        configure: specifies if the engine has to be configured if it is not
-            yet configured.
 
     Returns:
         The global My Data object.
     """
-    if not global_my_data.database_engine and configure:
-        global_my_data.configure(db_connection_str=AppConfig().database_str)
-        global_my_data.create_engine(force=False)
-    return global_my_data
+    return MyRESTAPI.get_instance().data
+
+
+def app_config_object() -> AppConfig:
+    """Return the AppConfig object from the global MyRESTAPI object.
+
+    The AppConfig object is used to configure the application.
+
+    Returns:
+        The global AppConfig object.
+    """
+    return MyRESTAPI.get_instance().config

@@ -2,7 +2,7 @@
 from sys import version_info as py_version_info
 from typing import Annotated
 
-from fastapi import APIRouter, Header, HTTPException
+from fastapi import APIRouter, Depends, Header, HTTPException
 from fastapi import __version__ as fastapi_version
 from my_data import __version__ as my_data_version
 from my_model import __version__ as my_model_version
@@ -14,16 +14,21 @@ from my_rest_api.app_config import AppConfig
 
 from . import __version__ as rest_api_version
 from .authentication import get_user_for_api_key
+from .dependencies import app_config_object
 from .model import ErrorModel, Version
 
 api_router = APIRouter()
 
 
 @api_router.get('/version', responses={403: {'model': ErrorModel}})
-def version(x_api_key: Annotated[str | None, Header()] = None) -> Version:
+def version(
+    app_config: AppConfig = Depends(app_config_object),
+    x_api_key: Annotated[str | None, Header()] = None
+) -> Version:
     """Get version information for the REST API.
 
     Args:
+        app_config: a global AppConfig object.
         x_api_key: The API key to use for authentication.
 
     Returns:
@@ -51,7 +56,6 @@ def version(x_api_key: Annotated[str | None, Header()] = None) -> Version:
     # Get the requesting user
     user = get_user_for_api_key(api_key=x_api_key)
 
-    app_config = AppConfig()
     if user is None:
         # Unauthorized
         if not app_config.version_unauthorized:

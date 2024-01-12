@@ -19,11 +19,14 @@ from fastapi.exceptions import HTTPException
 
 from .api_authentication import api_router as auth_api_router
 from .api_rest_api import api_router as rest_api_router
-from .app_config import AppConfig
 from .custom_errors_handlers import custom_http_exception_handler
+from .my_rest_api import MyRESTAPI
 
 # Get the configuration
-config = AppConfig()
+config = MyRESTAPI.get_instance().config
+
+# Configure the database
+MyRESTAPI.get_instance().configure_my_data(database_str=config.database_str)
 
 # Create the FastAPI application.
 app = FastAPI(
