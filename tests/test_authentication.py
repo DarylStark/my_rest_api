@@ -94,6 +94,11 @@ def test_login_with_incorrect_username(
     result = api_client.post(
         '/auth/login',
         json=login_json)
+    response = result.json()
+    assert response == {
+        'status': 'incorrect',
+        'api_key': None
+    }
     assert result.status_code == 401
 
 
@@ -114,6 +119,11 @@ def test_login_with_incorrect_password(
     result = api_client.post(
         '/auth/login',
         json=login_json)
+    response = result.json()
+    assert response == {
+        'status': 'incorrect',
+        'api_key': None
+    }
     assert result.status_code == 401
 
 
@@ -134,9 +144,11 @@ def test_login_with_incorrect_2fa(api_client: TestClient) -> None:
             'second_factor': '345123'
         })
     response = result.json()
-    assert response['status'] == 'correct'
-    assert response['api_key'] is not None
-    assert result.status_code == 200
+    assert response == {
+        'status': 'incorrect',
+        'api_key': None
+    }
+    assert result.status_code == 401
 
 
 def test_login_with_service_account(api_client: TestClient) -> None:
@@ -153,4 +165,9 @@ def test_login_with_service_account(api_client: TestClient) -> None:
         json={
             'username': 'normal.user.1',
             'password': 'normal_user_2_pw'})
+    response = result.json()
+    assert response == {
+        'status': 'incorrect',
+        'api_key': None
+    }
     assert result.status_code == 401
