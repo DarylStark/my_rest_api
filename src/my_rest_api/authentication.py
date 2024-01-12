@@ -51,8 +51,9 @@ def login(
             correct, but that the user needs to provide a second factor.
     """
     my_data = my_data_object()
-    service_user = AppConfig().service_user
-    service_password = AppConfig().service_password
+    app_config = AppConfig()
+    service_user = app_config.service_user
+    service_password = app_config.service_password
 
     # Log in with a service user to retrieve the user.
     with my_data.get_context_for_service_user(
