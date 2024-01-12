@@ -17,7 +17,7 @@ class Version(BaseModel):
             corresponding version.
     """
 
-    version: str
+    version: str | None
     python_version: str | None = None
     internal_dependencies: dict[str, str] | None = None
     external_dependencies: dict[str, str] | None = None
@@ -47,3 +47,13 @@ class AuthenticationResult(BaseModel):
 
     status: str  # TODO: make this a Enum
     api_key: str | None = Field(pattern=r'^[a-zA-Z0-9]{32}$')
+
+
+class ErrorModel(BaseModel):
+    """Error model for the REST API.
+
+    Attributes:
+        error: The error message.
+    """
+
+    error: str = 'Unknown error'

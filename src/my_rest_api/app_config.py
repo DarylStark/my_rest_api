@@ -19,3 +19,16 @@ class AppConfig(BaseSettings):
 
     # Authentication-session configuration
     session_timeout_in_seconds: int = Field(default=3600 * 24 * 7)
+
+    # Configuration for `/version` for unauthorized users
+    version_unauthorized: bool = False
+    version_unauthorized_show_version: bool = False
+    version_unauthorized_show_python_version: bool = False
+    version_unauthorized_show_internal_libraries: bool = False
+    version_unauthorized_show_external_libraries: bool = False
+
+    # Configuration for `/version` for authorized users
+    version_authorized_show_version: bool = True
+    version_authorized_show_python_version: bool = False
+    version_authorized_show_internal_libraries: bool = False
+    version_authorized_show_external_libraries: bool = False
