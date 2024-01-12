@@ -45,5 +45,5 @@ class AuthenticationResult(BaseModel):
         api_key: The API key for the user, if applicable.
     """
 
-    status: str
+    status: str  # TODO: make this a Enum
     api_key: str | None = Field(pattern=r'^[a-zA-Z0-9]{32}$')
