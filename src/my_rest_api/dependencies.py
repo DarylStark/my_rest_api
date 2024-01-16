@@ -9,19 +9,30 @@ as arguments to the endpoint function. For example:
 """
 
 from my_data.my_data import MyData
+
 from .app_config import AppConfig
+from .my_rest_api import MyRESTAPI
 
 global_my_data = MyData()
-global_my_data.configure(db_connection_str=AppConfig().database_str)
-global_my_data.create_engine(force=False)
 
 
 def my_data_object() -> MyData:
-    """Return the MyData object.
+    """Return the MyData object from the global MyRESTAPI object.
 
     The MyData object is used to communicate with the persistent data store.
 
     Returns:
         The global My Data object.
     """
-    return global_my_data
+    return MyRESTAPI.get_instance().my_data
+
+
+def app_config_object() -> AppConfig:
+    """Return the AppConfig object from the global MyRESTAPI object.
+
+    The AppConfig object is used to configure the application.
+
+    Returns:
+        The global AppConfig object.
+    """
+    return MyRESTAPI.get_instance().config

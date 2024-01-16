@@ -1,5 +1,6 @@
 """Module with the configuration model of the application."""
 
+from typing import Any
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -14,5 +15,9 @@ class AppConfig(BaseSettings):
 
     # Database configuration
     database_str: str = 'sqlite:///database.sqlite'
+    database_args: dict[str, Any] | None = None
     service_user: str = Field(default='service.user')
     service_password: str = Field(default='service_password')
+
+    # Authentication-session configuration
+    session_timeout_in_seconds: int = Field(default=3600 * 24 * 7)
