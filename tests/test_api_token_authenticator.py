@@ -137,3 +137,30 @@ def test_api_token_property_without_api_token(
     """
     authenticator = APITokenAuthenticator()
     assert authenticator.api_token is None
+
+
+def test_api_is_valid_user_property_without_api_token(
+        api_client: TestClient,  # pylint: disable=unused-argument
+) -> None:
+    """Test the `is_valid_user` property of the APITokenAuthenticator class.
+
+    Args:
+        api_client: the test client for making API requests. Not used in this
+            test but needed to create the database.
+    """
+    authenticator = APITokenAuthenticator()
+    assert not authenticator.is_valid_user
+
+
+def test_api_is_valid_user_property(
+        api_client: TestClient,  # pylint: disable=unused-argument
+        random_api_token_root: str) -> None:
+    """Test the `is_valid_user` property of the APITokenAuthenticator class.
+
+    Args:
+        api_client: the test client for making API requests. Not used in this
+            test but needed to create the database.
+        random_api_token_root: a random API token for a root user.
+    """
+    authenticator = APITokenAuthenticator(random_api_token_root)
+    assert authenticator.is_valid_user
