@@ -219,6 +219,4 @@ class APITokenAuthenticator:
         Returns:
             True if the user is a service user, False otherwise.
         """
-        if not self.user:
-            return False
         return self._get_user_role() == UserRole.SERVICE
