@@ -63,6 +63,9 @@ class MyRESTAPI:
             database_str: the database string to configure. If this is not
                 specified, the database string from the config file will be
                 used.
+            database_args: the database arguments to configure. If this is not
+                specified, the database arguments from the config file will be
+                used.
             create_tables: if True, the database tables will be created.
             create_init_data: if True, initial data will be created.
         """

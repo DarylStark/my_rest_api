@@ -35,9 +35,9 @@ async def custom_http_exception_handler(
 
 async def custom_unknown_user_account_exception_handler(
         request: Request,  # pylint: disable=unused-argument,
-        exc: UnknownUserAccountException) -> JSONResponse:
+        exc: UnknownUserAccountException  # pylint: disable=unused-argument,
+) -> JSONResponse:
     """Exception handler for unknown user account exceptions.
-
 
     Args:
         request: The incoming request object.

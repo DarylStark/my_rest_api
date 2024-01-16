@@ -4,8 +4,7 @@ from typing import Optional
 
 from my_model.user_scoped_models import APIToken, User
 
-from .app_config import AppConfig
-from .dependencies import my_data_object, app_config_object
+from .dependencies import app_config_object, my_data_object
 
 
 def create_api_token_for_valid_user(user: User) -> str:

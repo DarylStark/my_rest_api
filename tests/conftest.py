@@ -2,6 +2,7 @@
 
 Contains globally used fixtures for the unit testing.
 """
+# pylint: disable=redefined-outer-name
 
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -78,17 +79,21 @@ def random_api_token_normal_user_logout() -> str:
 
 @pytest.fixture(scope='session')
 def api_client(
-        random_second_factor: str,  # pylint: disable=redefined-outer-name
-        temp_data_dir: Path,  # pylint: disable=redefined-outer-name
-        random_api_token_root: str,  # pylint: disable=redefined-outer-name
-        random_api_token_normal_user: str,  # pylint: disable=redefined-outer-name
-        random_api_token_normal_user_logout: str  # pylint: disable=redefined-outer-name
+        random_second_factor: str,
+        temp_data_dir: Path,
+        random_api_token_root: str,
+        random_api_token_normal_user: str,
+        random_api_token_normal_user_logout: str
 ) -> TestClient:
     """Return a TestClient instance for the FastAPI application.
 
     Args:
         random_second_factor: a random second factor.
         temp_data_dir: a temporary data directory.
+        random_api_token_root: a random API token for a root user.
+        random_api_token_normal_user: a random API token for a normal user.
+        random_api_token_normal_user_logout: a random API token for a normal
+            user. This token is only used for the logout test.
 
     Returns:
         TestClient: A TestClient instance for the FastAPI application.
@@ -126,7 +131,8 @@ def api_client(
 
     if normal_user_1:
         with my_rest_api.my_data.get_context(user=normal_user_1) as context:
-            for token in (random_api_token_normal_user, random_api_token_normal_user_logout):
+            for token in (random_api_token_normal_user,
+                          random_api_token_normal_user_logout):
                 # Set a API token for the user.
                 api_token = APIToken(
                     api_client=None,
