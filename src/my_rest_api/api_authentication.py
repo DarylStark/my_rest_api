@@ -45,6 +45,10 @@ def login(
             user = context.get_user_account_by_username(
                 username=authentication.username)
 
+            if (user.second_factor is None and
+                    authentication.second_factor is not None):
+                raise UnknownUserAccountException
+
             valid_credentials = user.verify_credentials(
                 username=authentication.username,
                 password=authentication.password,

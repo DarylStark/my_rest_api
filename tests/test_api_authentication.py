@@ -131,6 +131,29 @@ def test_login_with_incorrect_password(
     assert result.status_code == 401
 
 
+def test_login_with_incorrect_2fa_format(api_client: TestClient) -> None:
+    """Test logging in with a 2FA code when not needed.
+
+    Should give an Access Denied error.
+
+    Args:
+        api_client: the test client for making API requests.
+    """
+    result = api_client.post(
+        '/auth/login',
+        json={
+            'username': 'normal.user.1',
+            'password': 'normal_user_1_pw',
+            'second_factor': '123456'
+        })
+    response = result.json()
+    assert response == {
+        'status': 'failure',
+        'api_key': None
+    }
+    assert result.status_code == 401
+
+
 def test_login_with_incorrect_2fa(api_client: TestClient) -> None:
     """Test logging in with incorrect 2FA.
 
