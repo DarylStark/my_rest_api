@@ -1,17 +1,6 @@
 """Test for the REST API endpoints."""
 
-from sys import version_info as py_version_info
-
-from fastapi import __version__ as fastapi_version
 from fastapi.testclient import TestClient
-from my_data import __version__ as my_data_version
-from my_model import __version__ as my_model_version
-from pydantic import __version__ as pydantic_version
-from pydantic_settings import __version__ as pydantic_settings_version
-
-from my_rest_api import __version__ as api_version
-
-from my_rest_api.my_rest_api import MyRESTAPI
 
 from my_rest_api import __version__ as rest_api_version
 

@@ -79,6 +79,7 @@ class APITokenAuthenticator:
 
         Args:
             api_key: The API key to authenticate with.
+            authenticator: The authenticator to use.
         """
         self._api_key = api_key
         if authenticator:
@@ -101,8 +102,8 @@ class APITokenAuthenticator:
 
         my_data = my_data_object()
         app_config = app_config_object()
-        service_user = app_config.service_user
         service_password = app_config.service_password
+        service_user = app_config.service_user
 
         # Log in with a service user to retrieve the user.
         with my_data.get_context_for_service_user(

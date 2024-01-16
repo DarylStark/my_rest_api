@@ -111,9 +111,6 @@ def status(
 
     Returns:
         An status information object.
-
-    Raises:
-        UnknownUserAccountException: if the user account is unknown.
     """
     auth = APITokenAuthenticator(
         api_key=x_api_key,
