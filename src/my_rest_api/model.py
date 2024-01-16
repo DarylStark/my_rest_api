@@ -75,3 +75,20 @@ class LogoutResult(BaseModel):
     """
 
     status: AuthenticationResultStatus
+
+
+class APIAuthStatusToken(str, Enum):
+    """Enum for the status of the authentication result."""
+
+    LONG_LIVED = 'Logged in with a long-lived token'
+    SHORT_LIVED = 'Logged in with a short-lived token'
+
+
+class APIAuthStatus(BaseModel):
+    """Result of the API authentication status.
+
+    Attributes:
+        token: information about the token.
+    """
+
+    token: APIAuthStatusToken

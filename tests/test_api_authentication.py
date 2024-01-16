@@ -245,7 +245,7 @@ def test_authenticaiton_status_not_logged_in(
     Args:
         api_client: the test client for making API requests.
     """
-    result = api_client.post('/auth/status')
+    result = api_client.get('/auth/status')
     response = result.json()
     assert response['error'] == 'Not authorized to perform this action'
     assert result.status_code == 401
@@ -253,18 +253,18 @@ def test_authenticaiton_status_not_logged_in(
 
 def test_authenticaiton_status_valid_short_lived_token(
         api_client: TestClient,
-        random_api_token_normal_user_logout: str) -> None:
+        random_api_token_normal_user: str) -> None:
     """Test the authentication status with a valid token.
 
     Should be succesfull.
 
     Args:
         api_client: the test client for making API requests.
-        random_api_token_normal_user_logout: a token for the request.
+        random_api_token_normal_user: a token for the request.
     """
-    result = api_client.post(
+    result = api_client.get(
         '/auth/status',
-        headers={'X-API-Key': random_api_token_normal_user_logout})
+        headers={'X-API-Key': random_api_token_normal_user})
     response = result.json()
     assert response['token'] == 'Logged in with a short-lived token'
     assert result.status_code == 200
@@ -281,7 +281,7 @@ def test_authenticaiton_status_valid_long_lived_token(
         api_client: the test client for making API requests.
         random_api_token_normal_user_long_lived: a token for the request.
     """
-    result = api_client.post(
+    result = api_client.get(
         '/auth/status',
         headers={'X-API-Key': random_api_token_normal_user_long_lived})
     response = result.json()
@@ -298,7 +298,7 @@ def test_authenticaiton_status_invalid_token(
     Args:
         api_client: the test client for making API requests.
     """
-    result = api_client.post(
+    result = api_client.get(
         '/auth/status',
         headers={'X-API-Key': 'wrong_token'})
     response = result.json()

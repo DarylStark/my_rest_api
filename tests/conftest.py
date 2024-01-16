@@ -156,20 +156,21 @@ def api_client(
                 api_token.token = token
                 context.api_tokens.create(api_token)
 
-        # Add a API client to user.normal.1
-        client = APIClient(
-            app_name='test_app',
-            app_publisher='Daryl Stark',
-            user=normal_user_1)
-        client.api_tokens.append(
-            APIToken(
+            # Add a API client to user.normal.1
+            client = APIClient(
+                app_name='test_app',
+                app_publisher='Daryl Stark',
+                user=normal_user_1)
+            context.api_clients.create(client)
+
+            long_lived_token = APIToken(
                 title='test token',
                 expires=datetime.now() +
                 timedelta(seconds=3600),
-                token=random_api_token_normal_user_long_lived)
-        )
-        with my_rest_api.my_data.get_context(user=normal_user_1) as context:
-            context.api_clients.create(client)
+                token=random_api_token_normal_user_long_lived,
+                api_client=client)
+
+            context.api_tokens.create(long_lived_token)
 
     # Make sure that normal_user_2 has 2FA enabled.
     normal_user_2: Optional[User] = None

@@ -10,7 +10,7 @@ from .app_config import AppConfig
 from .authentication import (create_api_token_for_valid_user,
                              get_user_for_api_key)
 from .dependencies import app_config_object, my_data_object
-from .model import (AuthenticationDetails, AuthenticationResult,
+from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails, AuthenticationResult,
                     AuthenticationResultStatus, LogoutResult)
 
 api_router = APIRouter()
@@ -97,3 +97,33 @@ def logout(
                     api_token[0].api_client is None):
                 context.api_tokens.delete(api_token)
     return LogoutResult(status=AuthenticationResultStatus.SUCCESS)
+
+
+@api_router.get('/status')
+def status(
+        x_api_key: Annotated[str | None, Header()] = None,
+        my_data: MyData = Depends(my_data_object)) -> APIAuthStatus:
+    """Get API token information.
+
+    Args:
+        x_api_key: The API key to use for authentication.
+        my_data: a global MyData object.
+
+    Returns:
+        An status information object.
+    """
+    user = get_user_for_api_key(api_key=x_api_key)
+    if not user:
+        raise UnknownUserAccountException
+
+    api_token_object: APIToken | None = None
+    if user:
+        with my_data.get_context(user=user) as context:
+            api_token = context.api_tokens.retrieve(
+                APIToken.token == x_api_key)  # type: ignore
+            if (api_token and len(api_token) == 1):
+                api_token_object = api_token[0]
+
+    if api_token_object.api_client_id is not None:
+        return APIAuthStatus(token=APIAuthStatusToken.LONG_LIVED)
+    return APIAuthStatus(token=APIAuthStatusToken.SHORT_LIVED)
