@@ -16,13 +16,13 @@ the `app` object. This allows the application to be run from a single module.
 
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
-from my_data.exceptions import UnknownUserAccountException
+
+from my_rest_api.exception import PermissionDeniedException
 
 from .api_authentication import api_router as auth_api_router
 from .api_rest_api import api_router as rest_api_router
 from .custom_errors_handlers import (
-    custom_http_exception_handler,
-    custom_unknown_user_account_exception_handler)
+    custom_http_exception_handler, custom_permission_denied_exception_handler)
 from .my_rest_api import MyRESTAPI
 
 # Get the configuration
@@ -38,8 +38,8 @@ app = FastAPI(
 
 # Add customer exception handlers
 app.exception_handlers[HTTPException] = custom_http_exception_handler
-app.exception_handlers[UnknownUserAccountException] = \
-    custom_unknown_user_account_exception_handler
+app.exception_handlers[PermissionDeniedException] = \
+    custom_permission_denied_exception_handler
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])

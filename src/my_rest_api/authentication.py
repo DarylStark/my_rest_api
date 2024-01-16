@@ -1,10 +1,12 @@
 """Functions for authentication."""
-from curses.ascii import US
+from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import Optional
+from typing import Optional, Type
 
 from my_data.exceptions import UnknownUserAccountException
 from my_model.user_scoped_models import APIToken, User, UserRole
+
+from my_rest_api.exception import PermissionDeniedException
 
 from .dependencies import app_config_object, my_data_object
 
@@ -33,42 +35,56 @@ def create_api_token_for_valid_user(user: User) -> str:
     return token
 
 
-def get_user_for_api_key(api_key: str | None) -> Optional[User]:
-    """Get the user for the given API key.
+class Authenticator(ABC):
+    """Base class for authenticators."""
 
-    Args:
-        api_key: The API key to get the user for.
+    def __init__(
+            self,
+            api_token_authenticator: 'APITokenAuthenticator') -> None:
+        """Initialize the authenticator.
 
-    Returns:
-        The user for the API key, or None if the API key is invalid.
-    """
-    if not api_key:
-        return None
+        Args:
+            api_token_authenticator: the API token authenticator.
+        """
+        self._api_token_authenticator = api_token_authenticator
 
-    my_data = my_data_object()
-    app_config = app_config_object()
-    service_user = app_config.service_user
-    service_password = app_config.service_password
+    @abstractmethod
+    def authenticate(self) -> None:
+        """Authenticate the user."""
 
-    # Log in with a service user to retrieve the user.
-    user = None
-    with my_data.get_context_for_service_user(
-            username=service_user,
-            password=service_password) as context:
-        user = context.get_user_account_by_api_token(api_token=api_key)
-    return user
+
+class LoggedOnAuthenticator(Authenticator):
+    """Authenticator for logged on users."""
+
+    def authenticate(self) -> None:
+        """Authenticate the user and fail if he is not logged on.
+
+        If the user is not logged on, a exception will be raised.
+
+        Raises:
+            PermissionDeniedException: when the user it not logged on.
+        """
+        if self._api_token_authenticator.user is None:
+            raise PermissionDeniedException
 
 
 class APITokenAuthenticator:
     """Authenticator for API tokens."""
 
-    def __init__(self, api_key: str | None = None):
+    def __init__(
+            self,
+            api_key: str | None = None,
+            authenticator: Type[Authenticator] | None = None):
         """Initialize the API token authenticator.
 
         Args:
             api_key: The API key to authenticate with.
         """
-        self.api_key = api_key
+        self._api_key = api_key
+        if authenticator:
+            self._authenticator: Optional[Authenticator] = authenticator(self)
+        else:
+            self._authenticator = None
 
         # Caches
         self._user: Optional[User] = None
@@ -80,7 +96,7 @@ class APITokenAuthenticator:
         Returns:
             The user for the API key, or None if the API key is invalid.
         """
-        if not self.api_key:
+        if not self._api_key:
             return None
 
         my_data = my_data_object()
@@ -94,7 +110,7 @@ class APITokenAuthenticator:
                 password=service_password) as context:
             try:
                 user = context.get_user_account_by_api_token(
-                    api_token=self.api_key)
+                    api_token=self._api_key)
             except UnknownUserAccountException:
                 pass
             else:
@@ -107,7 +123,7 @@ class APITokenAuthenticator:
         Returns:
             The API token for the API key, or None if the API key is invalid.
         """
-        if not self.api_key:
+        if not self._api_key:
             return None
 
         my_data = my_data_object()
@@ -115,7 +131,7 @@ class APITokenAuthenticator:
         if user:
             with my_data.get_context(user=user) as context:
                 api_token = context.api_tokens.retrieve(
-                    APIToken.token == self.api_key)  # type: ignore
+                    APIToken.token == self._api_key)  # type: ignore
                 if api_token:
                     return api_token[0]
         return None
@@ -130,6 +146,11 @@ class APITokenAuthenticator:
         if not user:
             return None
         return user.role
+
+    def authenticate(self) -> None:
+        """Authenticate the user."""
+        if self._authenticator:
+            self._authenticator.authenticate()
 
     @property
     def user(self) -> Optional[User]:
@@ -160,6 +181,15 @@ class APITokenAuthenticator:
         if not self._api_token:
             self._api_token = self._get_api_token()
         return self._api_token
+
+    @property
+    def is_valid_user(self) -> bool:
+        """Check if the user is a valid user.
+
+        Returns:
+            True if the user is a valid user, False otherwise.
+        """
+        return self.user is not None
 
     @property
     def is_root(self) -> bool:

@@ -3,7 +3,7 @@ from fastapi import Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from my_data.exceptions import UnknownUserAccountException
+from my_rest_api.exception import PermissionDeniedException
 
 
 async def custom_http_exception_handler(
@@ -33,9 +33,9 @@ async def custom_http_exception_handler(
     )
 
 
-async def custom_unknown_user_account_exception_handler(
+async def custom_permission_denied_exception_handler(
         request: Request,  # pylint: disable=unused-argument,
-        exc: UnknownUserAccountException  # pylint: disable=unused-argument,
+        exc: PermissionDeniedException  # pylint: disable=unused-argument,
 ) -> JSONResponse:
     """Exception handler for unknown user account exceptions.
 
@@ -50,6 +50,6 @@ async def custom_unknown_user_account_exception_handler(
     return JSONResponse(
         status_code=401,
         content={
-            'error': 'Not authorized to perform this action',
+            'error': 'Not authorized',
         }
     )

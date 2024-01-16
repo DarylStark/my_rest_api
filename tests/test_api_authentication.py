@@ -232,7 +232,7 @@ def test_logout_with_invalid_token(
         '/auth/logout',
         headers={'X-API-Key': 'wrong_token'})
     response = result.json()
-    assert response['error'] == 'Not authorized to perform this action'
+    assert response['error'] == 'Not authorized'
     assert result.status_code == 401
 
 
@@ -247,7 +247,7 @@ def test_authenticaiton_status_not_logged_in(
     """
     result = api_client.get('/auth/status')
     response = result.json()
-    assert response['error'] == 'Not authorized to perform this action'
+    assert response['error'] == 'Not authorized'
     assert result.status_code == 401
 
 
@@ -302,5 +302,5 @@ def test_authenticaiton_status_invalid_token(
         '/auth/status',
         headers={'X-API-Key': 'wrong_token'})
     response = result.json()
-    assert response['error'] == 'Not authorized to perform this action'
+    assert response['error'] == 'Not authorized'
     assert result.status_code == 401

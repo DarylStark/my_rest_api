@@ -1,5 +1,5 @@
 """API endpoints for authentication."""
-from typing import Annotated
+from typing import Annotated, Optional
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from my_data.exceptions import UnknownUserAccountException
@@ -7,8 +7,8 @@ from my_data.my_data import MyData
 from my_model.user_scoped_models import APIToken, UserRole
 
 from .app_config import AppConfig
-from .authentication import (create_api_token_for_valid_user,
-                             get_user_for_api_key)
+from .authentication import (APITokenAuthenticator, LoggedOnAuthenticator,
+                             create_api_token_for_valid_user)
 from .dependencies import app_config_object, my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
                     AuthenticationResult, AuthenticationResultStatus,
@@ -88,27 +88,26 @@ def logout(
     Returns:
         An empty dictionary.
     """
-    user = get_user_for_api_key(api_key=x_api_key)
+    auth = APITokenAuthenticator(
+        api_key=x_api_key,
+        authenticator=LoggedOnAuthenticator)
+    auth.authenticate()
+
+    user = auth.user
     if user:
         with my_data.get_context(user=user) as context:
-            api_token = context.api_tokens.retrieve(
-                APIToken.token == x_api_key)  # type: ignore
-            if (api_token and
-                    len(api_token) == 1 and
-                    api_token[0].api_client is None):
-                context.api_tokens.delete(api_token)
+            if auth.api_token:
+                context.api_tokens.delete(auth.api_token)
     return LogoutResult(status=AuthenticationResultStatus.SUCCESS)
 
 
 @api_router.get('/status')
 def status(
-        x_api_key: Annotated[str | None, Header()] = None,
-        my_data: MyData = Depends(my_data_object)) -> APIAuthStatus:
+        x_api_key: Annotated[str | None, Header()] = None) -> APIAuthStatus:
     """Get API token information.
 
     Args:
         x_api_key: The API key to use for authentication.
-        my_data: a global MyData object.
 
     Returns:
         An status information object.
@@ -116,17 +115,12 @@ def status(
     Raises:
         UnknownUserAccountException: if the user account is unknown.
     """
-    user = get_user_for_api_key(api_key=x_api_key)
-    if not user:
-        raise UnknownUserAccountException
+    auth = APITokenAuthenticator(
+        api_key=x_api_key,
+        authenticator=LoggedOnAuthenticator)
+    auth.authenticate()
 
-    api_token_object: APIToken | None = None
-    if user:
-        with my_data.get_context(user=user) as context:
-            api_token = context.api_tokens.retrieve(
-                APIToken.token == x_api_key)  # type: ignore
-            if (api_token and len(api_token) == 1):
-                api_token_object = api_token[0]
+    api_token_object: Optional[APIToken] = auth.api_token
 
     # TODO: Refactor this is to something better
     if api_token_object and api_token_object.api_client_id is not None:
