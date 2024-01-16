@@ -3,6 +3,7 @@
 Contains globally used fixtures for the unit testing.
 """
 # pylint: disable=redefined-outer-name
+# pylint: disable=too-many-arguments
 
 from datetime import datetime, timedelta
 from pathlib import Path

@@ -10,8 +10,9 @@ from .app_config import AppConfig
 from .authentication import (create_api_token_for_valid_user,
                              get_user_for_api_key)
 from .dependencies import app_config_object, my_data_object
-from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails, AuthenticationResult,
-                    AuthenticationResultStatus, LogoutResult)
+from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
+                    AuthenticationResult, AuthenticationResultStatus,
+                    LogoutResult)
 
 api_router = APIRouter()
 
@@ -111,6 +112,9 @@ def status(
 
     Returns:
         An status information object.
+
+    Raises:
+        UnknownUserAccountException: if the user account is unknown.
     """
     user = get_user_for_api_key(api_key=x_api_key)
     if not user:
@@ -124,6 +128,7 @@ def status(
             if (api_token and len(api_token) == 1):
                 api_token_object = api_token[0]
 
-    if api_token_object.api_client_id is not None:
+    # TODO: Refactor this is to something better
+    if api_token_object and api_token_object.api_client_id is not None:
         return APIAuthStatus(token=APIAuthStatusToken.LONG_LIVED)
     return APIAuthStatus(token=APIAuthStatusToken.SHORT_LIVED)
