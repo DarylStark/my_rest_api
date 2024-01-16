@@ -19,8 +19,10 @@ from fastapi.exceptions import HTTPException
 
 from .api_authentication import api_router as auth_api_router
 from .api_rest_api import api_router as rest_api_router
-from .custom_errors_handlers import custom_http_exception_handler
+from .custom_errors_handlers import custom_http_exception_handler, custom_unknown_user_account_exception_handler
 from .my_rest_api import MyRESTAPI
+
+from my_data.exceptions import UnknownUserAccountException
 
 # Get the configuration
 config = MyRESTAPI.get_instance().config
@@ -35,6 +37,7 @@ app = FastAPI(
 
 # Add customer exception handlers
 app.exception_handlers[HTTPException] = custom_http_exception_handler
+app.exception_handlers[UnknownUserAccountException] = custom_unknown_user_account_exception_handler
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])

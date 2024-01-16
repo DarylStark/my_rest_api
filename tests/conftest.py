@@ -52,7 +52,22 @@ def random_api_token_root() -> str:
 
 @pytest.fixture(scope='session')
 def random_api_token_normal_user() -> str:
-    """Fixture to return a API token for a onrmal user.
+    """Fixture to return a API token for a normal user.
+
+    Returns:
+        str: a random generated API token.
+    """
+    temp_model = TokenModel()
+    return temp_model.set_random_token()
+
+
+@pytest.fixture(scope='session')
+def random_api_token_normal_user_logout() -> str:
+    """Fixture to return a API token for a normal user.
+
+    This fixture is only used by the `logout` test to see if we can logout. We
+    use a different token for this test to make sure that the logout is not
+    impacting other tests.
 
     Returns:
         str: a random generated API token.
@@ -66,7 +81,8 @@ def api_client(
         random_second_factor: str,  # pylint: disable=redefined-outer-name
         temp_data_dir: Path,  # pylint: disable=redefined-outer-name
         random_api_token_root: str,  # pylint: disable=redefined-outer-name
-        random_api_token_normal_user: str  # pylint: disable=redefined-outer-name
+        random_api_token_normal_user: str,  # pylint: disable=redefined-outer-name
+        random_api_token_normal_user_logout: str  # pylint: disable=redefined-outer-name
 ) -> TestClient:
     """Return a TestClient instance for the FastAPI application.
 
@@ -110,14 +126,15 @@ def api_client(
 
     if normal_user_1:
         with my_rest_api.my_data.get_context(user=normal_user_1) as context:
-            # Set a API token for the user.
-            api_token = APIToken(
-                api_client=None,
-                user=normal_user_1,
-                title='test short lived api token',
-                expires=datetime.now() + timedelta(seconds=3600))
-            api_token.token = random_api_token_normal_user
-            context.api_tokens.create(api_token)
+            for token in (random_api_token_normal_user, random_api_token_normal_user_logout):
+                # Set a API token for the user.
+                api_token = APIToken(
+                    api_client=None,
+                    user=normal_user_1,
+                    title='test short lived api token',
+                    expires=datetime.now() + timedelta(seconds=3600))
+                api_token.token = token
+                context.api_tokens.create(api_token)
 
     # Make sure that normal_user_2 has 2FA enabled.
     normal_user_2: Optional[User] = None

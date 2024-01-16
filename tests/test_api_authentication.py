@@ -198,3 +198,39 @@ def test_login_with_service_account(api_client: TestClient) -> None:
         'api_key': None
     }
     assert result.status_code == 401
+
+
+def test_logout_with_valid_token(
+        api_client: TestClient,
+        random_api_token_normal_user_logout: str) -> None:
+    """Test logging out with a valid token.
+
+    Should be succesfull.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_normal_user_logout: a token for the logout.
+    """
+    result = api_client.post(
+        '/auth/logout',
+        headers={'X-API-Key': random_api_token_normal_user_logout})
+    response = result.json()
+    assert response['status'] == 'success'
+    assert result.status_code == 200
+
+
+def test_logout_with_invalid_token(
+        api_client: TestClient) -> None:
+    """Test logging out with a invalid token.
+
+    Should fail.
+
+    Args:
+        api_client: the test client for making API requests.
+    """
+    result = api_client.post(
+        '/auth/logout',
+        headers={'X-API-Key': 'wrong_token'})
+    response = result.json()
+    assert response['error'] == 'Not authorized to perform this action'
+    assert result.status_code == 401

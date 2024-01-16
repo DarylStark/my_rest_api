@@ -1,11 +1,14 @@
 """API endpoints for authentication."""
-from fastapi import APIRouter, Depends, HTTPException
+from typing import Annotated
+from fastapi import APIRouter, Depends, HTTPException, Header
 from my_data.exceptions import UnknownUserAccountException
 from my_data.my_data import MyData
-from my_model.user_scoped_models import UserRole
+from my_model.user_scoped_models import UserRole, APIToken
+
+from my_rest_api.my_rest_api import MyRESTAPI
 
 from .app_config import AppConfig
-from .authentication import create_api_token_for_valid_user
+from .authentication import create_api_token_for_valid_user, get_user_for_api_key
 from .dependencies import app_config_object, my_data_object
 from .model import (AuthenticationDetails, AuthenticationResult,
                     AuthenticationResultStatus)
@@ -68,3 +71,30 @@ def login(
             status=AuthenticationResultStatus.FAILURE,
             api_key=None)
     )
+
+
+@api_router.post('/logout')
+def logout(
+    x_api_key: Annotated[str | None, Header()] = None,
+    my_data: MyData = Depends(my_data_object)
+) -> dict[str, str]:
+    """Logout from the REST API.
+
+    Args:
+        x_api_key: The API key to use for authentication.
+
+    Returns:
+        An empty dictionary.
+
+    Raises:
+        HTTPException: if the API key is invalid or not a short lived API
+            token.
+    """
+    user = get_user_for_api_key(api_key=x_api_key)
+    if user:
+        with my_data.get_context(user=user) as context:
+            api_token = context.api_tokens.retrieve(
+                APIToken.token == x_api_key)
+            if api_token and len(api_token) == 1 and api_token[0].api_client is None:
+                context.api_tokens.delete(api_token)
+    return {'status': 'success'}
