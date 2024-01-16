@@ -236,7 +236,7 @@ def test_logout_with_invalid_token(
     assert result.status_code == 401
 
 
-def test_authenticaiton_status_not_logged_in(
+def test_authentication_status_not_logged_in(
         api_client: TestClient) -> None:
     """Test the authentication status when not logged in.
 
@@ -251,7 +251,7 @@ def test_authenticaiton_status_not_logged_in(
     assert result.status_code == 401
 
 
-def test_authenticaiton_status_valid_short_lived_token(
+def test_authentication_status_valid_short_lived_token(
         api_client: TestClient,
         random_api_token_normal_user: str) -> None:
     """Test the authentication status with a valid token.
@@ -270,7 +270,7 @@ def test_authenticaiton_status_valid_short_lived_token(
     assert result.status_code == 200
 
 
-def test_authenticaiton_status_valid_long_lived_token(
+def test_authentication_status_valid_long_lived_token(
         api_client: TestClient,
         random_api_token_normal_user_long_lived: str) -> None:
     """Test the authentication status with a valid token.
@@ -289,7 +289,7 @@ def test_authenticaiton_status_valid_long_lived_token(
     assert result.status_code == 200
 
 
-def test_authenticaiton_status_invalid_token(
+def test_authentication_status_invalid_token(
         api_client: TestClient) -> None:
     """Test the authentication status with a invalid token.
 
