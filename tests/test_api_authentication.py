@@ -211,7 +211,7 @@ def test_logout_with_valid_token(
         api_client: the test client for making API requests.
         random_api_token_normal_user_logout: a token for the logout.
     """
-    result = api_client.post(
+    result = api_client.get(
         '/auth/logout',
         headers={'X-API-Key': random_api_token_normal_user_logout})
     response = result.json()
@@ -228,7 +228,7 @@ def test_logout_with_invalid_token(
     Args:
         api_client: the test client for making API requests.
     """
-    result = api_client.post(
+    result = api_client.get(
         '/auth/logout',
         headers={'X-API-Key': 'wrong_token'})
     response = result.json()

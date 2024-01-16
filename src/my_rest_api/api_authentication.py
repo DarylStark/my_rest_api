@@ -74,7 +74,7 @@ def login(
     )
 
 
-@api_router.post('/logout')
+@api_router.get('/logout')
 def logout(
     x_api_key: Annotated[str | None, Header()] = None,
     my_data: MyData = Depends(my_data_object)
