@@ -65,3 +65,13 @@ class ErrorModel(BaseModel):
     """
 
     error: str = 'Unknown error'
+
+
+class LogoutResult(BaseModel):
+    """Result of logout.
+
+    Attributes:
+        status: The status of the logout.
+    """
+
+    status: AuthenticationResultStatus

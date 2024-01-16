@@ -11,7 +11,7 @@ from .app_config import AppConfig
 from .authentication import create_api_token_for_valid_user, get_user_for_api_key
 from .dependencies import app_config_object, my_data_object
 from .model import (AuthenticationDetails, AuthenticationResult,
-                    AuthenticationResultStatus)
+                    AuthenticationResultStatus, LogoutResult)
 
 api_router = APIRouter()
 
@@ -77,7 +77,7 @@ def login(
 def logout(
     x_api_key: Annotated[str | None, Header()] = None,
     my_data: MyData = Depends(my_data_object)
-) -> dict[str, str]:
+) -> LogoutResult:
     """Logout from the REST API.
 
     Args:
@@ -97,4 +97,4 @@ def logout(
                 APIToken.token == x_api_key)
             if api_token and len(api_token) == 1 and api_token[0].api_client is None:
                 context.api_tokens.delete(api_token)
-    return {'status': 'success'}
+    return LogoutResult(status=AuthenticationResultStatus.SUCCESS)
