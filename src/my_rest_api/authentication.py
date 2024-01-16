@@ -220,3 +220,25 @@ class APITokenAuthenticator:
             True if the user is a service user, False otherwise.
         """
         return self._get_user_role() == UserRole.SERVICE
+
+    @property
+    def is_long_lived_token(self) -> bool:
+        """Check if the token is a long lived token.
+
+        Returns:
+            True if the token is a long lived token, False otherwise.
+        """
+        if not self.api_token:
+            return False
+        return self.api_token.api_client_id is not None
+
+    @property
+    def is_short_lived_token(self) -> bool:
+        """Check if the token is a short lived token.
+
+        Returns:
+            True if the token is a short lived token, False otherwise.
+        """
+        if not self.api_token:
+            return False
+        return self.api_token.api_client_id is None

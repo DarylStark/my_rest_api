@@ -164,3 +164,55 @@ def test_api_is_valid_user_property(
     """
     authenticator = APITokenAuthenticator(random_api_token_root)
     assert authenticator.is_valid_user
+
+
+def test_api_is_long_lived_token_property(
+        api_client: TestClient,  # pylint: disable=unused-argument
+        random_api_token_normal_user_long_lived: str) -> None:
+    """Test the `is_long_lived_token` property.
+
+    Test with long lived tokens.
+
+    Args:
+        api_client: the test client for making API requests. Not used in this
+            test but needed to create the database.
+        random_api_token_normal_user_long_lived: a random API token for a root
+            user.
+    """
+    authenticator = APITokenAuthenticator(
+        api_key=random_api_token_normal_user_long_lived)
+    assert authenticator.is_long_lived_token
+    assert not authenticator.is_short_lived_token
+
+
+def test_api_is_short_lived_token_property(
+        api_client: TestClient,  # pylint: disable=unused-argument
+        random_api_token_root: str) -> None:
+    """Test the `is_long_lived_token` property.
+
+    Test with short lived tokens.
+
+    Args:
+        api_client: the test client for making API requests. Not used in this
+            test but needed to create the database.
+        random_api_token_root: a random API token for a root user.
+    """
+    authenticator = APITokenAuthenticator(api_key=random_api_token_root)
+    assert authenticator.is_short_lived_token
+    assert not authenticator.is_long_lived_token
+
+
+def test_api_is_short_lived_token_property_without_api_key(
+        api_client: TestClient,  # pylint: disable=unused-argument
+) -> None:
+    """Test the `is_long_lived_token` property.
+
+    Test without API key.
+
+    Args:
+        api_client: the test client for making API requests. Not used in this
+            test but needed to create the database.
+    """
+    authenticator = APITokenAuthenticator()
+    assert not authenticator.is_short_lived_token
+    assert not authenticator.is_long_lived_token

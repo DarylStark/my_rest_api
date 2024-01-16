@@ -1,10 +1,10 @@
 """API endpoints for authentication."""
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException
 from my_data.exceptions import UnknownUserAccountException
 from my_data.my_data import MyData
-from my_model.user_scoped_models import APIToken, UserRole
+from my_model.user_scoped_models import UserRole
 
 from .app_config import AppConfig
 from .authentication import (APITokenAuthenticator, LoggedOnAuthenticator,
@@ -117,9 +117,6 @@ def status(
         authenticator=LoggedOnAuthenticator)
     auth.authenticate()
 
-    api_token_object: Optional[APIToken] = auth.api_token
-
-    # TODO: Refactor this is to something better
-    if api_token_object and api_token_object.api_client_id is not None:
-        return APIAuthStatus(token=APIAuthStatusToken.LONG_LIVED)
-    return APIAuthStatus(token=APIAuthStatusToken.SHORT_LIVED)
+    return APIAuthStatus(
+        token=APIAuthStatusToken.LONG_LIVED
+        if auth.is_long_lived_token else APIAuthStatusToken.SHORT_LIVED)
