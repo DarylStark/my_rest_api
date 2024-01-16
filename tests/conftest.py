@@ -10,7 +10,7 @@ from typing import Optional
 
 import pytest
 from fastapi.testclient import TestClient
-from my_model.user_scoped_models import APIToken, TokenModel, User
+from my_model.user_scoped_models import APIClient, APIToken, TokenModel, User
 from pyotp import random_base32
 
 from my_rest_api.app import app
@@ -78,12 +78,24 @@ def random_api_token_normal_user_logout() -> str:
 
 
 @pytest.fixture(scope='session')
+def random_api_token_normal_user_long_lived() -> str:
+    """Fixture to return a long lived API token for a normal user.
+
+    Returns:
+        str: a random generated API token.
+    """
+    temp_model = TokenModel()
+    return temp_model.set_random_token()
+
+
+@pytest.fixture(scope='session')
 def api_client(
         random_second_factor: str,
         temp_data_dir: Path,
         random_api_token_root: str,
         random_api_token_normal_user: str,
-        random_api_token_normal_user_logout: str
+        random_api_token_normal_user_logout: str,
+        random_api_token_normal_user_long_lived: str
 ) -> TestClient:
     """Return a TestClient instance for the FastAPI application.
 
@@ -94,6 +106,8 @@ def api_client(
         random_api_token_normal_user: a random API token for a normal user.
         random_api_token_normal_user_logout: a random API token for a normal
             user. This token is only used for the logout test.
+        random_api_token_normal_user_long_lived: a random API token for a
+            normal user that is long lived.
 
     Returns:
         TestClient: A TestClient instance for the FastAPI application.
@@ -141,6 +155,21 @@ def api_client(
                     expires=datetime.now() + timedelta(seconds=3600))
                 api_token.token = token
                 context.api_tokens.create(api_token)
+
+        # Add a API client to user.normal.1
+        client = APIClient(
+            app_name='test_app',
+            app_publisher='Daryl Stark',
+            user=normal_user_1)
+        client.api_tokens.append(
+            APIToken(
+                title='test token',
+                expires=datetime.now() +
+                timedelta(seconds=3600),
+                token=random_api_token_normal_user_long_lived)
+        )
+        with my_rest_api.my_data.get_context(user=normal_user_1) as context:
+            context.api_clients.create(client)
 
     # Make sure that normal_user_2 has 2FA enabled.
     normal_user_2: Optional[User] = None

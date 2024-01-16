@@ -234,3 +234,73 @@ def test_logout_with_invalid_token(
     response = result.json()
     assert response['error'] == 'Not authorized to perform this action'
     assert result.status_code == 401
+
+
+def test_authenticaiton_status_not_logged_in(
+        api_client: TestClient) -> None:
+    """Test the authentication status when not logged in.
+
+    Should result in a 200 page indicating that nobody is logged in.
+
+    Args:
+        api_client: the test client for making API requests.
+    """
+    result = api_client.post('/auth/status')
+    response = result.json()
+    assert response['error'] == 'Not authorized to perform this action'
+    assert result.status_code == 401
+
+
+def test_authenticaiton_status_valid_short_lived_token(
+        api_client: TestClient,
+        random_api_token_normal_user_logout: str) -> None:
+    """Test the authentication status with a valid token.
+
+    Should be succesfull.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_normal_user_logout: a token for the request.
+    """
+    result = api_client.post(
+        '/auth/status',
+        headers={'X-API-Key': random_api_token_normal_user_logout})
+    response = result.json()
+    assert response['token'] == 'Logged in with a short-lived token'
+    assert result.status_code == 200
+
+
+def test_authenticaiton_status_valid_long_lived_token(
+        api_client: TestClient,
+        random_api_token_normal_user_long_lived: str) -> None:
+    """Test the authentication status with a valid token.
+
+    Should be succesfull.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_normal_user_long_lived: a token for the request.
+    """
+    result = api_client.post(
+        '/auth/status',
+        headers={'X-API-Key': random_api_token_normal_user_long_lived})
+    response = result.json()
+    assert response['token'] == 'Logged in with a long-lived token'
+    assert result.status_code == 200
+
+
+def test_authenticaiton_status_invalid_token(
+        api_client: TestClient) -> None:
+    """Test the authentication status with a invalid token.
+
+    Should result in a 401 error.
+
+    Args:
+        api_client: the test client for making API requests.
+    """
+    result = api_client.post(
+        '/auth/status',
+        headers={'X-API-Key': 'wrong_token'})
+    response = result.json()
+    assert response['error'] == 'Not authorized to perform this action'
+    assert result.status_code == 401
