@@ -62,13 +62,13 @@ def api_client(
 
     # Make sure that normal_user_2 has 2FA enabled.
     user: Optional[User] = None
-    with my_rest_api.data.get_context_for_service_user(
+    with my_rest_api.my_data.get_context_for_service_user(
             username='service.user', password='service_password') as context:
         # Retrieve the user.
         user = context.get_user_account_by_username('normal.user.2')
 
     if user:
-        with my_rest_api.data.get_context(user=user) as context:
+        with my_rest_api.my_data.get_context(user=user) as context:
             # Enable 2FA for the user.
             user.second_factor = random_second_factor
             context.users.update(user)

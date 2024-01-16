@@ -24,7 +24,7 @@ def my_data_object() -> MyData:
     Returns:
         The global My Data object.
     """
-    return MyRESTAPI.get_instance().data
+    return MyRESTAPI.get_instance().my_data
 
 
 def app_config_object() -> AppConfig:
