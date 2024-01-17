@@ -1,6 +1,8 @@
 """Module that contains extra models for the REST API."""
 
+from datetime import datetime
 from enum import Enum
+from typing import Optional
 from pydantic import BaseModel, Field
 
 
@@ -79,6 +81,10 @@ class APIAuthStatus(BaseModel):
 
     Attributes:
         token: information about the token.
+        title: the title of the token.
     """
 
     token_type: APIAuthStatusToken
+    title: Optional[str]
+    created: Optional[datetime]
+    expires: Optional[datetime]

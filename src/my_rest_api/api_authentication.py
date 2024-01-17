@@ -117,6 +117,13 @@ def status(
         authenticator=LoggedOnAuthenticator)
     auth.authenticate()
 
+    token_type = (APIAuthStatusToken.LONG_LIVED
+                  if auth.is_long_lived_token
+                  else APIAuthStatusToken.SHORT_LIVED)
+
     return APIAuthStatus(
-        token_type=APIAuthStatusToken.LONG_LIVED
-        if auth.is_long_lived_token else APIAuthStatusToken.SHORT_LIVED)
+        token_type=token_type,
+        title=auth.api_token.title if auth.api_token else None,
+        created=auth.api_token.created if auth.api_token else None,
+        expires=auth.api_token.expires if auth.api_token else None
+    )

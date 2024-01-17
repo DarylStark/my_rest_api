@@ -267,6 +267,9 @@ def test_authentication_status_valid_short_lived_token(
         headers={'X-API-Key': random_api_token_normal_user})
     response = result.json()
     assert response['token_type'] == 'short-lived'
+    assert response['title'] == 'test short lived api token'
+    assert response['created'] is not None
+    assert response['expires'] is not None
     assert result.status_code == 200
 
 
@@ -286,6 +289,9 @@ def test_authentication_status_valid_long_lived_token(
         headers={'X-API-Key': random_api_token_normal_user_long_lived})
     response = result.json()
     assert response['token_type'] == 'long-lived'
+    assert response['title'] == 'test token'
+    assert response['created'] is not None
+    assert response['expires'] is not None
     assert result.status_code == 200
 
 
