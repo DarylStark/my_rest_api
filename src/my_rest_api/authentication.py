@@ -122,7 +122,8 @@ class APITokenAuthenticator:
         """Get the API token for the given API token.
 
         Returns:
-            The API token for the API token, or None if the API token is invalid.
+            The API token for the API token, or None if the API token is
+            invalid.
         """
         if not self._api_token_str:
             return None
