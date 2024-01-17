@@ -21,6 +21,7 @@ from my_rest_api.exception import PermissionDeniedException
 
 from .api_authentication import api_router as auth_api_router
 from .api_rest_api import api_router as rest_api_router
+from .api_users import api_router as users_api_router
 from .custom_errors_handlers import (
     custom_http_exception_handler, custom_permission_denied_exception_handler)
 from .my_rest_api import MyRESTAPI
@@ -44,3 +45,4 @@ app.exception_handlers[PermissionDeniedException] = \
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
 app.include_router(auth_api_router, tags=['Authentication'], prefix='/auth')
+app.include_router(users_api_router, tags=['User management'], prefix='/users')

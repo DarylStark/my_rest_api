@@ -3,6 +3,8 @@
 from datetime import datetime
 from enum import Enum
 from typing import Optional
+
+from my_model.user_scoped_models import UserRole
 from pydantic import BaseModel, Field
 
 
@@ -88,3 +90,20 @@ class APIAuthStatus(BaseModel):
     title: Optional[str]
     created: Optional[datetime]
     expires: Optional[datetime]
+
+
+class UserWithoutPassword(BaseModel):
+    """User object without password.
+
+    Attributes:
+        created: the datetime when this user was created
+        fullname: the fullname for the user
+        username: the username for the user
+        email: the emailaddress of the user
+        role: the role of the user (see UserRole)
+    """
+    created: datetime = Field(default_factory=datetime.utcnow)
+    fullname: str
+    username: str
+    email: str
+    role: UserRole = Field(default=UserRole.USER)
