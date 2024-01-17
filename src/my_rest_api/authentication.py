@@ -73,15 +73,15 @@ class APITokenAuthenticator:
 
     def __init__(
             self,
-            api_key: str | None = None,
+            api_token: str | None = None,
             authenticator: Type[Authenticator] | None = None):
         """Initialize the API token authenticator.
 
         Args:
-            api_key: The API key to authenticate with.
+            api_token: The API token to authenticate with.
             authenticator: The authenticator to use.
         """
-        self._api_key = api_key
+        self._api_token_str = api_token
         if authenticator:
             self._authenticator: Optional[Authenticator] = authenticator(self)
         else:
@@ -92,12 +92,12 @@ class APITokenAuthenticator:
         self._api_token: Optional[APIToken] = None
 
     def _get_user(self) -> Optional[User]:
-        """Get the user for the given API key.
+        """Get the user for the given API token.
 
         Returns:
-            The user for the API key, or None if the API key is invalid.
+            The user for the API token, or None if the API token is invalid.
         """
-        if not self._api_key:
+        if not self._api_token_str:
             return None
 
         my_data = my_data_object()
@@ -111,7 +111,7 @@ class APITokenAuthenticator:
                 password=service_password) as context:
             try:
                 user = context.get_user_account_by_api_token(
-                    api_token=self._api_key)
+                    api_token=self._api_token_str)
             except UnknownUserAccountException:
                 pass
             else:
@@ -119,12 +119,13 @@ class APITokenAuthenticator:
         return None
 
     def _get_api_token(self) -> Optional[APIToken]:
-        """Get the API token for the given API key.
+        """Get the API token for the given API token.
 
         Returns:
-            The API token for the API key, or None if the API key is invalid.
+            The API token for the API token, or None if the API token is
+            invalid.
         """
-        if not self._api_key:
+        if not self._api_token_str:
             return None
 
         my_data = my_data_object()
@@ -132,16 +133,17 @@ class APITokenAuthenticator:
         if user:
             with my_data.get_context(user=user) as context:
                 api_token = context.api_tokens.retrieve(
-                    APIToken.token == self._api_key)  # type: ignore
+                    APIToken.token == self._api_token_str)  # type: ignore
                 if api_token:
                     return api_token[0]
         return None
 
     def _get_user_role(self) -> Optional[UserRole]:
-        """Get the user role for the given API key.
+        """Get the user role for the given API token.
 
         Returns:
-            The user role for the API key, or None if the API key is invalid.
+            The user role for the API token, or None if the API token is
+            invalid.
         """
         user = self.user
         if not user:
@@ -155,14 +157,14 @@ class APITokenAuthenticator:
 
     @property
     def user(self) -> Optional[User]:
-        """Get the user for the given API key.
+        """Get the user for the given API token.
 
         When the user is not loaded yet, it will be loaded from the database
         and cached. When the user is already loaded, the cached user will be
         returned.
 
         Returns:
-            The user for the API key, or None if the API key is invalid.
+            The user for the API token, or None if the API token is invalid.
         """
         if not self._user:
             self._user = self._get_user()
@@ -170,14 +172,15 @@ class APITokenAuthenticator:
 
     @property
     def api_token(self) -> Optional[APIToken]:
-        """Get the API token for the given API key.
+        """Get the API token for the given API token.
 
         When the API token is not loaded yet, it will be loaded from the
         database and cached. When the API token is already loaded, the cached
         API token will be returned.
 
         Returns:
-            The API token for the API key, or None if the API key is invalid.
+            The API token for the API token, or None if the API token is
+            invalid.
         """
         if not self._api_token:
             self._api_token = self._get_api_token()

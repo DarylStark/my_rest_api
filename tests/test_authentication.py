@@ -14,7 +14,7 @@ def test_user_property(
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthenticator(api_key=random_api_token_root)
+    authenticator = APITokenAuthenticator(api_token=random_api_token_root)
     assert authenticator.user is not None
     assert authenticator.user.username == 'root'
 
@@ -28,7 +28,7 @@ def test_user_property_wrong_token(
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthenticator(api_key='wrong_token')
+    authenticator = APITokenAuthenticator(api_token='wrong_token')
     assert authenticator.user is None
 
 
@@ -42,7 +42,7 @@ def test_api_token_property(
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthenticator(api_key=random_api_token_root)
+    authenticator = APITokenAuthenticator(api_token=random_api_token_root)
     assert authenticator.api_token is not None
     assert authenticator.api_token.token == random_api_token_root
 
@@ -56,7 +56,7 @@ def test_token_property_wrong_token(
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthenticator(api_key='wrong_token')
+    authenticator = APITokenAuthenticator(api_token='wrong_token')
     assert authenticator.api_token is None
 
 
@@ -72,7 +72,7 @@ def test_role_property_root(
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthenticator(api_key=random_api_token_root)
+    authenticator = APITokenAuthenticator(api_token=random_api_token_root)
     assert authenticator.is_root
     assert not authenticator.is_normal_user
     assert not authenticator.is_service_user
@@ -89,7 +89,7 @@ def test_role_property_wrong_token(
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthenticator(api_key='wrong_token')
+    authenticator = APITokenAuthenticator(api_token='wrong_token')
     assert not authenticator.is_root
     assert not authenticator.is_normal_user
     assert not authenticator.is_service_user
@@ -107,7 +107,8 @@ def test_role_property_normal_user(
             test but needed to create the database.
         random_api_token_normal_user: a random API token for a normal user.
     """
-    authenticator = APITokenAuthenticator(api_key=random_api_token_normal_user)
+    authenticator = APITokenAuthenticator(
+        api_token=random_api_token_normal_user)
     assert not authenticator.is_root
     assert authenticator.is_normal_user
     assert not authenticator.is_service_user
@@ -180,7 +181,7 @@ def test_api_is_long_lived_token_property(
             user.
     """
     authenticator = APITokenAuthenticator(
-        api_key=random_api_token_normal_user_long_lived)
+        api_token=random_api_token_normal_user_long_lived)
     assert authenticator.is_long_lived_token
     assert not authenticator.is_short_lived_token
 
@@ -197,17 +198,17 @@ def test_api_is_short_lived_token_property(
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthenticator(api_key=random_api_token_root)
+    authenticator = APITokenAuthenticator(api_token=random_api_token_root)
     assert authenticator.is_short_lived_token
     assert not authenticator.is_long_lived_token
 
 
-def test_api_is_short_lived_token_property_without_api_key(
+def test_api_is_short_lived_token_property_without_api_token(
         api_client: TestClient,  # pylint: disable=unused-argument
 ) -> None:
     """Test the `is_long_lived_token` property.
 
-    Test without API key.
+    Test without API token.
 
     Args:
         api_client: the test client for making API requests. Not used in this

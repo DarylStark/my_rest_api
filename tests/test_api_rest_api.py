@@ -13,7 +13,7 @@ def test_version(api_client: TestClient):
     Args:
         api_client: a testclient for the application.
     """
-    api_client.headers.pop('X-API-Key', None)
+    api_client.headers.pop('X-API-Token', None)
     response = api_client.get('/version')
     contents = response.json()
     assert response.status_code == 200
