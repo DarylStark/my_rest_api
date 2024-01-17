@@ -118,5 +118,5 @@ def status(
     auth.authenticate()
 
     return APIAuthStatus(
-        token=APIAuthStatusToken.LONG_LIVED
+        token_type=APIAuthStatusToken.LONG_LIVED
         if auth.is_long_lived_token else APIAuthStatusToken.SHORT_LIVED)
