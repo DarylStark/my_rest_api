@@ -42,11 +42,11 @@ class AuthenticationResult(BaseModel):
 
     Attributes:
         status: The status of the authentication.
-        api_key: The API key for the user, if applicable.
+        api_token: The API token for the user, if applicable.
     """
 
     status: AuthenticationResultStatus
-    api_key: str | None = Field(pattern=r'^[a-zA-Z0-9]{32}$')
+    api_token: str | None = Field(pattern=r'^[a-zA-Z0-9]{32}$')
 
 
 class ErrorModel(BaseModel):

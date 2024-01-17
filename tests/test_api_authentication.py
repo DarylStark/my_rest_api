@@ -14,7 +14,7 @@ def test_login_with_correct_credentials_no_2fa(
         login_json: dict[str, str]) -> None:
     """Test logging in with correct credentials and no 2FA.
 
-    Should be succesfull and returning a API key.
+    Should be succesfull and returning a API token.
 
     Args:
         api_client: the test client for making API requests.
@@ -46,7 +46,7 @@ def test_login_with_correct_credentials_needed_2fa(
     response = result.json()
     assert response == {
         'status': 'failure',
-        'api_key': None
+        'api_token': None
     }
     assert result.status_code == 401
 
@@ -56,7 +56,7 @@ def test_login_with_correct_credentials_and_2fa(
         random_second_factor: str) -> None:
     """Test logging in with correct credentials and 2FA.
 
-    Should be succesfull and returning a API key.
+    Should be succesfull and returning a API token.
 
     Args:
         api_client: the test client for making API requests.
@@ -72,7 +72,7 @@ def test_login_with_correct_credentials_and_2fa(
         })
     response = result.json()
     assert response['status'] == 'success'
-    assert response['api_key'] is not None
+    assert response['api_token'] is not None
     assert result.status_code == 200
 
 
@@ -100,7 +100,7 @@ def test_login_with_incorrect_username(
     response = result.json()
     assert response == {
         'status': 'failure',
-        'api_key': None
+        'api_token': None
     }
     assert result.status_code == 401
 
@@ -126,7 +126,7 @@ def test_login_with_incorrect_password(
     response = result.json()
     assert response == {
         'status': 'failure',
-        'api_key': None
+        'api_token': None
     }
     assert result.status_code == 401
 
@@ -149,7 +149,7 @@ def test_login_with_incorrect_2fa_format(api_client: TestClient) -> None:
     response = result.json()
     assert response == {
         'status': 'failure',
-        'api_key': None
+        'api_token': None
     }
     assert result.status_code == 401
 
@@ -173,7 +173,7 @@ def test_login_with_incorrect_2fa(api_client: TestClient) -> None:
     response = result.json()
     assert response == {
         'status': 'failure',
-        'api_key': None
+        'api_token': None
     }
     assert result.status_code == 401
 
@@ -195,7 +195,7 @@ def test_login_with_service_account(api_client: TestClient) -> None:
     response = result.json()
     assert response == {
         'status': 'failure',
-        'api_key': None
+        'api_token': None
     }
     assert result.status_code == 401
 
@@ -213,7 +213,7 @@ def test_logout_with_valid_token(
     """
     result = api_client.get(
         '/auth/logout',
-        headers={'X-API-Key': random_api_token_normal_user_logout})
+        headers={'X-API-Token': random_api_token_normal_user_logout})
     response = result.json()
     assert response['status'] == 'success'
     assert result.status_code == 200
@@ -230,7 +230,7 @@ def test_logout_with_invalid_token(
     """
     result = api_client.get(
         '/auth/logout',
-        headers={'X-API-Key': 'wrong_token'})
+        headers={'X-API-Token': 'wrong_token'})
     response = result.json()
     assert response['error'] == 'Not authorized'
     assert result.status_code == 401
@@ -264,7 +264,7 @@ def test_authentication_status_valid_short_lived_token(
     """
     result = api_client.get(
         '/auth/status',
-        headers={'X-API-Key': random_api_token_normal_user})
+        headers={'X-API-Token': random_api_token_normal_user})
     response = result.json()
     assert response['token_type'] == 'short-lived'
     assert response['title'] == 'test short lived api token'
@@ -286,7 +286,7 @@ def test_authentication_status_valid_long_lived_token(
     """
     result = api_client.get(
         '/auth/status',
-        headers={'X-API-Key': random_api_token_normal_user_long_lived})
+        headers={'X-API-Token': random_api_token_normal_user_long_lived})
     response = result.json()
     assert response['token_type'] == 'long-lived'
     assert response['title'] == 'test token'
@@ -306,7 +306,7 @@ def test_authentication_status_invalid_token(
     """
     result = api_client.get(
         '/auth/status',
-        headers={'X-API-Key': 'wrong_token'})
+        headers={'X-API-Token': 'wrong_token'})
     response = result.json()
     assert response['error'] == 'Not authorized'
     assert result.status_code == 401

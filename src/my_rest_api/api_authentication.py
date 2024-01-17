@@ -62,7 +62,7 @@ def login(
                 token = create_api_token_for_valid_user(user=user)
                 return AuthenticationResult(
                     status=AuthenticationResultStatus.SUCCESS,
-                    api_key=token)
+                    api_token=token)
         except UnknownUserAccountException:
             pass
 
@@ -70,26 +70,26 @@ def login(
         status_code=401,
         detail=AuthenticationResult(
             status=AuthenticationResultStatus.FAILURE,
-            api_key=None)
+            api_token=None)
     )
 
 
 @api_router.get('/logout')
 def logout(
-    x_api_key: Annotated[str | None, Header()] = None,
+    x_api_token: Annotated[str | None, Header()] = None,
     my_data: MyData = Depends(my_data_object)
 ) -> LogoutResult:
     """Logout from the REST API.
 
     Args:
-        x_api_key: The API key to use for authentication.
+        x_api_token: The API token to use for authentication.
         my_data: a global MyData object.
 
     Returns:
         An empty dictionary.
     """
     auth = APITokenAuthenticator(
-        api_key=x_api_key,
+        api_token=x_api_token,
         authenticator=LoggedOnAuthenticator)
     auth.authenticate()
 
@@ -103,17 +103,17 @@ def logout(
 
 @api_router.get('/status')
 def status(
-        x_api_key: Annotated[str | None, Header()] = None) -> APIAuthStatus:
+        x_api_token: Annotated[str | None, Header()] = None) -> APIAuthStatus:
     """Get API token information.
 
     Args:
-        x_api_key: The API key to use for authentication.
+        x_api_token: The API token to use for authentication.
 
     Returns:
         An status information object.
     """
     auth = APITokenAuthenticator(
-        api_key=x_api_key,
+        api_token=x_api_token,
         authenticator=LoggedOnAuthenticator)
     auth.authenticate()
 
