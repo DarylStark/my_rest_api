@@ -33,6 +33,8 @@ def retrieve(
         authenticator=LoggedOnAuthenticator)
     auth.authenticate()
 
+    # TODO: Check given scopes
+
     user_list: list[UserWithoutPassword] = []
     if auth.user:
         with my_data.get_context(user=auth.user) as context:
