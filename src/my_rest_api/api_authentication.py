@@ -7,8 +7,10 @@ from my_data.my_data import MyData
 from my_model.user_scoped_models import UserRole
 
 from .app_config import AppConfig
-from .auth import (APITokenAuthorizer, LoggedOnAuthorizer, LoggedOnWithShortLivedAuthorizer, LoggedOffAuthorizer,
-                   create_api_token_for_valid_user)
+from .authentication import create_api_token_for_valid_user
+from .authorization import (APITokenAuthorizer, LoggedOffAuthorizer,
+                            LoggedOnAuthorizer,
+                            LoggedOnWithShortLivedAuthorizer)
 from .dependencies import app_config_object, my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
                     AuthenticationResult, AuthenticationResultStatus,

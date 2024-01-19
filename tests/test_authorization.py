@@ -2,7 +2,7 @@
 
 from fastapi.testclient import TestClient
 import pytest
-from my_rest_api.auth import APITokenAuthorizer, LoggedOffAuthorizer
+from my_rest_api.authorization import APITokenAuthorizer, LoggedOffAuthorizer
 from my_rest_api.exception import APITokenAuthorizerAlreadySetException
 
 
