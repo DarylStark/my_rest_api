@@ -6,8 +6,7 @@ from my_data.my_data import MyData
 
 from my_rest_api.exception import APIAuthenticationFailed
 
-from .authentication import (APIAuthenticator, CredentialsAuthenticator,
-                             create_api_token_for_valid_user)
+from .authentication import APIAuthenticator, CredentialsAuthenticator
 from .authorization import (APITokenAuthorizer, LoggedOffAuthorizer,
                             LoggedOnAuthorizer,
                             LoggedOnWithShortLivedAuthorizer)
@@ -53,7 +52,9 @@ def login(
     )
 
     try:
-        authenticated_user = authenticator.authenticate()
+        return AuthenticationResult(
+            status=AuthenticationResultStatus.SUCCESS,
+            api_token=authenticator.create_api_token(title=''))
     except APIAuthenticationFailed as exc:
         raise HTTPException(
             status_code=401,
@@ -61,10 +62,6 @@ def login(
                 status=AuthenticationResultStatus.FAILURE,
                 api_token=None)
         ) from exc
-
-    return AuthenticationResult(
-        status=AuthenticationResultStatus.SUCCESS,
-        api_token=create_api_token_for_valid_user(user=authenticated_user))
 
 
 @api_router.get('/logout')
