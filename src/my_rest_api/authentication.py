@@ -162,6 +162,3 @@ class APIAuthenticator:
         with my_data.get_context(user=self.authenticate()) as context:
             context.api_tokens.create(new_api_token)
         return token
-
-
-# -----------------------------------------------------------------------------
