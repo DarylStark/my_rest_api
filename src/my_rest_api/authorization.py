@@ -23,9 +23,8 @@ class Authorizer(ABC):
         Args:
             api_token_authorizer: the API token authorizer.
         """
-        self._api_token_authorizer: Optional['APITokenAuthorizer'] = None
-        if api_token_authorizer:
-            self.set_api_token_authorizer(api_token_authorizer)
+        self._api_token_authorizer: Optional['APITokenAuthorizer'] = \
+            api_token_authorizer
 
     def set_api_token_authorizer(
             self,
