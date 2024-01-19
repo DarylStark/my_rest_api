@@ -96,12 +96,14 @@ class UserWithoutPassword(BaseModel):
     """User object without password.
 
     Attributes:
-        created: the datetime when this user was created
-        fullname: the fullname for the user
-        username: the username for the user
-        email: the emailaddress of the user
-        role: the role of the user (see UserRole)
+        id: the id of the user.
+        created: the datetime when this user was created.
+        fullname: the fullname for the user.
+        username: the username for the user.
+        email: the emailaddress of the user.
+        role: the role of the user (see UserRole).
     """
+    id: int
     created: datetime = Field(default_factory=datetime.utcnow)
     fullname: str
     username: str
