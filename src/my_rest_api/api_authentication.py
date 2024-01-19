@@ -2,16 +2,16 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from my_data.exceptions import UnknownUserAccountException
 from my_data.my_data import MyData
-from my_model.user_scoped_models import UserRole
 
-from .app_config import AppConfig
-from .authentication import create_api_token_for_valid_user
+from my_rest_api.exception import APIAuthenticationFailed
+
+from .authentication import (APIAuthenticator, CredentialsAuthenticator,
+                             create_api_token_for_valid_user)
 from .authorization import (APITokenAuthorizer, LoggedOffAuthorizer,
                             LoggedOnAuthorizer,
                             LoggedOnWithShortLivedAuthorizer)
-from .dependencies import app_config_object, my_data_object
+from .dependencies import my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
                     AuthenticationResult, AuthenticationResultStatus,
                     LogoutResult)
@@ -22,9 +22,7 @@ api_router = APIRouter()
 @api_router.post('/login')
 def login(
     authentication: AuthenticationDetails,
-    x_api_token: Annotated[str | None, Header()] = None,
-    my_data: MyData = Depends(my_data_object),
-    app_config: AppConfig = Depends(app_config_object)
+    x_api_token: Annotated[str | None, Header()] = None
 ) -> AuthenticationResult:
     """Login to the REST API.
 
@@ -32,8 +30,6 @@ def login(
         authentication: authentication details.
         x_api_token: The API token to use for authentication. Should be empty
             or a invalid token.
-        my_data: a global MyData object.
-        app_config: a global AppConfig object.
 
     Returns:
         A dictionary containing the authentication token.
@@ -48,40 +44,27 @@ def login(
         authorizer=LoggedOffAuthorizer())
     auth.authorize()
 
-    service_user = app_config.service_user
-    service_password = app_config.service_password
-
-    # Log in with a service user to retrieve the user.
-    with my_data.get_context_for_service_user(
-            username=service_user,
-            password=service_password) as context:
-        try:
-            user = context.get_user_account_by_username(
-                username=authentication.username)
-
-            if (user.second_factor is None and
-                    authentication.second_factor is not None):
-                raise UnknownUserAccountException
-
-            valid_credentials = user.verify_credentials(
-                username=authentication.username,
-                password=authentication.password,
-                second_factor=authentication.second_factor)
-
-            if valid_credentials and (user.role is not UserRole.SERVICE):
-                token = create_api_token_for_valid_user(user=user)
-                return AuthenticationResult(
-                    status=AuthenticationResultStatus.SUCCESS,
-                    api_token=token)
-        except UnknownUserAccountException:
-            pass
-
-    raise HTTPException(
-        status_code=401,
-        detail=AuthenticationResult(
-            status=AuthenticationResultStatus.FAILURE,
-            api_token=None)
+    authenticator = APIAuthenticator(
+        CredentialsAuthenticator(
+            username=authentication.username,
+            password=authentication.password,
+            second_factor=authentication.second_factor
+        )
     )
+
+    try:
+        authenticated_user = authenticator.authenticate()
+    except APIAuthenticationFailed as exc:
+        raise HTTPException(
+            status_code=401,
+            detail=AuthenticationResult(
+                status=AuthenticationResultStatus.FAILURE,
+                api_token=None)
+        ) from exc
+
+    return AuthenticationResult(
+        status=AuthenticationResultStatus.SUCCESS,
+        api_token=create_api_token_for_valid_user(user=authenticated_user))
 
 
 @api_router.get('/logout')

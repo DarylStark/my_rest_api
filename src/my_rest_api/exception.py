@@ -11,3 +11,11 @@ class PermissionDeniedException(MyRESTAPIException):
 
 class APITokenAuthorizerAlreadySetException(MyRESTAPIException):
     """Exception raised when the API token authorizer is already set."""
+
+
+class APITokenAuthenticatorAlreadySetException(MyRESTAPIException):
+    """Exception raised when the API token authenticator is already set."""
+
+
+class APIAuthenticationFailed(MyRESTAPIException):
+    """Exception raised when the API authentication fails."""
