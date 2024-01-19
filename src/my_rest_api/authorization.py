@@ -108,7 +108,7 @@ class LoggedOnWithShortLivedAuthorizer(LoggedOnAuthorizer):
         If the user is not logged on with a short lived token, a exception
         will be raised.
 
-        Reises:
+        Raises:
             PermissionDeniedException: when the user is not logged on with a
                 short lived token.
         """
