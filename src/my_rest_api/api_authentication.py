@@ -7,7 +7,7 @@ from my_data.my_data import MyData
 from my_model.user_scoped_models import UserRole
 
 from .app_config import AppConfig
-from .auth import (APITokenAuthorizer, LoggedOnAutorizer,
+from .auth import (APITokenAuthorizer, LoggedOnAutorizer, LoggedOnWithShortLivedAuthorizer,
                    create_api_token_for_valid_user)
 from .dependencies import app_config_object, my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
@@ -90,7 +90,7 @@ def logout(
     """
     auth = APITokenAuthorizer(
         api_token=x_api_token,
-        authorizer=LoggedOnAutorizer)
+        authorizer=LoggedOnWithShortLivedAuthorizer())
     auth.authorize()
 
     user = auth.user
@@ -114,7 +114,7 @@ def status(
     """
     auth = APITokenAuthorizer(
         api_token=x_api_token,
-        authorizer=LoggedOnAutorizer)
+        authorizer=LoggedOnAutorizer())
     auth.authorize()
 
     token_type = (APIAuthStatusToken.LONG_LIVED

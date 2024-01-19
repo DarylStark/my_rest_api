@@ -6,7 +6,7 @@ from typing import Optional, Type
 from my_data.exceptions import UnknownUserAccountException
 from my_model.user_scoped_models import APIToken, User, UserRole
 
-from my_rest_api.exception import PermissionDeniedException
+from my_rest_api.exception import APITokenAuthorizerAlreadySetException, PermissionDeniedException
 
 from .dependencies import app_config_object, my_data_object
 
@@ -40,12 +40,34 @@ class Authorizer(ABC):
 
     def __init__(
             self,
-            api_token_authorizer: 'APITokenAuthorizer') -> None:
+            api_token_authorizer: Optional['APITokenAuthorizer'] = None
+    ) -> None:
         """Initialize the authorizer.
 
         Args:
             api_token_authorizer: the API token authorizer.
         """
+        self._api_token_authorizer: Optional['APITokenAuthorizer'] = None
+        if api_token_authorizer:
+            self.set_api_token_authorizer(api_token_authorizer)
+
+    def set_api_token_authorizer(
+            self,
+            api_token_authorizer: 'APITokenAuthorizer') -> None:
+        """Set the API token authorizer.
+
+        Fails if the API token authorizer is already set.
+
+        Args:
+            api_token_authorizer: the API token authorizer.
+
+        Raises:
+            APITokenAuthorizerAlreadySetException: when the API token
+                authorizer is already set.
+        """
+        if self._api_token_authorizer is not None:
+            raise APITokenAuthorizerAlreadySetException(
+                'API token authorizer is already set.')
         self._api_token_authorizer = api_token_authorizer
 
     @abstractmethod
@@ -54,7 +76,13 @@ class Authorizer(ABC):
 
 
 class LoggedOnAutorizer(Authorizer):
-    """Authenticator for logged on users."""
+    """Authorizer for logged on users.
+
+    This authorizer will only fail if the user is not logged on. If there
+    is a user logged on, the authentication will succeed. This can be useful
+    for endpoints that are only accessible for logged on users, but that don't
+    need any special permissions.
+    """
 
     def authorize(self) -> None:
         """Authenticate the user and fail if he is not logged on.
@@ -64,7 +92,32 @@ class LoggedOnAutorizer(Authorizer):
         Raises:
             PermissionDeniedException: when the user it not logged on.
         """
-        if self._api_token_authorizer.user is None:
+        if (not self._api_token_authorizer or
+                self._api_token_authorizer.user is None):
+            raise PermissionDeniedException
+
+
+class LoggedOnWithShortLivedAuthorizer(LoggedOnAutorizer):
+    """Authenticator for logged on users with short lived tokens.
+
+    This authorizer will fail if the logged on user is logged on with a API
+    token that is not a short lived token. We subclass this class from
+    LoggedOnAutorizer, because we want to reuse the authorize method.
+    """
+
+    def authorize(self) -> None:
+        """Fails if he is not logged on with a short lived token.
+
+        If the user is not logged on with a short lived token, a exception
+        will be raised.
+
+        Reises:
+            PermissionDeniedException: when the user is not logged on with a
+                short lived token.
+        """
+        super().authorize()
+        if (not self._api_token_authorizer or
+                self._api_token_authorizer.is_long_lived_token):
             raise PermissionDeniedException
 
 
@@ -74,7 +127,7 @@ class APITokenAuthorizer:
     def __init__(
             self,
             api_token: str | None = None,
-            authorizer: Type[Authorizer] | None = None):
+            authorizer: Authorizer | None = None):
         """Initialize the API token authorizer.
 
         Args:
@@ -82,10 +135,12 @@ class APITokenAuthorizer:
             authorizer: The authorizer to use.
         """
         self._api_token_str = api_token
+        self._authorizer: Optional[Authorizer] = None
+
+        # Set objects if authorizer is given
         if authorizer:
-            self._authorizer: Optional[Authorizer] = authorizer(self)
-        else:
-            self._authorizer = None
+            self._authorizer = authorizer
+            self._authorizer.set_api_token_authorizer(self)
 
         # Caches
         self._user: Optional[User] = None

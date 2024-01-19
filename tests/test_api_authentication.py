@@ -219,6 +219,26 @@ def test_logout_with_valid_token(
     assert result.status_code == 200
 
 
+def test_logout_with_long_lived_token(
+        api_client: TestClient,
+        random_api_token_normal_user_long_lived: str) -> None:
+    """Test logging out with a valid long-lived token.
+
+    Should not be succesfull. A long-lived token cannot be logged out. These
+    tokens shuold be deleted by the user.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_normal_user_long_lived: a token for the logout.
+    """
+    result = api_client.get(
+        '/auth/logout',
+        headers={'X-API-Token': random_api_token_normal_user_long_lived})
+    response = result.json()
+    assert response['error'] == 'Not authorized'
+    assert result.status_code == 401
+
+
 def test_logout_with_invalid_token(
         api_client: TestClient) -> None:
     """Test logging out with a invalid token.

@@ -7,3 +7,7 @@ class MyRESTAPIException(Exception):
 
 class PermissionDeniedException(MyRESTAPIException):
     """Exception raised when a user has insufficient permissions."""
+
+
+class APITokenAuthorizerAlreadySetException(MyRESTAPIException):
+    """Exception raised when the API token authorizer is already set."""
