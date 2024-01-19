@@ -75,6 +75,27 @@ class Authorizer(ABC):
         """Authorize the user."""
 
 
+class LoggedOffAuthorizer(Authorizer):
+    """Authorizer for logged off users.
+
+    This authorizer will only fail if the user is logged on. If there
+    is no user logged on, the authentication will succeed. This can be useful
+    for endpoints that are only accessible for logged off users.
+    """
+
+    def authorize(self) -> None:
+        """Authenticate the user and fail if he is logged on.
+
+        If the user is logged on, a exception will be raised.
+
+        Raises:
+            PermissionDeniedException: when the user it logged on.
+        """
+        if (self._api_token_authorizer and
+                self._api_token_authorizer.user is not None):
+            raise PermissionDeniedException
+
+
 class LoggedOnAutorizer(Authorizer):
     """Authorizer for logged on users.
 

@@ -7,7 +7,7 @@ from my_data.my_data import MyData
 from my_model.user_scoped_models import UserRole
 
 from .app_config import AppConfig
-from .auth import (APITokenAuthorizer, LoggedOnAutorizer, LoggedOnWithShortLivedAuthorizer,
+from .auth import (APITokenAuthorizer, LoggedOnAutorizer, LoggedOnWithShortLivedAuthorizer, LoggedOffAuthorizer,
                    create_api_token_for_valid_user)
 from .dependencies import app_config_object, my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
@@ -20,6 +20,7 @@ api_router = APIRouter()
 @api_router.post('/login')
 def login(
     authentication: AuthenticationDetails,
+    x_api_token: Annotated[str | None, Header()] = None,
     my_data: MyData = Depends(my_data_object),
     app_config: AppConfig = Depends(app_config_object)
 ) -> AuthenticationResult:
@@ -27,6 +28,8 @@ def login(
 
     Args:
         authentication: authentication details.
+        x_api_token: The API token to use for authentication. Should be empty
+            or a invalid token.
         my_data: a global MyData object.
         app_config: a global AppConfig object.
 
@@ -38,6 +41,11 @@ def login(
             incomplete. This can also mean that the username and password are
             correct, but that the user needs to provide a second factor.
     """
+    auth = APITokenAuthorizer(
+        api_token=x_api_token,
+        authorizer=LoggedOffAuthorizer())
+    auth.authorize()
+
     service_user = app_config.service_user
     service_password = app_config.service_password
 
