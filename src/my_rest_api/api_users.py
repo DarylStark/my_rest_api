@@ -7,7 +7,7 @@ from my_data.my_data import MyData
 from my_model.user_scoped_models import User
 from sqlalchemy import ColumnElement
 
-from .authentication import APITokenAuthenticator, LoggedOnAuthenticator
+from .authorization import APITokenAuthorizer, LoggedOnAuthorizer
 from .dependencies import my_data_object
 from .model import UserWithoutPassword
 
@@ -52,10 +52,10 @@ def retrieve(
     Returns:
         A list of selected users.
     """
-    auth = APITokenAuthenticator(
+    auth = APITokenAuthorizer(
         api_token=x_api_token,
-        authenticator=LoggedOnAuthenticator)
-    auth.authenticate()
+        authorizer=LoggedOnAuthorizer())
+    auth.authorize()
 
     # TODO: Check given scopes
 
