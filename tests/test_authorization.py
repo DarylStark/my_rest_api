@@ -1,4 +1,4 @@
-"""Tests for the APITokenAuthenticator class."""
+"""Tests for the APITokenAuthorizer class."""
 
 from fastapi.testclient import TestClient
 from my_rest_api.auth import APITokenAuthorizer
@@ -7,16 +7,16 @@ from my_rest_api.auth import APITokenAuthorizer
 def test_user_property(
         api_client: TestClient,  # pylint: disable=unused-argument
         random_api_token_root: str) -> None:
-    """Test the `user` property of the APITokenAuthenticator class.
+    """Test the `user` property of the APITokenAuthorizer class.
 
     Args:
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthorizer(api_token=random_api_token_root)
-    assert authenticator.user is not None
-    assert authenticator.user.username == 'root'
+    authorizator = APITokenAuthorizer(api_token=random_api_token_root)
+    assert authorizator.user is not None
+    assert authorizator.user.username == 'root'
 
 
 def test_user_property_wrong_token(
@@ -28,42 +28,42 @@ def test_user_property_wrong_token(
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthorizer(api_token='wrong_token')
-    assert authenticator.user is None
+    authorizator = APITokenAuthorizer(api_token='wrong_token')
+    assert authorizator.user is None
 
 
 def test_api_token_property(
         api_client: TestClient,  # pylint: disable=unused-argument
         random_api_token_root: str) -> None:
-    """Test the `api_token` property of the APITokenAuthenticator class.
+    """Test the `api_token` property of the APITokenAuthorizer class.
 
     Args:
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthorizer(api_token=random_api_token_root)
-    assert authenticator.api_token is not None
-    assert authenticator.api_token.token == random_api_token_root
+    authorizator = APITokenAuthorizer(api_token=random_api_token_root)
+    assert authorizator.api_token is not None
+    assert authorizator.api_token.token == random_api_token_root
 
 
 def test_token_property_wrong_token(
         api_client: TestClient,  # pylint: disable=unused-argument
 ) -> None:
-    """Test the `api_token` property of the APITokenAuthenticator class.
+    """Test the `api_token` property of the APITokenAuthorizer class.
 
     Args:
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthorizer(api_token='wrong_token')
-    assert authenticator.api_token is None
+    authorizator = APITokenAuthorizer(api_token='wrong_token')
+    assert authorizator.api_token is None
 
 
 def test_role_property_root(
         api_client: TestClient,  # pylint: disable=unused-argument
         random_api_token_root: str) -> None:
-    """Test the roles property of the APITokenAuthenticator class.
+    """Test the roles property of the APITokenAuthorizer class.
 
     For root users.
 
@@ -72,16 +72,16 @@ def test_role_property_root(
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthorizer(api_token=random_api_token_root)
-    assert authenticator.is_root
-    assert not authenticator.is_normal_user
-    assert not authenticator.is_service_user
+    authorizator = APITokenAuthorizer(api_token=random_api_token_root)
+    assert authorizator.is_root
+    assert not authorizator.is_normal_user
+    assert not authorizator.is_service_user
 
 
 def test_role_property_wrong_token(
         api_client: TestClient,  # pylint: disable=unused-argument
 ) -> None:
-    """Test the roles property of the APITokenAuthenticator class.
+    """Test the roles property of the APITokenAuthorizer class.
 
     For wrong tokens.
 
@@ -89,16 +89,16 @@ def test_role_property_wrong_token(
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthorizer(api_token='wrong_token')
-    assert not authenticator.is_root
-    assert not authenticator.is_normal_user
-    assert not authenticator.is_service_user
+    authorizator = APITokenAuthorizer(api_token='wrong_token')
+    assert not authorizator.is_root
+    assert not authorizator.is_normal_user
+    assert not authorizator.is_service_user
 
 
 def test_role_property_normal_user(
         api_client: TestClient,  # pylint: disable=unused-argument
         random_api_token_normal_user: str) -> None:
-    """Test the roles property of the APITokenAuthenticator class.
+    """Test the roles property of the APITokenAuthorizer class.
 
     For normal user.
 
@@ -107,64 +107,64 @@ def test_role_property_normal_user(
             test but needed to create the database.
         random_api_token_normal_user: a random API token for a normal user.
     """
-    authenticator = APITokenAuthorizer(
+    authorizator = APITokenAuthorizer(
         api_token=random_api_token_normal_user)
-    assert not authenticator.is_root
-    assert authenticator.is_normal_user
-    assert not authenticator.is_service_user
+    assert not authorizator.is_root
+    assert authorizator.is_normal_user
+    assert not authorizator.is_service_user
 
 
 def test_user_property_without_api_token(
         api_client: TestClient,  # pylint: disable=unused-argument
 ) -> None:
-    """Test the `user` property of the APITokenAuthenticator class.
+    """Test the `user` property of the APITokenAuthorizer class.
 
     Args:
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthorizer()
-    assert authenticator.user is None
+    authorizator = APITokenAuthorizer()
+    assert authorizator.user is None
 
 
 def test_api_token_property_without_api_token(
         api_client: TestClient,  # pylint: disable=unused-argument
 ) -> None:
-    """Test the `api_token` property of the APITokenAuthenticator class.
+    """Test the `api_token` property of the APITokenAuthorizer class.
 
     Args:
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthorizer()
-    assert authenticator.api_token is None
+    authorizator = APITokenAuthorizer()
+    assert authorizator.api_token is None
 
 
 def test_api_is_valid_user_property_without_api_token(
         api_client: TestClient,  # pylint: disable=unused-argument
 ) -> None:
-    """Test the `is_valid_user` property of the APITokenAuthenticator class.
+    """Test the `is_valid_user` property of the APITokenAuthorizer class.
 
     Args:
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthorizer()
-    assert not authenticator.is_valid_user
+    authorizator = APITokenAuthorizer()
+    assert not authorizator.is_valid_user
 
 
 def test_api_is_valid_user_property(
         api_client: TestClient,  # pylint: disable=unused-argument
         random_api_token_root: str) -> None:
-    """Test the `is_valid_user` property of the APITokenAuthenticator class.
+    """Test the `is_valid_user` property of the APITokenAuthorizer class.
 
     Args:
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthorizer(random_api_token_root)
-    assert authenticator.is_valid_user
+    authorizator = APITokenAuthorizer(random_api_token_root)
+    assert authorizator.is_valid_user
 
 
 def test_api_is_long_lived_token_property(
@@ -180,10 +180,10 @@ def test_api_is_long_lived_token_property(
         random_api_token_normal_user_long_lived: a random API token for a root
             user.
     """
-    authenticator = APITokenAuthorizer(
+    authorizator = APITokenAuthorizer(
         api_token=random_api_token_normal_user_long_lived)
-    assert authenticator.is_long_lived_token
-    assert not authenticator.is_short_lived_token
+    assert authorizator.is_long_lived_token
+    assert not authorizator.is_short_lived_token
 
 
 def test_api_is_short_lived_token_property(
@@ -198,9 +198,9 @@ def test_api_is_short_lived_token_property(
             test but needed to create the database.
         random_api_token_root: a random API token for a root user.
     """
-    authenticator = APITokenAuthorizer(api_token=random_api_token_root)
-    assert authenticator.is_short_lived_token
-    assert not authenticator.is_long_lived_token
+    authorizator = APITokenAuthorizer(api_token=random_api_token_root)
+    assert authorizator.is_short_lived_token
+    assert not authorizator.is_long_lived_token
 
 
 def test_api_is_short_lived_token_property_without_api_token(
@@ -214,6 +214,6 @@ def test_api_is_short_lived_token_property_without_api_token(
         api_client: the test client for making API requests. Not used in this
             test but needed to create the database.
     """
-    authenticator = APITokenAuthorizer()
-    assert not authenticator.is_short_lived_token
-    assert not authenticator.is_long_lived_token
+    authorizator = APITokenAuthorizer()
+    assert not authorizator.is_short_lived_token
+    assert not authorizator.is_long_lived_token
