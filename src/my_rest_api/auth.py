@@ -96,7 +96,7 @@ class LoggedOffAuthorizer(Authorizer):
             raise PermissionDeniedException
 
 
-class LoggedOnAutorizer(Authorizer):
+class LoggedOnAuthorizer(Authorizer):
     """Authorizer for logged on users.
 
     This authorizer will only fail if the user is not logged on. If there
@@ -118,7 +118,7 @@ class LoggedOnAutorizer(Authorizer):
             raise PermissionDeniedException
 
 
-class LoggedOnWithShortLivedAuthorizer(LoggedOnAutorizer):
+class LoggedOnWithShortLivedAuthorizer(LoggedOnAuthorizer):
     """Authenticator for logged on users with short lived tokens.
 
     This authorizer will fail if the logged on user is logged on with a API
