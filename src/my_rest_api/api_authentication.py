@@ -2,14 +2,15 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, HTTPException
-from my_data.exceptions import UnknownUserAccountException
 from my_data.my_data import MyData
-from my_model.user_scoped_models import UserRole
 
-from .app_config import AppConfig
-from .authentication import (APITokenAuthenticator, LoggedOnAuthenticator,
-                             create_api_token_for_valid_user)
-from .dependencies import app_config_object, my_data_object
+from my_rest_api.exception import APIAuthenticationFailed
+
+from .authentication import APIAuthenticator, CredentialsAuthenticator
+from .authorization import (APITokenAuthorizer, LoggedOffAuthorizer,
+                            LoggedOnAuthorizer,
+                            LoggedOnWithShortLivedAuthorizer)
+from .dependencies import my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
                     AuthenticationResult, AuthenticationResultStatus,
                     LogoutResult)
@@ -20,15 +21,14 @@ api_router = APIRouter()
 @api_router.post('/login')
 def login(
     authentication: AuthenticationDetails,
-    my_data: MyData = Depends(my_data_object),
-    app_config: AppConfig = Depends(app_config_object)
+    x_api_token: Annotated[str | None, Header()] = None
 ) -> AuthenticationResult:
     """Login to the REST API.
 
     Args:
         authentication: authentication details.
-        my_data: a global MyData object.
-        app_config: a global AppConfig object.
+        x_api_token: The API token to use for authentication. Should be empty
+            or a invalid token.
 
     Returns:
         A dictionary containing the authentication token.
@@ -38,40 +38,30 @@ def login(
             incomplete. This can also mean that the username and password are
             correct, but that the user needs to provide a second factor.
     """
-    service_user = app_config.service_user
-    service_password = app_config.service_password
+    auth = APITokenAuthorizer(
+        api_token=x_api_token,
+        authorizer=LoggedOffAuthorizer())
+    auth.authorize()
 
-    # Log in with a service user to retrieve the user.
-    with my_data.get_context_for_service_user(
-            username=service_user,
-            password=service_password) as context:
-        try:
-            user = context.get_user_account_by_username(
-                username=authentication.username)
-
-            if (user.second_factor is None and
-                    authentication.second_factor is not None):
-                raise UnknownUserAccountException
-
-            valid_credentials = user.verify_credentials(
-                username=authentication.username,
-                password=authentication.password,
-                second_factor=authentication.second_factor)
-
-            if valid_credentials and (user.role is not UserRole.SERVICE):
-                token = create_api_token_for_valid_user(user=user)
-                return AuthenticationResult(
-                    status=AuthenticationResultStatus.SUCCESS,
-                    api_token=token)
-        except UnknownUserAccountException:
-            pass
-
-    raise HTTPException(
-        status_code=401,
-        detail=AuthenticationResult(
-            status=AuthenticationResultStatus.FAILURE,
-            api_token=None)
+    authenticator = APIAuthenticator(
+        CredentialsAuthenticator(
+            username=authentication.username,
+            password=authentication.password,
+            second_factor=authentication.second_factor
+        )
     )
+
+    try:
+        return AuthenticationResult(
+            status=AuthenticationResultStatus.SUCCESS,
+            api_token=authenticator.create_api_token(title=''))
+    except APIAuthenticationFailed as exc:
+        raise HTTPException(
+            status_code=401,
+            detail=AuthenticationResult(
+                status=AuthenticationResultStatus.FAILURE,
+                api_token=None)
+        ) from exc
 
 
 @api_router.get('/logout')
@@ -88,10 +78,10 @@ def logout(
     Returns:
         An empty dictionary.
     """
-    auth = APITokenAuthenticator(
+    auth = APITokenAuthorizer(
         api_token=x_api_token,
-        authenticator=LoggedOnAuthenticator)
-    auth.authenticate()
+        authorizer=LoggedOnWithShortLivedAuthorizer())
+    auth.authorize()
 
     user = auth.user
     if user:
@@ -112,10 +102,10 @@ def status(
     Returns:
         An status information object.
     """
-    auth = APITokenAuthenticator(
+    auth = APITokenAuthorizer(
         api_token=x_api_token,
-        authenticator=LoggedOnAuthenticator)
-    auth.authenticate()
+        authorizer=LoggedOnAuthorizer())
+    auth.authorize()
 
     token_type = (APIAuthStatusToken.LONG_LIVED
                   if auth.is_long_lived_token
