@@ -1,12 +1,13 @@
 """Functions for authentication."""
 from abc import ABC, abstractmethod
 from datetime import datetime, timedelta
-from typing import Optional, Type
+from typing import Optional
 
 from my_data.exceptions import UnknownUserAccountException
 from my_model.user_scoped_models import APIToken, User, UserRole
 
-from my_rest_api.exception import APITokenAuthorizerAlreadySetException, PermissionDeniedException
+from my_rest_api.exception import (APITokenAuthorizerAlreadySetException,
+                                   PermissionDeniedException)
 
 from .dependencies import app_config_object, my_data_object
 
@@ -79,12 +80,12 @@ class LoggedOffAuthorizer(Authorizer):
     """Authorizer for logged off users.
 
     This authorizer will only fail if the user is logged on. If there
-    is no user logged on, the authentication will succeed. This can be useful
+    is no user logged on, the authorization will succeed. This can be useful
     for endpoints that are only accessible for logged off users.
     """
 
     def authorize(self) -> None:
-        """Authenticate the user and fail if he is logged on.
+        """Authorize the user and fail if he is logged on.
 
         If the user is logged on, a exception will be raised.
 
@@ -100,13 +101,13 @@ class LoggedOnAuthorizer(Authorizer):
     """Authorizer for logged on users.
 
     This authorizer will only fail if the user is not logged on. If there
-    is a user logged on, the authentication will succeed. This can be useful
+    is a user logged on, the authorization will succeed. This can be useful
     for endpoints that are only accessible for logged on users, but that don't
     need any special permissions.
     """
 
     def authorize(self) -> None:
-        """Authenticate the user and fail if he is not logged on.
+        """Authorize the user and fail if he is not logged on.
 
         If the user is not logged on, a exception will be raised.
 
@@ -119,7 +120,7 @@ class LoggedOnAuthorizer(Authorizer):
 
 
 class LoggedOnWithShortLivedAuthorizer(LoggedOnAuthorizer):
-    """Authenticator for logged on users with short lived tokens.
+    """Authorization for logged on users with short lived tokens.
 
     This authorizer will fail if the logged on user is logged on with a API
     token that is not a short lived token. We subclass this class from
@@ -152,7 +153,7 @@ class APITokenAuthorizer:
         """Initialize the API token authorizer.
 
         Args:
-            api_token: The API token to authenticate with.
+            api_token: The API token to authorize with.
             authorizer: The authorizer to use.
         """
         self._api_token_str = api_token
@@ -231,7 +232,7 @@ class APITokenAuthorizer:
 
         This method is delegated to the authorizer. This way, the configured
         authorizer can be used to authorize the user and the user of the
-        library can decide which authorization-scheme to use.
+        library can decide which authorize-scheme to use.
         """
         if self._authorizer:
             self._authorizer.authorize()
