@@ -7,8 +7,8 @@ from my_data.my_data import MyData
 from my_model.user_scoped_models import UserRole
 
 from .app_config import AppConfig
-from .authentication import (APITokenAuthenticator, LoggedOnAuthenticator,
-                             create_api_token_for_valid_user)
+from .auth import (APITokenAuthorizer, LoggedOnAutorizer,
+                   create_api_token_for_valid_user)
 from .dependencies import app_config_object, my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
                     AuthenticationResult, AuthenticationResultStatus,
@@ -88,10 +88,10 @@ def logout(
     Returns:
         An empty dictionary.
     """
-    auth = APITokenAuthenticator(
+    auth = APITokenAuthorizer(
         api_token=x_api_token,
-        authenticator=LoggedOnAuthenticator)
-    auth.authenticate()
+        authorizer=LoggedOnAutorizer)
+    auth.authorize()
 
     user = auth.user
     if user:
@@ -112,10 +112,10 @@ def status(
     Returns:
         An status information object.
     """
-    auth = APITokenAuthenticator(
+    auth = APITokenAuthorizer(
         api_token=x_api_token,
-        authenticator=LoggedOnAuthenticator)
-    auth.authenticate()
+        authorizer=LoggedOnAutorizer)
+    auth.authorize()
 
     token_type = (APIAuthStatusToken.LONG_LIVED
                   if auth.is_long_lived_token

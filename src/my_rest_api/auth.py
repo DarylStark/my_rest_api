@@ -35,28 +35,28 @@ def create_api_token_for_valid_user(user: User) -> str:
     return token
 
 
-class Authenticator(ABC):
-    """Base class for authenticators."""
+class Authorizer(ABC):
+    """Base class for authorizers."""
 
     def __init__(
             self,
-            api_token_authenticator: 'APITokenAuthenticator') -> None:
-        """Initialize the authenticator.
+            api_token_authorizer: 'APITokenAuthorizer') -> None:
+        """Initialize the authorizer.
 
         Args:
-            api_token_authenticator: the API token authenticator.
+            api_token_authorizer: the API token authorizer.
         """
-        self._api_token_authenticator = api_token_authenticator
+        self._api_token_authorizer = api_token_authorizer
 
     @abstractmethod
-    def authenticate(self) -> None:
-        """Authenticate the user."""
+    def authorize(self) -> None:
+        """Authorize the user."""
 
 
-class LoggedOnAuthenticator(Authenticator):
+class LoggedOnAutorizer(Authorizer):
     """Authenticator for logged on users."""
 
-    def authenticate(self) -> None:
+    def authorize(self) -> None:
         """Authenticate the user and fail if he is not logged on.
 
         If the user is not logged on, a exception will be raised.
@@ -64,28 +64,28 @@ class LoggedOnAuthenticator(Authenticator):
         Raises:
             PermissionDeniedException: when the user it not logged on.
         """
-        if self._api_token_authenticator.user is None:
+        if self._api_token_authorizer.user is None:
             raise PermissionDeniedException
 
 
-class APITokenAuthenticator:
-    """Authenticator for API tokens."""
+class APITokenAuthorizer:
+    """Authorizer for API tokens."""
 
     def __init__(
             self,
             api_token: str | None = None,
-            authenticator: Type[Authenticator] | None = None):
-        """Initialize the API token authenticator.
+            authorizer: Type[Authorizer] | None = None):
+        """Initialize the API token authorizer.
 
         Args:
             api_token: The API token to authenticate with.
-            authenticator: The authenticator to use.
+            authorizer: The authorizer to use.
         """
         self._api_token_str = api_token
-        if authenticator:
-            self._authenticator: Optional[Authenticator] = authenticator(self)
+        if authorizer:
+            self._authorizer: Optional[Authorizer] = authorizer(self)
         else:
-            self._authenticator = None
+            self._authorizer = None
 
         # Caches
         self._user: Optional[User] = None
@@ -150,10 +150,15 @@ class APITokenAuthenticator:
             return None
         return user.role
 
-    def authenticate(self) -> None:
-        """Authenticate the user."""
-        if self._authenticator:
-            self._authenticator.authenticate()
+    def authorize(self) -> None:
+        """Authorize the user.
+
+        This method is delegated to the authorizer. This way, the configured
+        authorizer can be used to authorize the user and the user of the
+        library can decide which authorization-scheme to use.
+        """
+        if self._authorizer:
+            self._authorizer.authorize()
 
     @property
     def user(self) -> Optional[User]:
