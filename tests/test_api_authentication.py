@@ -5,6 +5,51 @@ from fastapi.testclient import TestClient
 from pyotp import TOTP
 
 
+def test_login_with_a_valid_api_token_set(
+        api_client: TestClient,
+        random_api_token_normal_user: str) -> None:
+    """Test logging in with a API token set.
+
+    Should result in a error response.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_normal_user: a token for the request.
+    """
+    result = api_client.post(
+        '/auth/login',
+        json={
+            'username': 'normal.user.1',
+            'password': 'normal_user_1_pw'
+        },
+        headers={'X-API-Token': random_api_token_normal_user})
+    response = result.json()
+    assert response['error'] == 'Not authorized'
+    assert result.status_code == 401
+
+
+def test_login_with_invalid_api_token_set(
+        api_client: TestClient) -> None:
+    """Test logging in with a invalid API token set.
+
+    Should not result in a error response.
+
+    Args:
+        api_client: the test client for making API requests.
+    """
+    result = api_client.post(
+        '/auth/login',
+        json={
+            'username': 'normal.user.1',
+            'password': 'normal_user_1_pw'
+        },
+        headers={'X-API-Token': 'wrong_token'})
+    response = result.json()
+    assert response['status'] == 'success'
+    assert response['api_token'] is not None
+    assert result.status_code == 200
+
+
 @pytest.mark.parametrize('login_json', [
     {'username': 'normal.user.1', 'password': 'normal_user_1_pw'},
     {'username': 'root', 'password': 'root_pw'}],
@@ -217,6 +262,26 @@ def test_logout_with_valid_token(
     response = result.json()
     assert response['status'] == 'success'
     assert result.status_code == 200
+
+
+def test_logout_with_long_lived_token(
+        api_client: TestClient,
+        random_api_token_normal_user_long_lived: str) -> None:
+    """Test logging out with a valid long-lived token.
+
+    Should not be succesfull. A long-lived token cannot be logged out. These
+    tokens shuold be deleted by the user.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_normal_user_long_lived: a token for the logout.
+    """
+    result = api_client.get(
+        '/auth/logout',
+        headers={'X-API-Token': random_api_token_normal_user_long_lived})
+    response = result.json()
+    assert response['error'] == 'Not authorized'
+    assert result.status_code == 401
 
 
 def test_logout_with_invalid_token(
