@@ -138,22 +138,32 @@ class FilterGenerator(Generic[T]):
             The generated filter.
         """
         filters: list[ColumnElement[T]] = []
+        filter_generators: dict[type, BaseFilterGenerator[T]] = {
+            int: FilterGeneratorInt(self._model),
+            str: FilterGeneratorStr(self._model)
+        }
 
         for field_name, field in self._model.model_fields.items():
             given_types = get_args(field.annotation) or [field.annotation]
             for given_type in given_types:
-                if given_type is int:
-                    # Add filters for integers
+                if given_type in filter_generators.keys():
                     filters.extend(
-                        FilterGeneratorInt(self._model).get_filter(
+                        filter_generators[given_type].get_filter(
                             field_name, self._given_filters
                         )
                     )
-                if given_type is str:
-                    # Add filters for strings
-                    filters.extend(
-                        FilterGeneratorStr(self._model).get_filter(
-                            field_name, self._given_filters
-                        )
-                    )
+                # if given_type is int:
+                #     # Add filters for integers
+                #     filters.extend(
+                #         FilterGeneratorInt(self._model).get_filter(
+                #             field_name, self._given_filters
+                #         )
+                #     )
+                # if given_type is str:
+                #     # Add filters for strings
+                #     filters.extend(
+                #         FilterGeneratorStr(self._model).get_filter(
+                #             field_name, self._given_filters
+                #         )
+                #     )
         return filters
