@@ -11,7 +11,7 @@
             "module": "uvicorn",
             "args": [
                 "my_rest_api.app:app",
-                "--reload"
+                // "--reload"
             ],
             "jinja": true,
             "justMyCode": true,
