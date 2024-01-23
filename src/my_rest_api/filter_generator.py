@@ -136,7 +136,7 @@ class FilterGenerator(Generic[T]):
 
             # Add the needed filters
             for field_type in types:
-                if field_type in self.registered_type_filters.keys():
+                if field_type in self.registered_type_filters:
                     filter_class = self.registered_type_filters[field_type]
                     extra_filter = filter_class(
                         self._model,
