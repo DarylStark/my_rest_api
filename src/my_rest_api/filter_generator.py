@@ -78,7 +78,8 @@ class StrFilter(TypeFilter[T]):
             The generated filter.
         """
         if super().get_filter() is None:
-            pass
+            if self._flt == 'contains':
+                return getattr(self._model, self._field_name).like(f'%{self._value}%')
         return super().get_filter()
 
 
