@@ -1,11 +1,10 @@
 """Module that contains the endpoints for user management."""
 
-from typing import Annotated, Optional
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, Request
 from my_data.my_data import MyData
 from my_model.user_scoped_models import User
-from sqlalchemy import ColumnElement
 
 from my_rest_api.filter_generator import FilterGenerator
 
