@@ -103,6 +103,7 @@ class UserWithoutPassword(BaseModel):
         email: the emailaddress of the user.
         role: the role of the user (see UserRole).
     """
+
     id: int
     created: datetime = Field(default_factory=datetime.utcnow)
     fullname: str

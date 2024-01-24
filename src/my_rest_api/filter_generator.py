@@ -1,14 +1,11 @@
 """Module with filter generators."""
 
+import re
 from abc import ABC, abstractmethod
-from typing import Type, TypeVar, Generic, Any
-from sqlmodel import SQLModel
+from typing import Any, Generic, Type, TypeVar, get_args
 
 from sqlalchemy.sql.elements import ColumnElement
-
-from typing import get_args
-
-import re
+from sqlmodel import SQLModel
 
 T = TypeVar('T', bound=SQLModel)
 
