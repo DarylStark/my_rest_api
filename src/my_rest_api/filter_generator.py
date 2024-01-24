@@ -122,7 +122,7 @@ class FilterGenerator(Generic[T]):
         self._given_filters = given_filters
         self._included_fields = included_fields
 
-    def get_filter(self) -> list[ColumnElement[T]]:
+    def get_filters(self) -> list[ColumnElement[T]]:
         """Generate the filter.
 
         Generates all filters for the given model.

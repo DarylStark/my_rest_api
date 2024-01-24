@@ -48,7 +48,7 @@ def retrieve(
             model=User,
             given_filters=dict(request.query_params),
             included_fields=['username', 'fullname', 'email'])
-        filters = filter_generator.get_filter()
+        filters = filter_generator.get_filters()
 
         with my_data.get_context(user=auth.user) as context:
             user_list = [UserWithoutPassword(**user.model_dump())
