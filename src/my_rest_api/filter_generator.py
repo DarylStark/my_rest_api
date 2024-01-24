@@ -118,6 +118,8 @@ class FilterGenerator(Generic[T]):
 
         Args:
             model: The model to generate the filter for.
+            given_filters: the filters given by the end user.
+            included_fields: the fields that are allowed to be filtered on.
         """
         self._model = model
         self._given_filters = given_filters
