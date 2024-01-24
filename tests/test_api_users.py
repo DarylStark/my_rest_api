@@ -1,4 +1,5 @@
 """Test the user management of the REST API."""
+# pylint: disable=too-many-arguments
 
 import pytest
 from fastapi.testclient import TestClient
