@@ -47,7 +47,8 @@ def retrieve(
     if auth.user:
         filter_generator = FilterGenerator[User](
             model=User,
-            given_filters=dict(request.query_params))
+            given_filters=dict(request.query_params),
+            included_fields=['username', 'fullname', 'email'])
         filters = filter_generator.get_filter()
 
         with my_data.get_context(user=auth.user) as context:

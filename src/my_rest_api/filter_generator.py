@@ -28,6 +28,7 @@ class TypeFilter(ABC, Generic[T]):
         Args:
             model: the model to generate the filter for.
             field_name: the name of the field to generate the filter for.
+            value: the value to filter on.
             flt: the filtername.
         """
         self._model = model
@@ -44,6 +45,8 @@ class TypeFilter(ABC, Generic[T]):
         """
         if self._flt is None:
             return getattr(self._model, self._field_name) == self._value
+        if self._flt == 'ne':
+            return getattr(self._model, self._field_name) != self._value
         return None
 
 
@@ -56,16 +59,20 @@ class IntFilter(TypeFilter[T]):
         Returns:
             The generated filter.
         """
-        if super().get_filter() is None:
-            if self._flt == 'lt':
-                return getattr(self._model, self._field_name) < self._value
-            if self._flt == 'le':
-                return getattr(self._model, self._field_name) <= self._value
-            if self._flt == 'gt':
-                return getattr(self._model, self._field_name) > self._value
-            if self._flt == 'ge':
-                return getattr(self._model, self._field_name) >= self._value
-        return super().get_filter()
+        super_filters = super().get_filter()
+        if super_filters is not None:
+            return super_filters
+
+        if self._flt == 'lt':
+            return getattr(self._model, self._field_name) < self._value
+        if self._flt == 'le':
+            return getattr(self._model, self._field_name) <= self._value
+        if self._flt == 'gt':
+            return getattr(self._model, self._field_name) > self._value
+        if self._flt == 'ge':
+            return getattr(self._model, self._field_name) >= self._value
+
+        return None
 
 
 class StrFilter(TypeFilter[T]):
@@ -77,12 +84,20 @@ class StrFilter(TypeFilter[T]):
         Returns:
             The generated filter.
         """
-        if super().get_filter() is None:
-            if self._flt == 'contains':
-                return getattr(
-                    self._model,
-                    self._field_name).like(f'%{self._value}%')
-        return super().get_filter()
+        super_filters = super().get_filter()
+        if super_filters is not None:
+            return super_filters
+
+        if self._flt == 'contains':
+            return getattr(
+                self._model,
+                self._field_name).like(f'%{self._value}%')
+        if self._flt == 'notcontains':
+            return getattr(
+                self._model,
+                self._field_name).notlike(f'%{self._value}%')
+
+        return None
 
 
 class FilterGenerator(Generic[T]):
@@ -96,7 +111,8 @@ class FilterGenerator(Generic[T]):
     def __init__(
         self,
         model: Type[T],
-        given_filters: dict[str, Any]
+        given_filters: dict[str, Any],
+        included_fields: list[str],
     ) -> None:
         """Initialize the class.
 
@@ -105,6 +121,7 @@ class FilterGenerator(Generic[T]):
         """
         self._model = model
         self._given_filters = given_filters
+        self._included_fields = included_fields
 
     def get_filter(self) -> list[ColumnElement[T]]:
         """Generate the filter.
@@ -125,7 +142,8 @@ class FilterGenerator(Generic[T]):
             # Get filter specifics
             field_name = match.group('field_name')
             flt = match.group('flt')
-            if field_name not in self._model.model_fields:
+            if (field_name not in self._model.model_fields or
+                    field_name not in self._included_fields):
                 continue
 
             # Get the field-type
