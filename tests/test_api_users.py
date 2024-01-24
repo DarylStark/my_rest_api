@@ -74,6 +74,10 @@ def test_retrieve_users_with_filters_as_root(
     Args:
         api_client: the test client for making API requests.
         random_api_token_root: a token for the request.
+        field_name: the field name to filter on.
+        operator: the operator to use for the filter.
+        value: the value to filter on.
+        expected_length: the expected length of the result.
     """
     filter_argument = field_name
     if operator:
