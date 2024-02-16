@@ -2,20 +2,18 @@
 
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Generic, Type, TypeVar, get_args
+from typing import Any, Type, get_args
 
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel
 
-T = TypeVar('T', bound=SQLModel)
 
-
-class TypeFilter(ABC, Generic[T]):
+class TypeFilter(ABC):
     """Abstract class for type filters."""
 
     def __init__(
         self,
-        model: Type[T],
+        model: Type[SQLModel],
         field_name: str,
         value: Any,
         flt: str | None = None
@@ -34,7 +32,7 @@ class TypeFilter(ABC, Generic[T]):
         self._flt = flt
 
     @abstractmethod
-    def get_filter(self) -> ColumnElement[T] | None:
+    def get_filter(self) -> ColumnElement[bool] | None:
         """Generate the filter.
 
         Returns:
@@ -47,10 +45,10 @@ class TypeFilter(ABC, Generic[T]):
         return None
 
 
-class IntFilter(TypeFilter[T]):
+class IntFilter(TypeFilter):
     """Class for int filters."""
 
-    def get_filter(self) -> ColumnElement[T] | None:
+    def get_filter(self) -> ColumnElement[bool] | None:
         """Generate the filter.
 
         Returns:
@@ -72,10 +70,10 @@ class IntFilter(TypeFilter[T]):
         return None
 
 
-class StrFilter(TypeFilter[T]):
+class StrFilter(TypeFilter):
     """Class for string filters."""
 
-    def get_filter(self) -> ColumnElement[T] | None:
+    def get_filter(self) -> ColumnElement[bool] | None:
         """Generate the filter.
 
         Returns:
@@ -97,17 +95,17 @@ class StrFilter(TypeFilter[T]):
         return None
 
 
-class FilterGenerator(Generic[T]):
+class FilterGenerator:
     """Class to generate filter."""
 
-    registered_type_filters: dict[object, Type[TypeFilter[T]]] = {
+    registered_type_filters: dict[object, Type[TypeFilter]] = {
         int: IntFilter,
         str: StrFilter,
     }
 
     def __init__(
         self,
-        model: Type[T],
+        model: Type[SQLModel],
         given_filters: dict[str, Any],
         included_fields: list[str],
     ) -> None:
@@ -122,7 +120,7 @@ class FilterGenerator(Generic[T]):
         self._given_filters = given_filters
         self._included_fields = included_fields
 
-    def get_filters(self) -> list[ColumnElement[T]]:
+    def get_filters(self) -> list[ColumnElement[bool]]:
         """Generate the filter.
 
         Generates all filters for the given model.
@@ -130,7 +128,7 @@ class FilterGenerator(Generic[T]):
         Returns:
             The generated filter.
         """
-        filters: list[ColumnElement[T]] = []
+        filters: list[ColumnElement[bool]] = []
         for filter_name, filter_value in self._given_filters.items():
             match = re.match(
                 r'^(?P<field_name>\w+)(-(?P<flt>\w+))?$', filter_name)

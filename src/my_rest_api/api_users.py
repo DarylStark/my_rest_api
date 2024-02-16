@@ -45,7 +45,7 @@ def retrieve(
 
     user_list: list[UserWithoutPassword] = []
     if auth.user:
-        filter_generator = FilterGenerator[User](
+        filter_generator = FilterGenerator(
             model=User,
             given_filters=dict(request.query_params),
             included_fields=['id', 'username', 'fullname', 'email'])
