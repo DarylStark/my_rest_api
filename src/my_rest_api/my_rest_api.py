@@ -34,11 +34,11 @@ class MyRESTAPI:
         self.data: MyData = MyData()
         self.config = AppConfig()
 
-        # Database configuration
+        # MyData configuration
         self._db_string: str = self.config.database_str
         self._db_args: dict[str, Any] | None = None
-        self._service_user = None
-        self._service_password = None
+        self._service_user = self.config.service_user
+        self._service_password = self.config.service_password
 
     def _db_is_created(self) -> bool:
         """Return True if the database is created.
