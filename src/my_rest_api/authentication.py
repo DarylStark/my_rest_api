@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from typing import Optional
 
 from my_data.exceptions import UnknownUserAccountException
-from my_model.user_scoped_models import APIToken, User, UserRole
+from my_model import APIToken, User, UserRole
 
 from my_rest_api.exception import (APIAuthenticationFailed,
                                    APITokenAuthenticatorAlreadySetException)

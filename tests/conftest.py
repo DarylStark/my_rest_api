@@ -11,7 +11,7 @@ from typing import Optional
 
 import pytest
 from fastapi.testclient import TestClient
-from my_model.user_scoped_models import APIClient, APIToken, TokenModel, User
+from my_model import APIClient, APIToken, TokenModel, User
 from pyotp import random_base32
 
 from my_rest_api.app import app

@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from typing import Optional
 
-from my_model.user_scoped_models import UserRole
+from my_model import UserRole
 from pydantic import BaseModel, Field
 
 

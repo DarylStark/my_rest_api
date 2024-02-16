@@ -1,7 +1,7 @@
 """Tests for the filter_generator module."""
 
 import pytest
-from my_model.user_scoped_models import User
+from my_model`` import User
 from my_rest_api.filter_generator import FilterGenerator
 
 
