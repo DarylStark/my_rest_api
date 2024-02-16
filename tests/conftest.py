@@ -7,7 +7,7 @@ Contains globally used fixtures for the unit testing.
 import os
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Optional
+from typing import Generator, Optional
 
 import pytest
 from fastapi.testclient import TestClient
@@ -17,6 +17,7 @@ from my_model import APIClient, APIToken, TokenModel, User
 from pyotp import random_base32
 
 from my_rest_api.app import app
+from my_rest_api.app_config import AppConfig
 from my_rest_api.my_rest_api import MyRESTAPI
 
 
@@ -27,19 +28,6 @@ def test_filename() -> str:
         The filename of the test data file.
     """
     return os.path.join(os.path.dirname(__file__), 'test_data.json')
-
-
-@pytest.fixture(scope='session')
-def temp_data_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
-    """Create a temporary directory for storing temporary data.
-
-    Args:
-        tmp_path_factory: The pytest fixture for creating temporary paths.
-
-    Returns:
-        The path to the created temporary directory.
-    """
-    return tmp_path_factory.mktemp("temp_dir")
 
 
 @pytest.fixture(scope='session')
@@ -101,9 +89,24 @@ def random_api_token_normal_user_long_lived() -> str:
 
 
 @pytest.fixture(scope='session')
+def cleanup() -> Generator[None, None, None]:
+    """Cleanup the environment after the tests are done.
+
+    This fixture is used to cleanup the environment after the tests are done.
+
+    Yields:
+        None
+    """
+    yield
+    db_str = AppConfig().database_str
+    db_path = Path(db_str.replace('sqlite:///', ''))
+    os.remove(db_path)
+
+
+@pytest.fixture(scope='session')
 def api_client(
+        cleanup: None,
         random_second_factor: str,
-        temp_data_dir: Path,
         random_api_token_root: str,
         random_api_token_normal_user: str,
         random_api_token_normal_user_logout: str,

@@ -32,13 +32,6 @@ class MyRESTAPI:
         """Initialize the class."""
         # Objects for the complete application
         self.data: MyData = MyData()
-        config = AppConfig()
-
-        # MyData configuration
-        self._db_string: str = config.database_str
-        self._db_args: dict[str, Any] | None = config.database_args
-        self._service_user = config.service_user
-        self._service_password = config.service_password
 
     def _db_is_created(self) -> bool:
         """Return True if the database is created.
@@ -55,10 +48,10 @@ class MyRESTAPI:
         store. Using this method, the database object can be created.
         """
         self.data.configure(
-            db_connection_str=self._db_string,
-            database_args=self._db_args,
-            service_username=self._service_user,
-            service_password=self._service_password)
+            db_connection_str=AppConfig().database_str,
+            database_args=AppConfig().database_args,
+            service_username=AppConfig().service_user,
+            service_password=AppConfig().service_password)
         self.data.create_engine(force=True)
 
     @property
