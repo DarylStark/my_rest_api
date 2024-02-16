@@ -39,7 +39,7 @@ def retrieve(
     auth.authorize()
 
     # TODO: Check given scopes
-    # TODO: Pagianation
+    # TODO: Pagianation (don't forget to include the `Link` header)
     # TODO: Sorting
 
     user_list: list[UserWithoutPassword] = []
