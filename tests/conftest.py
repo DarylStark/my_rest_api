@@ -4,18 +4,29 @@ Contains globally used fixtures for the unit testing.
 """
 # pylint: disable=redefined-outer-name
 # pylint: disable=too-many-arguments
-
+import os
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
 
 import pytest
 from fastapi.testclient import TestClient
+from my_data.data_loader import DataLoader, JSONDataSource
+from my_data.my_data_table_creator import MyDataTableCreator
 from my_model import APIClient, APIToken, TokenModel, User
 from pyotp import random_base32
 
 from my_rest_api.app import app
 from my_rest_api.my_rest_api import MyRESTAPI
+
+
+def test_filename() -> str:
+    """Return the filename of the test data file.
+
+    Returns:
+        The filename of the test data file.
+    """
+    return os.path.join(os.path.dirname(__file__), 'test_data.json')
 
 
 @pytest.fixture(scope='session')
@@ -116,13 +127,20 @@ def api_client(
     my_rest_api = MyRESTAPI.get_instance()
     my_rest_api.configure_my_data(
         f'sqlite:///{temp_data_dir}test.sqlite',
-        create_tables=True,
-        create_init_data=True)
+        service_user='service.user',
+        service_password='service_password')
+
+    # Create the tables for the database
+    MyDataTableCreator(my_rest_api.my_data).create_db_tables()
+
+    # Import data from the data JSON
+    DataLoader(
+        my_data_object=my_rest_api.my_data,
+        data_source=JSONDataSource(test_filename())).load()
 
     # Make sure that the root user has a short lived API token
     root_user: Optional[User] = None
-    with my_rest_api.my_data.get_context_for_service_user(
-            username='service.user', password='service_password') as context:
+    with my_rest_api.my_data.get_context_for_service_user() as context:
         # Retrieve the user.
         root_user = context.get_user_account_by_username('root')
 
@@ -139,8 +157,7 @@ def api_client(
 
     # Make sure that the normal.user.1 user has a short lived API token
     normal_user_1: Optional[User] = None
-    with my_rest_api.my_data.get_context_for_service_user(
-            username='service.user', password='service_password') as context:
+    with my_rest_api.my_data.get_context_for_service_user() as context:
         # Retrieve the user.
         normal_user_1 = context.get_user_account_by_username('normal.user.1')
 
@@ -175,8 +192,7 @@ def api_client(
 
     # Make sure that normal_user_2 has 2FA enabled.
     normal_user_2: Optional[User] = None
-    with my_rest_api.my_data.get_context_for_service_user(
-            username='service.user', password='service_password') as context:
+    with my_rest_api.my_data.get_context_for_service_user() as context:
         # Retrieve the user.
         normal_user_2 = context.get_user_account_by_username('normal.user.2')
 

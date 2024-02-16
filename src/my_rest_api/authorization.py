@@ -157,9 +157,7 @@ class APITokenAuthorizer:
         service_user = app_config.service_user
 
         # Log in with a service user to retrieve the user.
-        with my_data.get_context_for_service_user(
-                username=service_user,
-                password=service_password) as context:
+        with my_data.get_context_for_service_user() as context:
             try:
                 user = context.get_user_account_by_api_token(
                     api_token=self._api_token_str)

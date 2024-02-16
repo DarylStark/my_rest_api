@@ -37,8 +37,8 @@ class MyRESTAPI:
         # Database configuration
         self._db_string: str = self.config.database_str
         self._db_args: dict[str, Any] | None = None
-        self._create_tables: bool = False
-        self._create_init_data: bool = False
+        self._service_user = None
+        self._service_password = None
 
     def _db_is_created(self) -> bool:
         """Return True if the database is created.
@@ -52,8 +52,8 @@ class MyRESTAPI:
             self,
             database_str: str | None = None,
             database_args: dict[str, Any] | None = None,
-            create_tables: bool = False,
-            create_init_data: bool = False) -> None:
+            service_user: str | None = None,
+            service_password: str | None = None) -> None:
         """Set the database configuration.
 
         The MyData object is used to communicate with the persistent data
@@ -66,13 +66,14 @@ class MyRESTAPI:
             database_args: the database arguments to configure. If this is not
                 specified, the database arguments from the config file will be
                 used.
-            create_tables: if True, the database tables will be created.
-            create_init_data: if True, initial data will be created.
+            service_user: the service user to use for the database connection.
+            service_password: the service password to use for the database.
+
         """
         self._db_string = database_str or self.config.database_str
         self._db_args = database_args or self.config.database_args
-        self._create_tables = create_tables
-        self._create_init_data = create_init_data
+        self._service_user = service_user
+        self._service_password = service_password
 
     def _create_my_data(self) -> None:
         """Create the MyData object.
@@ -82,13 +83,10 @@ class MyRESTAPI:
         """
         self.data.configure(
             db_connection_str=self._db_string,
-            database_args=self._db_args)
+            database_args=self._db_args,
+            service_username=self._service_user,
+            service_password=self._service_password)
         self.data.create_engine(force=True)
-
-        if self._create_tables:
-            self.data.create_db_tables()
-        if self._create_init_data:
-            self.data.create_init_data()
 
     @property
     def my_data(self) -> MyData:

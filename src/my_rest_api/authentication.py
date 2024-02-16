@@ -92,9 +92,7 @@ class CredentialsAuthenticator(Authenticator):
         service_user = app_config_object().service_user
         service_password = app_config_object().service_password
 
-        with my_data_object().get_context_for_service_user(
-                username=service_user,
-                password=service_password) as context:
+        with my_data_object().get_context_for_service_user() as context:
             try:
                 user = context.get_user_account_by_username(
                     username=self._username)
