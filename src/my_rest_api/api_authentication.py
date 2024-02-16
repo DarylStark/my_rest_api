@@ -59,7 +59,7 @@ def login(
         authenticator.authenticate()
     except AuthenticationFailed as exc:
         raise HTTPException(
-            status_code=401,
+            status_code=403,
             detail=AuthenticationResult(
                 status=AuthenticationResultStatus.FAILURE)
         ) from exc
