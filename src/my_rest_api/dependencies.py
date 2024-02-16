@@ -10,7 +10,6 @@ as arguments to the endpoint function. For example:
 
 from my_data.my_data import MyData
 
-from .app_config import AppConfig
 from .my_rest_api import MyRESTAPI
 
 global_my_data = MyData()

@@ -16,6 +16,7 @@ def test_app_config() -> None:
     # Assert that the default values are set correctly
     app_config = AppConfig()
     assert not app_config.debug
-    assert app_config.database_str == 'sqlite:///database.sqlite'
+    assert app_config.database_str == 'sqlite:////database.sqlite'
+    assert app_config.database_args is None
     assert app_config.service_user == 'service.user'
     assert app_config.service_password == 'service_password'

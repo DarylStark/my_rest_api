@@ -125,10 +125,6 @@ def api_client(
         TestClient: A TestClient instance for the FastAPI application.
     """
     my_rest_api = MyRESTAPI.get_instance()
-    my_rest_api.configure_my_data(
-        f'sqlite:///{temp_data_dir}test.sqlite',
-        service_user='service.user',
-        service_password='service_password')
 
     # Create the tables for the database
     MyDataTableCreator(my_rest_api.my_data).create_db_tables()
