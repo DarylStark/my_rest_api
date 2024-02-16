@@ -30,7 +30,7 @@ from .my_rest_api import MyRESTAPI
 config = MyRESTAPI.get_instance().config
 
 # Configure the database
-MyRESTAPI.get_instance().configure_my_data(database_str=config.database_str)
+MyRESTAPI.get_instance()
 
 # Create the FastAPI application.
 app = FastAPI(

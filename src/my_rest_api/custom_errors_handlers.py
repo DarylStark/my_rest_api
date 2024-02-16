@@ -3,7 +3,7 @@ from fastapi import Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from my_rest_api.exception import PermissionDeniedException
+from my_data.exceptions import AuthorizationFailed
 
 
 async def custom_http_exception_handler(
@@ -35,7 +35,7 @@ async def custom_http_exception_handler(
 
 async def custom_authorizationfailed_exception_handler(
         request: Request,  # pylint: disable=unused-argument,
-        exc: PermissionDeniedException  # pylint: disable=unused-argument,
+        exc: AuthorizationFailed  # pylint: disable=unused-argument,
 ) -> JSONResponse:
     """Exception handler for failed authorization.
 
