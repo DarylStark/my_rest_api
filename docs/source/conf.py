@@ -14,7 +14,7 @@ sys.path.insert(0, os.path.abspath('../../src/'))
 project = 'My REST API'
 copyright = '2023, Daryl Stark'
 author = 'Daryl Stark'
-release = '0.0.0'
+release = '1.0.0-dev'
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -27,7 +27,6 @@ extensions = [
 
 templates_path = ['_templates']
 exclude_patterns = []
-
 
 
 # -- Options for HTML output -------------------------------------------------

@@ -55,6 +55,7 @@ push = false
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['current_version = "{version}"', 'version = "{version}"']
 "src/my_rest_api/__init__.py" = ["{version}"]
+"docs/source/conf.py" = ["release = '{version}'"]
 
 [tool.pytest.ini_options]
 addopts = ['--cov=my_rest_api', '--cov-report=html', '--cov-report=lcov']
