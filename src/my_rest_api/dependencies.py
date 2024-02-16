@@ -25,14 +25,3 @@ def my_data_object() -> MyData:
         The global My Data object.
     """
     return MyRESTAPI.get_instance().my_data
-
-
-def app_config_object() -> AppConfig:
-    """Return the AppConfig object from the global MyRESTAPI object.
-
-    The AppConfig object is used to configure the application.
-
-    Returns:
-        The global AppConfig object.
-    """
-    return MyRESTAPI.get_instance().config
