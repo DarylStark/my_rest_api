@@ -31,6 +31,7 @@ def login(
         authentication: authentication details.
         x_api_token: The API token to use for authentication. Should be empty
             or a invalid token.
+        my_data: a global MyData object.
 
     Returns:
         A dictionary containing the authentication token.
@@ -106,6 +107,7 @@ def status(
 
     Args:
         x_api_token: The API token to use for authentication.
+        my_data: a global MyData object.
 
     Returns:
         An status information object.

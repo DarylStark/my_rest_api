@@ -1,6 +1,7 @@
 """Module that contains the MyRESTAPI class."""
 
-from typing import Any, Optional
+from typing import Optional
+
 from my_data.my_data import MyData
 
 from .app_config import AppConfig

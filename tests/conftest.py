@@ -105,7 +105,7 @@ def cleanup() -> Generator[None, None, None]:
 
 @pytest.fixture(scope='session')
 def api_client(
-        cleanup: None,
+        cleanup: None,  # pylint: disable=unused-argument
         random_second_factor: str,
         random_api_token_root: str,
         random_api_token_normal_user: str,
@@ -115,8 +115,8 @@ def api_client(
     """Return a TestClient instance for the FastAPI application.
 
     Args:
+        cleanup: a cleanup fixture.
         random_second_factor: a random second factor.
-        temp_data_dir: a temporary data directory.
         random_api_token_root: a random API token for a root user.
         random_api_token_normal_user: a random API token for a normal user.
         random_api_token_normal_user_logout: a random API token for a normal
