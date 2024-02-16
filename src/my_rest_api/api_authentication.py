@@ -3,7 +3,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header
 from fastapi.exceptions import HTTPException
-from fastapi.responses import JSONResponse
 from my_data.authenticator import CredentialsAuthenticator, UserAuthenticator
 from my_data.authorizer import (APITokenAuthorizer, InvalidTokenAuthorizer,
                                 ShortLivedTokenAuthorizer,
@@ -11,6 +10,7 @@ from my_data.authorizer import (APITokenAuthorizer, InvalidTokenAuthorizer,
 from my_data.exceptions import AuthenticationFailed
 from my_data.my_data import MyData
 
+from .app_config import AppConfig
 from .dependencies import my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
                     AuthenticationResult, AuthenticationResultStatus,
@@ -66,7 +66,7 @@ def login(
     return AuthenticationResult(
         status=AuthenticationResultStatus.SUCCESS,
         api_token=authenticator.create_api_token(
-            session_timeout_in_seconds=180,
+            session_timeout_in_seconds=AppConfig().session_timeout_in_seconds,
             title=''))
 
 

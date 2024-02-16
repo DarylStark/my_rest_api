@@ -32,13 +32,13 @@ class MyRESTAPI:
         """Initialize the class."""
         # Objects for the complete application
         self.data: MyData = MyData()
-        self.config = AppConfig()
+        config = AppConfig()
 
         # MyData configuration
-        self._db_string: str = self.config.database_str
-        self._db_args: dict[str, Any] | None = None
-        self._service_user = self.config.service_user
-        self._service_password = self.config.service_password
+        self._db_string: str = config.database_str
+        self._db_args: dict[str, Any] | None = config.database_args
+        self._service_user = config.service_user
+        self._service_password = config.service_password
 
     def _db_is_created(self) -> bool:
         """Return True if the database is created.
@@ -47,33 +47,6 @@ class MyRESTAPI:
             bool: True if the database is created, False otherwise.
         """
         return self.data.database_engine is not None
-
-    def configure_my_data(
-            self,
-            database_str: str | None = None,
-            database_args: dict[str, Any] | None = None,
-            service_user: str | None = None,
-            service_password: str | None = None) -> None:
-        """Set the database configuration.
-
-        The MyData object is used to communicate with the persistent data
-        store. Using this method, the database can be configured.
-
-        Args:
-            database_str: the database string to configure. If this is not
-                specified, the database string from the config file will be
-                used.
-            database_args: the database arguments to configure. If this is not
-                specified, the database arguments from the config file will be
-                used.
-            service_user: the service user to use for the database connection.
-            service_password: the service password to use for the database.
-
-        """
-        self._db_string = database_str or self.config.database_str
-        self._db_args = database_args or self.config.database_args
-        self._service_user = service_user
-        self._service_password = service_password
 
     def _create_my_data(self) -> None:
         """Create the MyData object.
