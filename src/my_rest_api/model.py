@@ -48,7 +48,7 @@ class AuthenticationResult(BaseModel):
     """
 
     status: AuthenticationResultStatus
-    api_token: str | None = Field(pattern=r'^[a-zA-Z0-9]{32}$')
+    api_token: str | None = Field(default=None, pattern=r'^[a-zA-Z0-9]{32}$')
 
 
 class ErrorModel(BaseModel):

@@ -1,15 +1,16 @@
 """API endpoints for authentication."""
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from fastapi import APIRouter, Depends, Header
+from fastapi.exceptions import HTTPException
+from fastapi.responses import JSONResponse
+from my_data.authenticator import CredentialsAuthenticator, UserAuthenticator
+from my_data.authorizer import (APITokenAuthorizer, InvalidTokenAuthorizer,
+                                ShortLivedTokenAuthorizer,
+                                ValidTokenAuthorizer)
+from my_data.exceptions import AuthenticationFailed
 from my_data.my_data import MyData
 
-from my_rest_api.exception import APIAuthenticationFailed
-
-from .authentication import APIAuthenticator, CredentialsAuthenticator
-from .authorization import (APITokenAuthorizer, LoggedOffAuthorizer,
-                            LoggedOnAuthorizer,
-                            LoggedOnWithShortLivedAuthorizer)
 from .dependencies import my_data_object
 from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
                     AuthenticationResult, AuthenticationResultStatus,
@@ -21,7 +22,8 @@ api_router = APIRouter()
 @api_router.post('/login')
 def login(
     authentication: AuthenticationDetails,
-    x_api_token: Annotated[str | None, Header()] = None
+    x_api_token: Annotated[str | None, Header()] = None,
+    my_data: MyData = Depends(my_data_object)
 ) -> AuthenticationResult:
     """Login to the REST API.
 
@@ -39,29 +41,33 @@ def login(
             correct, but that the user needs to provide a second factor.
     """
     auth = APITokenAuthorizer(
+        my_data_object=my_data,
         api_token=x_api_token,
-        authorizer=LoggedOffAuthorizer())
+        authorizer=InvalidTokenAuthorizer())
     auth.authorize()
 
-    authenticator = APIAuthenticator(
-        CredentialsAuthenticator(
+    authenticator = UserAuthenticator(
+        my_data_object=my_data,
+        authenticator=CredentialsAuthenticator(
             username=authentication.username,
             password=authentication.password,
             second_factor=authentication.second_factor
         )
     )
-
     try:
-        return AuthenticationResult(
-            status=AuthenticationResultStatus.SUCCESS,
-            api_token=authenticator.create_api_token(title=''))
-    except APIAuthenticationFailed as exc:
+        authenticator.authenticate()
+    except AuthenticationFailed as exc:
         raise HTTPException(
             status_code=401,
             detail=AuthenticationResult(
-                status=AuthenticationResultStatus.FAILURE,
-                api_token=None)
+                status=AuthenticationResultStatus.FAILURE)
         ) from exc
+
+    return AuthenticationResult(
+        status=AuthenticationResultStatus.SUCCESS,
+        api_token=authenticator.create_api_token(
+            session_timeout_in_seconds=180,
+            title=''))
 
 
 @api_router.get('/logout')
@@ -79,8 +85,9 @@ def logout(
         An empty dictionary.
     """
     auth = APITokenAuthorizer(
+        my_data_object=my_data,
         api_token=x_api_token,
-        authorizer=LoggedOnWithShortLivedAuthorizer())
+        authorizer=ShortLivedTokenAuthorizer())
     auth.authorize()
 
     user = auth.user
@@ -93,7 +100,8 @@ def logout(
 
 @api_router.get('/status')
 def status(
-        x_api_token: Annotated[str | None, Header()] = None) -> APIAuthStatus:
+        x_api_token: Annotated[str | None, Header()] = None,
+        my_data: MyData = Depends(my_data_object)) -> APIAuthStatus:
     """Get API token information.
 
     Args:
@@ -103,8 +111,9 @@ def status(
         An status information object.
     """
     auth = APITokenAuthorizer(
+        my_data_object=my_data,
         api_token=x_api_token,
-        authorizer=LoggedOnAuthorizer())
+        authorizer=ValidTokenAuthorizer())
     auth.authorize()
 
     token_type = (APIAuthStatusToken.LONG_LIVED

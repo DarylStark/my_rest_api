@@ -33,11 +33,11 @@ async def custom_http_exception_handler(
     )
 
 
-async def custom_permission_denied_exception_handler(
+async def custom_authorizationfailed_exception_handler(
         request: Request,  # pylint: disable=unused-argument,
         exc: PermissionDeniedException  # pylint: disable=unused-argument,
 ) -> JSONResponse:
-    """Exception handler for unknown user account exceptions.
+    """Exception handler for failed authorization.
 
     Args:
         request: The incoming request object.

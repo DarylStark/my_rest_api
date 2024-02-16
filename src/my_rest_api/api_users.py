@@ -3,12 +3,12 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, Request
+from my_data.authorizer import APITokenAuthorizer, ValidTokenAuthorizer
 from my_data.my_data import MyData
 from my_model import User
 
 from my_rest_api.filter_generator import FilterGenerator
 
-from .authorization import APITokenAuthorizer, LoggedOnAuthorizer
 from .dependencies import my_data_object
 from .model import UserWithoutPassword
 
@@ -34,8 +34,9 @@ def retrieve(
         A list of selected users.
     """
     auth = APITokenAuthorizer(
+        my_data_object=my_data,
         api_token=x_api_token,
-        authorizer=LoggedOnAuthorizer())
+        authorizer=ValidTokenAuthorizer())
     auth.authorize()
 
     # TODO: Check given scopes
