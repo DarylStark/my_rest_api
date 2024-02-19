@@ -1,5 +1,6 @@
 """Module that contains the endpoints for user management."""
 
+from math import ceil
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, Request
@@ -13,8 +14,6 @@ from my_rest_api.filter_generator import FilterGenerator
 
 from .dependencies import my_data_object
 from .model import PaginationError, UserWithoutPassword
-
-from math import ceil
 
 api_router = APIRouter()
 

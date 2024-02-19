@@ -14,6 +14,8 @@ Every part of the application is imported here. These parts are then added to
 the `app` object. This allows the application to be run from a single module.
 """
 
+import logging
+
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from my_data.exceptions import AuthorizationFailed
@@ -26,8 +28,6 @@ from .api_users import api_router as users_api_router
 from .custom_errors_handlers import (
     custom_authorizationfailed_exception_handler,
     custom_http_exception_handler)
-
-import logging
 
 # Configure logging
 logging.basicConfig(
