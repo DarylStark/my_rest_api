@@ -3,7 +3,7 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, Request
-from my_data.authorizer import APITokenAuthorizer, ValidTokenAuthorizer
+from my_data.authorizer import APITokenAuthorizer, APIScopeAuthorizer
 from my_data.my_data import MyData
 from my_model import User
 
@@ -36,10 +36,11 @@ def retrieve(
     auth = APITokenAuthorizer(
         my_data_object=my_data,
         api_token=x_api_token,
-        authorizer=ValidTokenAuthorizer())
+        authorizer=APIScopeAuthorizer(
+            required_scopes=['users.retrieve'],
+            allow_short_lived=True))
     auth.authorize()
 
-    # TODO: Check given scopes
     # TODO: Pagianation (don't forget to include the `Link` header)
     # TODO: Sorting
 

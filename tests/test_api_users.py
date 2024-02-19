@@ -44,6 +44,39 @@ def test_retrieve_users_as_normal_user(
     assert response[0]['username'] == 'normal.user.1'
 
 
+def test_retrieve_users_as_normal_user_with_long_lived_token(
+        api_client: TestClient) -> None:
+    """Test retrieving users as a normal user with a long lived token.
+
+    Should be succesfull.
+
+    Args:
+        api_client: the test client for making API requests.
+    """
+    result = api_client.get(
+        '/users/users',
+        headers={'X-API-Token': '2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv'})
+    response = result.json()
+    assert result.status_code == 200
+    assert len(response) == 1
+    assert response[0]['username'] == 'normal.user.2'
+
+
+def test_retrieve_users_as_normal_user_with_long_lived_token_missing_scope(
+        api_client: TestClient) -> None:
+    """Test retrieving users as a normal user token without the correct scope.
+
+    Should fail since the token is not given the correct scope.
+
+    Args:
+        api_client: the test client for making API requests.
+    """
+    result = api_client.get(
+        '/users/users',
+        headers={'X-API-Token': 'BynORM5FVkt07BuQSA09lQUIrgCgOqEv'})
+    assert result.status_code == 401
+
+
 @pytest.mark.parametrize('field_name, operator, value, expected_length', [
     ('id', None, 1, 1),
     ('id', 'ne', 1, 3),
