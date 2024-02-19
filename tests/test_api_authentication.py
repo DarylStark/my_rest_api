@@ -93,7 +93,7 @@ def test_login_with_correct_credentials_needed_2fa(
         'status': 'failure',
         'api_token': None
     }
-    assert result.status_code == 401
+    assert result.status_code == 403
 
 
 def test_login_with_correct_credentials_and_2fa(
@@ -147,7 +147,7 @@ def test_login_with_incorrect_username(
         'status': 'failure',
         'api_token': None
     }
-    assert result.status_code == 401
+    assert result.status_code == 403
 
 
 @pytest.mark.parametrize('login_json', [
@@ -173,7 +173,7 @@ def test_login_with_incorrect_password(
         'status': 'failure',
         'api_token': None
     }
-    assert result.status_code == 401
+    assert result.status_code == 403
 
 
 def test_login_with_incorrect_2fa_format(api_client: TestClient) -> None:
@@ -196,7 +196,7 @@ def test_login_with_incorrect_2fa_format(api_client: TestClient) -> None:
         'status': 'failure',
         'api_token': None
     }
-    assert result.status_code == 401
+    assert result.status_code == 403
 
 
 def test_login_with_incorrect_2fa(api_client: TestClient) -> None:
@@ -220,7 +220,7 @@ def test_login_with_incorrect_2fa(api_client: TestClient) -> None:
         'status': 'failure',
         'api_token': None
     }
-    assert result.status_code == 401
+    assert result.status_code == 403
 
 
 def test_login_with_service_account(api_client: TestClient) -> None:
@@ -242,7 +242,7 @@ def test_login_with_service_account(api_client: TestClient) -> None:
         'status': 'failure',
         'api_token': None
     }
-    assert result.status_code == 401
+    assert result.status_code == 403
 
 
 def test_logout_with_valid_token(
