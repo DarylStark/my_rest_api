@@ -27,6 +27,13 @@ from .custom_errors_handlers import (
     custom_authorizationfailed_exception_handler,
     custom_http_exception_handler)
 
+import logging
+
+# Configure logging
+logging.basicConfig(
+    level=logging.DEBUG,  # TODO: configurable level
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+
 # Get the configuration
 config = AppConfig()
 

@@ -80,4 +80,5 @@ def retrieve(
                          for user in resources]
 
             # TODO: Add the `Link` header
+            # TODO: Nice error when no resources ar found
     return user_list

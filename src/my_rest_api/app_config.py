@@ -15,7 +15,7 @@ class AppConfig(BaseSettings):
 
     # Database configuration
     database_str: str = 'sqlite:////database.sqlite'
-    database_args: dict[str, Any] | None = None
+    database_args: dict[str, Any] | None = {'echo': True}
     service_user: str = Field(default='service.user')
     service_password: str = Field(default='service_password')
 
