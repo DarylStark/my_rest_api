@@ -7,6 +7,8 @@ from typing import Optional
 from my_model import UserRole
 from pydantic import BaseModel, Field
 
+from my_rest_api.app_config import AppConfig
+
 
 class Version(BaseModel):
     """Version information for the REST API.
@@ -110,3 +112,16 @@ class UserWithoutPassword(BaseModel):
     username: str
     email: str
     role: UserRole = Field(default=UserRole.USER)
+
+
+class PaginationError(BaseModel):
+    """Model for errors that indicate a pagination error.
+
+    Attributes:
+        message: The detail of the error.
+        max_page_size: The maximum page size allowed.
+    """
+
+    message: str
+    max_page_size: int = AppConfig().max_page_size
+    max_page: int | None = None
