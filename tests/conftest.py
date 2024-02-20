@@ -19,6 +19,8 @@ from pyotp import random_base32
 from my_rest_api.app import app
 from my_rest_api.app_config import AppConfig
 from my_rest_api.my_rest_api import MyRESTAPI
+import os
+from contextlib import suppress
 
 
 def test_filename() -> str:
@@ -97,9 +99,12 @@ def cleanup() -> Generator[None, None, None]:
     Yields:
         None
     """
-    yield
     db_str = AppConfig().database_str
     db_path = Path(db_str.replace('sqlite:///', ''))
+    with suppress(FileNotFoundError):
+        os.remove(db_path)
+
+    yield
     os.remove(db_path)
 
 
