@@ -17,7 +17,7 @@ def test_retrieve_users_as_root(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users',
+        '/users/users?page_size=10',
         headers={'X-API-Token': random_api_token_root})
     response = result.json()
     assert result.status_code == 200

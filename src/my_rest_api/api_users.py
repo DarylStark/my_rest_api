@@ -3,7 +3,7 @@
 from math import ceil
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header, Request
+from fastapi import APIRouter, Depends, Header, Request, Response
 from fastapi.exceptions import HTTPException
 from my_data.authorizer import APIScopeAuthorizer, APITokenAuthorizer
 from my_data.my_data import MyData
@@ -15,12 +15,15 @@ from my_rest_api.filter_generator import FilterGenerator
 from .dependencies import my_data_object
 from .model import PaginationError, UserWithoutPassword
 
+from urllib.parse import urljoin, urlencode, urlparse, urlunparse, parse_qs
+
 api_router = APIRouter()
 
 
 @api_router.get('/users/')
 def retrieve(
         request: Request,
+        response: Response,
         page_size: int = AppConfig().default_page_size,
         page: int = 1,
         x_api_token: Annotated[str | None, Header()] = None,
@@ -31,8 +34,9 @@ def retrieve(
     Returns a list of users that the logged on user is allowed to see.
 
     Args:
-        request: The request object.
-        x_api_token: The API token to use for authentication.
+        request: the request object.
+        response: a response object to alter the webservers response.
+        x_api_token: the API token to use for authentication.
         my_data: a global MyData object.
 
     Returns:
@@ -72,12 +76,36 @@ def retrieve(
                     message='Invalid page number.',
                     max_page=page_count))
 
+            # TODO: Create something to make the pagination work
+            #
+            # Code to parse a URL with new arguments
+            #
+            #   ```python
+            #   url_components = urlparse(str(request.url))
+            #   params = parse_qs(url_components.query)
+            #   params.update({'next_variable': 10})
+            #   query_string = urlencode(params, doseq=True)
+            #   url_components = url_components._replace(query=query_string)
+            #   new_url = urlunparse(url_components)
+            #   ```
+
             # Get the resources for this page
             resources = context.users.retrieve(
                 filters, max_items=page_size, start=(page - 1) * page_size)
             user_list = [UserWithoutPassword(**user.model_dump())
                          for user in resources]
 
-            # TODO: Add the `Link` header
-            # TODO: Nice error when no resources ar found
+            # Add the `Link` header
+            links: list[str] = [
+                f'<{request.url}?page=1>; rel=first',
+                f'<{request.url}?page={page_count}>; rel=last'
+            ]
+            if page_count > page:
+                links.append(f'<{request.url}?page={page + 1}>; rel=next')
+            if page > 1:
+                links.append(f'<{request.url}?page={page - 1}>; rel=prev')
+
+            response.headers['Link'] = 'Link: ' + ', '.join(links)
+
+            # TODO: Nice error when no resources are found
     return user_list
