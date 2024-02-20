@@ -13,7 +13,7 @@ from my_rest_api.app_config import AppConfig
 from my_rest_api.filter_generator import FilterGenerator
 
 from .dependencies import my_data_object
-from .model import PaginationError, UserWithoutPassword
+from .model import PaginationError, SortError, UserWithoutPassword
 
 from urllib.parse import urljoin, urlencode, urlparse, urlunparse, parse_qs
 
@@ -26,6 +26,7 @@ def retrieve(
         response: Response,
         page_size: int = AppConfig().default_page_size,
         page: int = 1,
+        sort: str | None = None,
         x_api_token: Annotated[str | None, Header()] = None,
         my_data: MyData = Depends(my_data_object)
 ) -> list[UserWithoutPassword]:
@@ -50,7 +51,19 @@ def retrieve(
             allow_short_lived=True))
     auth.authorize()
 
-    # TODO: Sorting
+    # Set sorting
+    # TODO: Create something to make sorting work
+    allowed_sort_list = ['id', 'username',
+                         'fullname', 'email', 'role', 'created']
+    sort_field = None
+    if sort:
+        if getattr(User, sort) and sort in allowed_sort_list:
+            sort_field = getattr(User, sort)
+        else:
+            raise HTTPException(400, detail=SortError(
+                message='Invalid sort field',
+                allowed_sort_fields=allowed_sort_list
+            ))
 
     user_list: list[UserWithoutPassword] = []
     if auth.user:
@@ -91,7 +104,10 @@ def retrieve(
 
             # Get the resources for this page
             resources = context.users.retrieve(
-                filters, max_items=page_size, start=(page - 1) * page_size)
+                flt=filters,
+                max_items=page_size,
+                start=(page - 1) * page_size,
+                sort=sort_field)
             user_list = [UserWithoutPassword(**user.model_dump())
                          for user in resources]
 

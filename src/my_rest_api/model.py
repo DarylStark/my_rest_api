@@ -125,3 +125,14 @@ class PaginationError(BaseModel):
     message: str
     max_page_size: int = AppConfig().max_page_size
     max_page: int | None = None
+
+
+class SortError(BaseModel):
+    """Model for errors that indicate a sort error.
+
+    Attributes:
+        message: The detail of the error.
+    """
+
+    message: str
+    allowed_sort_fields: list[str]
