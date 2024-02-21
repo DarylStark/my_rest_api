@@ -57,7 +57,7 @@ def retrieve(
                          'fullname', 'email', 'role', 'created']
     sort_field = None
     if sort:
-        if getattr(User, sort) and sort in allowed_sort_list:
+        if getattr(User, sort, None) and sort in allowed_sort_list:
             sort_field = getattr(User, sort)
         else:
             raise HTTPException(400, detail=SortError(

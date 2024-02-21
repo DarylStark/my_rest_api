@@ -190,6 +190,28 @@ def test_retrieving_users_with_sorting_on_role(
     assert response[3]['username'] == 'normal.user.2'
 
 
+def test_retrieving_users_invalid_sort_field(
+        api_client: TestClient,
+        random_api_token_root: str) -> None:
+    """Test retrieving users with invalid sorting.
+
+    Should fail.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
+    """
+    result = api_client.get(
+        '/users/users?sort=invalid_field',
+        headers={'X-API-Token': random_api_token_root})
+    assert result.status_code == 400
+    response = result.json()
+    assert response['message'] == 'Invalid sort field'
+    assert response['allowed_sort_fields'] == [
+        'id', 'username', 'fullname', 'email', 'role', 'created'
+    ]
+
+
 def test_retrieving_users_with_pagination(
         api_client: TestClient,
         random_api_token_root: str) -> None:
