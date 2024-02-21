@@ -142,3 +142,49 @@ def test_retrieve_users_with_invalid_filter_as_root(
     response = result.json()
     assert result.status_code == 200
     assert len(response) == 4
+
+
+def test_retrieving_users_with_sorting_on_username(
+        api_client: TestClient,
+        random_api_token_root: str) -> None:
+    """Test retrieving users with sorting.
+
+    Should be succesfull.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
+    """
+    result = api_client.get(
+        '/users/users?sort=username',
+        headers={'X-API-Token': random_api_token_root})
+    response = result.json()
+    assert result.status_code == 200
+    assert len(response) == 4
+    assert response[0]['username'] == 'normal.user.1'
+    assert response[1]['username'] == 'normal.user.2'
+    assert response[2]['username'] == 'root'
+    assert response[3]['username'] == 'service.user'
+
+
+def test_retrieving_users_with_sorting_on_role(
+        api_client: TestClient,
+        random_api_token_root: str) -> None:
+    """Test retrieving users with sorting.
+
+    Should be succesfull.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
+    """
+    result = api_client.get(
+        '/users/users?sort=role',
+        headers={'X-API-Token': random_api_token_root})
+    response = result.json()
+    assert result.status_code == 200
+    assert len(response) == 4
+    assert response[0]['username'] == 'root'
+    assert response[1]['username'] == 'service.user'
+    assert response[2]['username'] == 'normal.user.1'
+    assert response[3]['username'] == 'normal.user.2'
