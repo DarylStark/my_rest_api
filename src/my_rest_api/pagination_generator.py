@@ -1,9 +1,48 @@
 """Module that contains a class to generate pagination details."""
 
 from math import ceil
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from my_rest_api.app_config import AppConfig
 from .exceptions import InvalidPageError, InvalidPageSizeError
+
+
+class Link:
+    """Class for generating link headers."""
+
+    def __init__(self, url: str, rel: str) -> None:
+        """Initialize the class.
+
+        Args:
+            url: the URL for the link.
+            rel: the relation of the link.
+        """
+        self.url = url
+        self.rel = rel
+
+    def __str__(self) -> str:
+        """Return the string representation of the link header."""
+        return f'<{self.url}>; rel="{self.rel}"'
+
+    def update_params(self, params: dict[str, str | int]) -> 'Link':
+        """Set the URL from a string.
+
+        Args:
+            url: the URL to update.
+            params: the parameters to update.
+
+        Returns:
+            The updated link. We return the link itself so you can chain this
+            command.
+        """
+        url_components = urlparse(self.url)
+        current_params = parse_qs(url_components.query)
+        current_params.update(params)
+        new_query_string = urlencode(current_params, doseq=True)
+        url_components = url_components._replace(query=new_query_string)
+        new_url = urlunparse(url_components)
+        self.url = new_url
+        return self
 
 
 class PaginationGenerator:
@@ -50,3 +89,22 @@ class PaginationGenerator:
         """Calculate the resource offset."""
         self.validate()
         return (self.page - 1) * self.page_size
+
+    def get_link_headers(self, request_url: str) -> list[str]:
+        """Generate the link headers."""
+        self.validate()
+
+        links: list[str] = [
+            str(Link(request_url, 'first').update_params(
+                {'page': 1})),
+            str(Link(request_url, 'last').update_params(
+                {'page': self.total_pages}))
+        ]
+        if self.page > 1:
+            links.append(str(Link(request_url, 'prev').update_params(
+                {'page': self.page - 1})))
+        if self.total_pages > self.page:
+            links.append(str(Link(request_url, 'next').update_params(
+                {'page': self.page + 1})))
+
+        return links

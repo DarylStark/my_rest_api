@@ -52,7 +52,6 @@ def retrieve(
     auth.authorize()
 
     # Set sorting
-    # TODO: Create something to make sorting work
     allowed_sort_list = ['id', 'username',
                          'fullname', 'email', 'role', 'created']
     sort_field = None
@@ -83,17 +82,6 @@ def retrieve(
                 total_items=resource_count)
             pagination.validate()
 
-            # Code to parse a URL with new arguments
-            #
-            #   ```python
-            #   url_components = urlparse(str(request.url))
-            #   params = parse_qs(url_components.query)
-            #   params.update({'next_variable': 10})
-            #   query_string = urlencode(params, doseq=True)
-            #   url_components = url_components._replace(query=query_string)
-            #   new_url = urlunparse(url_components)
-            #   ```
-
             # Get the resources for this page
             resources = context.users.retrieve(
                 flt=filters,
@@ -103,17 +91,8 @@ def retrieve(
             user_list = [UserWithoutPassword(**user.model_dump())
                          for user in resources]
 
-            # Add the `Link` header
-            # links: list[str] = [
-            #     f'<{request.url}?page=1>; rel=first',
-            #     f'<{request.url}?page={page_count}>; rel=last'
-            # ]
-            # if page_count > page:
-            #     links.append(f'<{request.url}?page={page + 1}>; rel=next')
-            # if page > 1:
-            #     links.append(f'<{request.url}?page={page - 1}>; rel=prev')
+            # Add the link headers
+            link_headers = pagination.get_link_headers(str(request.url))
+            response.headers['Link'] = 'Link: ' + ', '.join(link_headers)
 
-            # response.headers['Link'] = 'Link: ' + ', '.join(links)
-
-            # TODO: Nice error when no resources are found
     return user_list
