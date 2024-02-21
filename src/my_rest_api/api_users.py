@@ -1,8 +1,6 @@
 """Module that contains the endpoints for user management."""
 
-from math import ceil
 from typing import Annotated
-from urllib.parse import parse_qs, urlencode, urljoin, urlparse, urlunparse
 
 from fastapi import APIRouter, Depends, Header, Request, Response
 from fastapi.exceptions import HTTPException
