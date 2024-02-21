@@ -249,7 +249,8 @@ def test_retrieving_users_with_invalid_page_size(
         headers={'X-API-Token': random_api_token_root})
     assert result.status_code == 400
     response = result.json()
-    assert response['message'] == 'Page size too large.'
+    assert response['error'] == 'Invalid page size.'
+    assert response['max_page'] == 250
 
 
 @pytest.mark.parametrize('page_number', [0, -1, 10000])
@@ -271,7 +272,7 @@ def test_retrieving_users_with_invalid_page_number(
         headers={'X-API-Token': random_api_token_root})
     assert result.status_code == 400
     response = result.json()
-    assert response['message'] == 'Invalid page number.'
+    assert response['error'] == 'Invalid page number.'
     assert response['max_page'] == 2
 
 

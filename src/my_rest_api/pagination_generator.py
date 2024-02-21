@@ -32,13 +32,13 @@ class PaginationGenerator:
         """Validate the page number."""
         if self.page < 1 or self.page > self.total_pages:
             raise InvalidPageError(
-                'Invalid page number.')
+                'Invalid page number.', self.total_pages)
 
     def validate_page_size(self) -> None:
         """Validate the page size."""
         if self.page_size < 1 or self.page_size > AppConfig().max_page_size:
             raise InvalidPageSizeError(
-                'Invalid page size.')
+                'Invalid page size.', AppConfig().max_page_size)
 
     def validate(self) -> None:
         """Validate the page and page size."""

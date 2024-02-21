@@ -2,6 +2,7 @@
 
 from math import ceil
 from typing import Annotated
+from urllib.parse import parse_qs, urlencode, urljoin, urlparse, urlunparse
 
 from fastapi import APIRouter, Depends, Header, Request, Response
 from fastapi.exceptions import HTTPException
@@ -11,11 +12,10 @@ from my_model import User
 
 from my_rest_api.app_config import AppConfig
 from my_rest_api.filter_generator import FilterGenerator
+from my_rest_api.pagination_generator import PaginationGenerator
 
 from .dependencies import my_data_object
-from .model import PaginationError, SortError, UserWithoutPassword
-
-from urllib.parse import urljoin, urlencode, urlparse, urlunparse, parse_qs
+from .model import SortError, UserWithoutPassword
 
 api_router = APIRouter()
 
@@ -67,12 +67,6 @@ def retrieve(
 
     user_list: list[UserWithoutPassword] = []
     if auth.user:
-        # Check the given page size
-        if page_size > AppConfig().max_page_size:
-            raise HTTPException(400, detail=PaginationError(
-                message='Page size too large.'
-            ))
-
         # Parse the given filters
         filter_generator = FilterGenerator(
             model=User,
@@ -81,16 +75,14 @@ def retrieve(
         filters = filter_generator.get_filters()
 
         with my_data.get_context(user=auth.user) as context:
-            # Get the max number of resources
+            # Get the max number of resources and vlidate pagination
             resource_count = context.users.count(filters)
-            page_count = ceil(resource_count / page_size)
-            if page > page_count or page < 1:
-                raise HTTPException(400, detail=PaginationError(
-                    message='Invalid page number.',
-                    max_page=page_count))
+            pagination = PaginationGenerator(
+                page_size=page_size,
+                page=page,
+                total_items=resource_count)
+            pagination.validate()
 
-            # TODO: Create something to make the pagination work
-            #
             # Code to parse a URL with new arguments
             #
             #   ```python
@@ -106,22 +98,22 @@ def retrieve(
             resources = context.users.retrieve(
                 flt=filters,
                 max_items=page_size,
-                start=(page - 1) * page_size,
+                start=pagination.offset,
                 sort=sort_field)
             user_list = [UserWithoutPassword(**user.model_dump())
                          for user in resources]
 
             # Add the `Link` header
-            links: list[str] = [
-                f'<{request.url}?page=1>; rel=first',
-                f'<{request.url}?page={page_count}>; rel=last'
-            ]
-            if page_count > page:
-                links.append(f'<{request.url}?page={page + 1}>; rel=next')
-            if page > 1:
-                links.append(f'<{request.url}?page={page - 1}>; rel=prev')
+            # links: list[str] = [
+            #     f'<{request.url}?page=1>; rel=first',
+            #     f'<{request.url}?page={page_count}>; rel=last'
+            # ]
+            # if page_count > page:
+            #     links.append(f'<{request.url}?page={page + 1}>; rel=next')
+            # if page > 1:
+            #     links.append(f'<{request.url}?page={page - 1}>; rel=prev')
 
-            response.headers['Link'] = 'Link: ' + ', '.join(links)
+            # response.headers['Link'] = 'Link: ' + ', '.join(links)
 
             # TODO: Nice error when no resources are found
     return user_list

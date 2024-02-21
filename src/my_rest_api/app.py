@@ -21,13 +21,14 @@ from fastapi.exceptions import HTTPException
 from my_data.exceptions import AuthorizationFailed
 
 from my_rest_api.app_config import AppConfig
+from my_rest_api.exceptions import PaginationError
 
 from .api_authentication import api_router as auth_api_router
 from .api_rest_api import api_router as rest_api_router
 from .api_users import api_router as users_api_router
 from .custom_errors_handlers import (
     custom_authorizationfailed_exception_handler,
-    custom_http_exception_handler)
+    custom_http_exception_handler, custom_paginationerror_exception_handler)
 
 # Configure logging
 logging.basicConfig(
@@ -46,6 +47,8 @@ app = FastAPI(
 app.exception_handlers[HTTPException] = custom_http_exception_handler
 app.exception_handlers[AuthorizationFailed] = \
     custom_authorizationfailed_exception_handler
+app.exception_handlers[PaginationError] = \
+    custom_paginationerror_exception_handler
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])

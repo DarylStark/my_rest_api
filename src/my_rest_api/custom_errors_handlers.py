@@ -53,3 +53,31 @@ async def custom_authorizationfailed_exception_handler(
             'error': 'Not authorized',
         }
     )
+
+
+async def custom_paginationerror_exception_handler(
+        request: Request,  # pylint: disable=unused-argument,
+        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+) -> JSONResponse:
+    """Exception handler for failed pagination.
+
+    Args:
+        request: The incoming request object.
+        exc: The raised HTTP exception.
+
+    Returns:
+        JSONResponse: The JSON response with the appropriate status code and
+            content.
+    """
+    error = 'Pagination error'
+    max_page: int | None = None
+    if len(exc.args) == 2:
+        error = exc.args[0]
+        max_page = exc.args[1]
+    return JSONResponse(
+        status_code=400,
+        content={
+            'error': error,
+            'max_page': max_page
+        }
+    )
