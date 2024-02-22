@@ -84,6 +84,7 @@ def test_pagination_validator_offset(
     Test if the pagination validator works with a valid page size.
 
     Args:
+        page_size: the page size.
         page: the page number.
         expected_offset: the expected offset.
     """
@@ -118,5 +119,5 @@ def test_pagination_validator_links(
     """
     # Test the pagination generator with a valid page size
     link = Link(url, 'first')
-    link.update_params({new_var: new_value})
+    link.update_params({new_var: [new_value]})
     assert expected_url in str(link)
