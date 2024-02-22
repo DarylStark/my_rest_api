@@ -206,7 +206,7 @@ def test_retrieving_users_invalid_sort_field(
         headers={'X-API-Token': random_api_token_root})
     assert result.status_code == 400
     response = result.json()
-    assert response['message'] == 'Invalid sort field'
+    assert response['error'] == 'Invalid sort field: "invalid_field"'
     assert response['allowed_sort_fields'] == [
         'id', 'username', 'fullname', 'email', 'role', 'created'
     ]

@@ -38,6 +38,9 @@ class SortingGenerator(Generic[T]):
         Returns:
             The field to sort in. This can be given to a retrieval MyData 
             function to sort the results.
+
+        Raises:
+            InvalidSortFieldError: if the sort field is invalid.
         """
         sort_field: ColumnElement[T] | None = None
         if self.sort_value:
@@ -47,5 +50,6 @@ class SortingGenerator(Generic[T]):
                 sort_field = attribute
             else:
                 raise InvalidSortFieldError(
-                    f'Invalid sort field: "{self.sort_value}')
+                    f'Invalid sort field: "{self.sort_value}"',
+                    self.allowed_sort_fields)
         return sort_field

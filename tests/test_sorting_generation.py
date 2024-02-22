@@ -5,7 +5,7 @@ from my_model import User
 from sqlalchemy import ColumnElement
 from my_rest_api.exceptions import InvalidSortFieldError
 
-from my_rest_api.sort_generator import SortingGenerator
+from my_rest_api.sorting_generator import SortingGenerator
 
 
 @pytest.mark.parametrize('field, expected_field', [

@@ -81,3 +81,30 @@ async def custom_paginationerror_exception_handler(
             'max_page': max_page
         }
     )
+
+
+async def custom_sortingerror_exception_handler(
+        request: Request,  # pylint: disable=unused-argument,
+        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+) -> JSONResponse:
+    """Exception handler for failed sorting.
+
+    Args:
+        request: The incoming request object.
+        exc: The raised HTTP exception.
+
+    Returns:
+        JSONResponse: The JSON response with the appropriate status code and
+            content.
+    """
+    error = 'Sorting error'
+    allowed_sort_fields: list[str] | None = None
+    if len(exc.args) == 2:
+        error = exc.args[0]
+        allowed_sort_fields = exc.args[1]
+    return JSONResponse(
+        status_code=400,
+        content={
+            'error': error,
+            'allowed_sort_fields': allowed_sort_fields
+        })

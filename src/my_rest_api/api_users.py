@@ -15,6 +15,8 @@ from my_rest_api.pagination_generator import PaginationGenerator
 from .dependencies import my_data_object
 from .model import SortError, UserWithoutPassword
 
+from .sorting_generator import SortingGenerator
+
 api_router = APIRouter()
 
 
@@ -56,17 +58,25 @@ def retrieve(
     auth.authorize()
 
     # Set sorting
-    allowed_sort_list = ['id', 'username',
-                         'fullname', 'email', 'role', 'created']
-    sort_field = None
-    if sort:
-        if getattr(User, sort, None) and sort in allowed_sort_list:
-            sort_field = getattr(User, sort)
-        else:
-            raise HTTPException(400, detail=SortError(
-                message='Invalid sort field',
-                allowed_sort_fields=allowed_sort_list
-            ))
+    # allowed_sort_list = ['id', 'username',
+    #                      'fullname', 'email', 'role', 'created']
+    # sort_field = None
+    # if sort:
+    #     if getattr(User, sort, None) and sort in allowed_sort_list:
+    #         sort_field = getattr(User, sort)
+    #     else:
+    #         raise HTTPException(400, detail=SortError(
+    #             message='Invalid sort field',
+    #             allowed_sort_fields=allowed_sort_list
+    #         ))
+
+    sorting_generator = SortingGenerator(
+        model=User,
+        allowed_sort_fields=[
+            'id', 'username',
+            'fullname', 'email',
+            'role', 'created'],
+        sort_value=sort)
 
     user_list: list[UserWithoutPassword] = []
     if auth.user:
@@ -91,7 +101,7 @@ def retrieve(
                 flt=filters,
                 max_items=page_size,
                 start=pagination.offset,
-                sort=sort_field)
+                sort=sorting_generator.sort_field)
             user_list = [UserWithoutPassword(**user.model_dump())
                          for user in resources]
 
