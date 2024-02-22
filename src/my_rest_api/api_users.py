@@ -35,11 +35,17 @@ def retrieve(
     Args:
         request: the request object.
         response: a response object to alter the webservers response.
+        page_size: the number of items to return in a page.
+        page: the page number to return.
+        sort: the field to sort by.
         x_api_token: the API token to use for authentication.
         my_data: a global MyData object.
 
     Returns:
         A list of selected users.
+
+    Raises:
+        HTTPException: if the user gives a invalid sort field.
     """
     auth = APITokenAuthorizer(
         my_data_object=my_data,

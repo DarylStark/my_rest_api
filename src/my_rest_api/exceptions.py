@@ -1,4 +1,4 @@
-"""Module with exceptions for My REST API"""
+"""Module with exceptions for My REST API."""
 
 
 class MyRESTAPIError(Exception):

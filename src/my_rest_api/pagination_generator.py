@@ -21,14 +21,17 @@ class Link:
         self.rel = rel
 
     def __str__(self) -> str:
-        """Return the string representation of the link header."""
+        """Return the string representation of the link header.
+
+        Returns:
+            The URL in string format.
+        """
         return f'<{self.url}>; rel="{self.rel}"'
 
-    def update_params(self, params: dict[str, str | int]) -> 'Link':
+    def update_params(self, params: dict[str, list[str]]) -> 'Link':
         """Set the URL from a string.
 
         Args:
-            url: the URL to update.
             params: the parameters to update.
 
         Returns:
@@ -68,13 +71,21 @@ class PaginationGenerator:
         self.total_pages = ceil(total_items / page_size)
 
     def validate_page(self) -> None:
-        """Validate the page number."""
+        """Validate the page number.
+
+        Raises:
+            InvalidPageError: if the page number is invalid.
+        """
         if self.page < 1 or self.page > self.total_pages:
             raise InvalidPageError(
                 'Invalid page number.', self.total_pages)
 
     def validate_page_size(self) -> None:
-        """Validate the page size."""
+        """Validate the page size.
+
+        Raises:
+            InvalidPageSizeError: if the page size is invalid.
+        """
         if self.page_size < 1 or self.page_size > AppConfig().max_page_size:
             raise InvalidPageSizeError(
                 'Invalid page size.', AppConfig().max_page_size)
@@ -86,25 +97,36 @@ class PaginationGenerator:
 
     @property
     def offset(self) -> int:
-        """Calculate the resource offset."""
+        """Calculate the resource offset.
+
+        Returns:
+            The offset for the given pagination.
+        """
         self.validate()
         return (self.page - 1) * self.page_size
 
     def get_link_headers(self, request_url: str) -> list[str]:
-        """Generate the link headers."""
+        """Generate the link headers.
+
+        Args:
+            request_url: the URL of the request.
+
+        Returns:
+            A list of link headers.
+        """
         self.validate()
 
         links: list[str] = [
             str(Link(request_url, 'first').update_params(
-                {'page': 1})),
+                {'page': ['1']})),
             str(Link(request_url, 'last').update_params(
-                {'page': self.total_pages}))
+                {'page': [str(self.total_pages)]}))
         ]
         if self.page > 1:
             links.append(str(Link(request_url, 'prev').update_params(
-                {'page': self.page - 1})))
+                {'page': [str(self.page - 1)]})))
         if self.total_pages > self.page:
             links.append(str(Link(request_url, 'next').update_params(
-                {'page': self.page + 1})))
+                {'page': [str(self.page + 1)]})))
 
         return links
