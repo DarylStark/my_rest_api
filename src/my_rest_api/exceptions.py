@@ -15,3 +15,11 @@ class InvalidPageError(PaginationError):
 
 class InvalidPageSizeError(PaginationError):
     """Exception for invalid page numbers."""
+
+
+class SortingError(MyRESTAPIError):
+    """Exception for sorting errors."""
+
+
+class InvalidSortFieldError(SortingError):
+    """Exception for invalid sort fields."""
