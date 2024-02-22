@@ -57,27 +57,6 @@ def retrieve(
             allow_short_lived=True))
     auth.authorize()
 
-    # Set sorting
-    # allowed_sort_list = ['id', 'username',
-    #                      'fullname', 'email', 'role', 'created']
-    # sort_field = None
-    # if sort:
-    #     if getattr(User, sort, None) and sort in allowed_sort_list:
-    #         sort_field = getattr(User, sort)
-    #     else:
-    #         raise HTTPException(400, detail=SortError(
-    #             message='Invalid sort field',
-    #             allowed_sort_fields=allowed_sort_list
-    #         ))
-
-    sorting_generator = SortingGenerator(
-        model=User,
-        allowed_sort_fields=[
-            'id', 'username',
-            'fullname', 'email',
-            'role', 'created'],
-        sort_value=sort)
-
     user_list: list[UserWithoutPassword] = []
     if auth.user:
         # Parse the given filters
@@ -86,6 +65,15 @@ def retrieve(
             given_filters=dict(request.query_params),
             included_fields=['id', 'username', 'fullname', 'email'])
         filters = filter_generator.get_filters()
+
+        # Parse the given sort field
+        sorting_generator = SortingGenerator(
+            model=User,
+            allowed_sort_fields=[
+                'id', 'username',
+                'fullname', 'email',
+                'role', 'created'],
+            sort_value=sort)
 
         with my_data.get_context(user=auth.user) as context:
             # Get the max number of resources and vlidate pagination
