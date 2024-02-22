@@ -3,7 +3,6 @@
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header, Request, Response
-from fastapi.exceptions import HTTPException
 from my_data.authorizer import APIScopeAuthorizer, APITokenAuthorizer
 from my_data.my_data import MyData
 from my_model import User
@@ -13,7 +12,7 @@ from my_rest_api.filter_generator import FilterGenerator
 from my_rest_api.pagination_generator import PaginationGenerator
 
 from .dependencies import my_data_object
-from .model import SortError, UserWithoutPassword
+from .model import UserWithoutPassword
 
 from .sorting_generator import SortingGenerator
 
@@ -45,9 +44,6 @@ def retrieve(
 
     Returns:
         A list of selected users.
-
-    Raises:
-        HTTPException: if the user gives a invalid sort field.
     """
     auth = APITokenAuthorizer(
         my_data_object=my_data,

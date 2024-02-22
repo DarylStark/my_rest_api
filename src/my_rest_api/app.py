@@ -33,7 +33,7 @@ from .custom_errors_handlers import (
 
 # Configure logging
 logging.basicConfig(
-    level=logging.DEBUG,  # TODO: configurable level
+    level=logging.DEBUG,
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
 # Get the configuration

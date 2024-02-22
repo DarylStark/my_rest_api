@@ -36,7 +36,7 @@ class SortingGenerator(Generic[T]):
         """Return the sort field.
 
         Returns:
-            The field to sort in. This can be given to a retrieval MyData 
+            The field to sort in. This can be given to a retrieval MyData
             function to sort the results.
 
         Raises:
