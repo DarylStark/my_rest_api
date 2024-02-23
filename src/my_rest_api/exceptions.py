@@ -29,9 +29,13 @@ class FilterError(MyRESTAPIError):
     """Exception for filter errors."""
 
 
-class InvalidFilter(FilterError):
+class InvalidFilterError(FilterError):
     """Exception for invalid filters."""
 
 
-class InvalidFilterField(FilterError):
+class InvalidFilterFieldError(FilterError):
     """Exception for invalid filter fields."""
+
+
+class InvalidFilterOperatorError(FilterError):
+    """Exception for invalid filter operators."""

@@ -7,7 +7,9 @@ from typing import Any, Type, get_args
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel
 
-from my_rest_api.exceptions import InvalidFilter, InvalidFilterField
+from my_rest_api.exceptions import (InvalidFilterError,
+                                    InvalidFilterFieldError,
+                                    InvalidFilterOperatorError)
 
 
 class TypeFilter(ABC):
@@ -69,7 +71,9 @@ class IntFilter(TypeFilter):
         if self._operator == '>=':
             return getattr(self._model, self._field_name) >= self._value
 
-        return None
+        raise InvalidFilterOperatorError(
+            f'Operator "{self._operator}" is not allowed for integers.'
+        )
 
 
 class StrFilter(TypeFilter):
@@ -94,7 +98,9 @@ class StrFilter(TypeFilter):
                 self._model,
                 self._field_name).notlike(f'%{self._value}%')
 
-        return None
+        raise InvalidFilterOperatorError(
+            f'Operator "{self._operator}" is not allowed for strings.'
+        )
 
 
 class FilterGenerator:
@@ -141,7 +147,7 @@ class FilterGenerator:
                 filter_field)
 
             if not match:
-                raise InvalidFilter(
+                raise InvalidFilterError(
                     f'Filter "{filter_field}" is in invalid format.')
 
             # Get filter specifics
@@ -150,7 +156,7 @@ class FilterGenerator:
             value = match.group('value')
             if (field not in self._model.model_fields or
                     field not in self._included_fields):
-                raise InvalidFilterField(
+                raise InvalidFilterFieldError(
                     f'Field "{field}" is not allowed to be filtered on.')
 
             # Get the field-type
