@@ -23,6 +23,7 @@ api_router = APIRouter()
 def retrieve(
         request: Request,
         response: Response,
+        filter: str | None = None,
         page_size: int = AppConfig().default_page_size,
         page: int = 1,
         sort: str | None = None,
@@ -58,7 +59,7 @@ def retrieve(
         # Parse the given filters
         filter_generator = FilterGenerator(
             model=User,
-            given_filters=dict(request.query_params),
+            given_filters=filter,
             included_fields=['id', 'username', 'fullname', 'email'])
         filters = filter_generator.get_filters()
 

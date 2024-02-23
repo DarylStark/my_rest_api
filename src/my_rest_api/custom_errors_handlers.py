@@ -108,3 +108,27 @@ async def custom_sortingerror_exception_handler(
             'error': error,
             'allowed_sort_fields': allowed_sort_fields
         })
+
+
+async def custom_filtererror_exception_handler(
+        request: Request,  # pylint: disable=unused-argument,
+        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+) -> JSONResponse:
+    """Exception handler for failed filtering.
+
+    Args:
+        request: The incoming request object.
+        exc: The raised HTTP exception.
+
+    Returns:
+        JSONResponse: The JSON response with the appropriate status code and
+            content.
+    """
+    error = 'Filtering error'
+    if len(exc.args) == 1:
+        error = exc.args[0]
+    return JSONResponse(
+        status_code=400,
+        content={
+            'error': error
+        })

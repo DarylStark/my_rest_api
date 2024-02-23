@@ -7,6 +7,8 @@ from typing import Any, Type, get_args
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel
 
+from my_rest_api.exceptions import InvalidFilter, InvalidFilterField
+
 
 class TypeFilter(ABC):
     """Abstract class for type filters."""
@@ -15,21 +17,21 @@ class TypeFilter(ABC):
         self,
         model: Type[SQLModel],
         field_name: str,
-        value: Any,
-        flt: str | None = None
+        operator: str,
+        value: Any
     ) -> None:
         """Initialize the class.
 
         Args:
             model: the model to generate the filter for.
             field_name: the name of the field to generate the filter for.
+            operator: the operator for the filter.
             value: the value to filter on.
-            flt: the filtername.
         """
         self._model = model
         self._field_name = field_name
         self._value = value
-        self._flt = flt
+        self._operator = operator
 
     @abstractmethod
     def get_filter(self) -> ColumnElement[bool] | None:
@@ -38,9 +40,9 @@ class TypeFilter(ABC):
         Returns:
             The generated filter.
         """
-        if self._flt is None:
+        if self._operator == '==':
             return getattr(self._model, self._field_name) == self._value
-        if self._flt == 'ne':
+        if self._operator == '!=':
             return getattr(self._model, self._field_name) != self._value
         return None
 
@@ -58,13 +60,13 @@ class IntFilter(TypeFilter):
         if super_filters is not None:
             return super_filters
 
-        if self._flt == 'lt':
+        if self._operator == '<':
             return getattr(self._model, self._field_name) < self._value
-        if self._flt == 'le':
+        if self._operator == '<=':
             return getattr(self._model, self._field_name) <= self._value
-        if self._flt == 'gt':
+        if self._operator == '>':
             return getattr(self._model, self._field_name) > self._value
-        if self._flt == 'ge':
+        if self._operator == '>=':
             return getattr(self._model, self._field_name) >= self._value
 
         return None
@@ -83,11 +85,11 @@ class StrFilter(TypeFilter):
         if super_filters is not None:
             return super_filters
 
-        if self._flt == 'contains':
+        if self._operator == '=contains=':
             return getattr(
                 self._model,
                 self._field_name).like(f'%{self._value}%')
-        if self._flt == 'notcontains':
+        if self._operator == '=!contains=':
             return getattr(
                 self._model,
                 self._field_name).notlike(f'%{self._value}%')
@@ -106,7 +108,7 @@ class FilterGenerator:
     def __init__(
         self,
         model: Type[SQLModel],
-        given_filters: dict[str, Any],
+        given_filters: str | None,
         included_fields: list[str],
     ) -> None:
         """Initialize the class.
@@ -128,26 +130,34 @@ class FilterGenerator:
         Returns:
             The generated filter.
         """
+        if not self._given_filters:
+            return []
+
         filters: list[ColumnElement[bool]] = []
-        for filter_name, filter_value in self._given_filters.items():
+        given_filters_splitted = self._given_filters.split(',')
+        for filter_field in given_filters_splitted:
             match = re.match(
-                r'^(?P<field_name>\w+)(-(?P<flt>\w+))?$', filter_name)
+                r'^(?P<field>\w+)(?P<operator>=[!\w]+=|[=<>!]{1,2})(?P<value>.+)$',
+                filter_field)
 
             if not match:
-                continue
+                raise InvalidFilter(
+                    f'Filter "{filter_field}" is in invalid format.')
 
             # Get filter specifics
-            field_name = match.group('field_name')
-            flt = match.group('flt')
-            if (field_name not in self._model.model_fields or
-                    field_name not in self._included_fields):
-                continue
+            field = str(match.group('field'))
+            operator = match.group('operator')
+            value = match.group('value')
+            if (field not in self._model.model_fields or
+                    field not in self._included_fields):
+                raise InvalidFilterField(
+                    f'Field "{field}" is not allowed to be filtered on.')
 
             # Get the field-type
-            field = self._model.model_fields[field_name]
-            types = ([t for t in get_args(field.annotation) if t]
-                     if get_args(field.annotation)
-                     else [field.annotation,])
+            object_field = self._model.model_fields[field]
+            types = ([t for t in get_args(object_field.annotation) if t]
+                     if get_args(object_field.annotation)
+                     else [object_field.annotation,])
 
             # Add the needed filters
             for field_type in types:
@@ -155,9 +165,9 @@ class FilterGenerator:
                     filter_class = self.registered_type_filters[field_type]
                     extra_filter = filter_class(
                         self._model,
-                        field_name,
-                        filter_value,
-                        flt).get_filter()
+                        field,
+                        operator,
+                        value).get_filter()
                     if extra_filter is not None:
                         filters.append(extra_filter)
 

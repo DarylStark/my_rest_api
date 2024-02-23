@@ -23,3 +23,15 @@ class SortingError(MyRESTAPIError):
 
 class InvalidSortFieldError(SortingError):
     """Exception for invalid sort fields."""
+
+
+class FilterError(MyRESTAPIError):
+    """Exception for filter errors."""
+
+
+class InvalidFilter(FilterError):
+    """Exception for invalid filters."""
+
+
+class InvalidFilterField(FilterError):
+    """Exception for invalid filter fields."""

@@ -78,27 +78,27 @@ def test_retrieve_users_as_normal_user_with_long_lived_token_missing_scope(
 
 
 @pytest.mark.parametrize('field_name, operator, value, expected_length', [
-    ('id', None, 1, 1),
-    ('id', 'ne', 1, 3),
-    ('id', 'lt', 4, 3),
-    ('id', 'gt', 1, 3),
-    ('id', 'le', 3, 3),
-    ('id', 'ge', 2, 3),
-    ('username', None, 'root', 1),
-    ('username', 'contains', 'normal', 2),
-    ('username', 'notcontains', 'service', 3),
-    ('fullname', None, 'root', 1),
-    ('fullname', 'contains', 'normal', 2),
-    ('fullname', 'notcontains', 'service', 3),
-    ('email', None, 'normal_user_1@example.com', 1),
-    ('email', 'contains', 'normal_user', 2),
-    ('email', 'notcontains', 'service', 3),
+    ('id', '==', 1, 1),
+    ('id', '!=', 1, 3),
+    ('id', '<', 4, 3),
+    ('id', '>', 1, 3),
+    ('id', '<=', 3, 3),
+    ('id', '>=', 2, 3),
+    ('username', '==', 'root', 1),
+    ('username', '=contains=', 'normal', 2),
+    ('username', '=!contains=', 'service', 3),
+    ('fullname', '==', 'root', 1),
+    ('fullname', '=contains=', 'normal', 2),
+    ('fullname', '=!contains=', 'service', 3),
+    ('email', '==', 'normal_user_1@example.com', 1),
+    ('email', '=contains=', 'normal_user', 2),
+    ('email', '=!contains=', 'service', 3),
 ])
 def test_retrieve_users_with_filters_as_root(
         api_client: TestClient,
         random_api_token_root: str,
         field_name: str,
-        operator: str | None,
+        operator: str,
         value: str,
         expected_length: int) -> None:
     """Test retrieving users with filters.
@@ -113,12 +113,9 @@ def test_retrieve_users_with_filters_as_root(
         value: the value to filter on.
         expected_length: the expected length of the result.
     """
-    filter_argument = field_name
-    if operator:
-        filter_argument += f'-{operator}'
-    filter_argument += f'={value}'
+    filter_argument = f'{field_name}{operator}{value}'
     result = api_client.get(
-        f'/users/users?{filter_argument}',
+        f'/users/users?filter={filter_argument}',
         headers={'X-API-Token': random_api_token_root})
     response = result.json()
     assert result.status_code == 200
@@ -130,18 +127,38 @@ def test_retrieve_users_with_invalid_filter_as_root(
         random_api_token_root: str) -> None:
     """Test retrieving users with invalid filters.
 
-    Should not fail; we just ignore the invalid filter.
+    Should fail.
 
     Args:
         api_client: the test client for making API requests.
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users?invalid_filter=1',
+        '/users/users?filter=invalid_filter',
         headers={'X-API-Token': random_api_token_root})
+    assert result.status_code == 400
     response = result.json()
-    assert result.status_code == 200
-    assert len(response) == 4
+    assert response['error'] == 'Filter "invalid_filter" is in invalid format.'
+
+
+def test_retrieve_users_with_invalid_filter_field_as_root(
+        api_client: TestClient,
+        random_api_token_root: str) -> None:
+    """Test retrieving users with invalid filter field
+
+    Should fail.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
+    """
+    result = api_client.get(
+        '/users/users?filter=password_hash=contains=e',
+        headers={'X-API-Token': random_api_token_root})
+    assert result.status_code == 400
+    response = result.json()
+    assert response['error'] == ('Field "password_hash" is not allowed to be '
+                                 + 'filtered on.')
 
 
 def test_retrieving_users_with_sorting_on_username(
