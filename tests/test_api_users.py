@@ -326,3 +326,29 @@ def test_retrieving_users_check_http_links(
     for expected_link in expected_links:
         assert expected_link in result.links
         assert result.links[expected_link] is not None
+
+
+def test_create_users_as_root(
+        api_client: TestClient,
+        random_api_token_root: str) -> None:
+    """Test creating users as root.
+
+    Should be succesfull and return a list of new users with the id filled in.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
+    """
+    result = api_client.post(
+        '/resources/users',
+        headers={'X-API-Token': random_api_token_root},
+        json=[{
+            'username': 'new_user_1',
+            'fullname': 'New User 1',
+            'email': 'new_user@test.com',
+            'role': 3
+        }])
+    response = result.json()
+    assert result.status_code == 200
+    assert len(response) == 1
+    assert response[0]['id'] is not None

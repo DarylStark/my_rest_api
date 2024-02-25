@@ -9,6 +9,7 @@ sorting.
 from typing import Generic, Optional, Type, TypeVar
 
 from my_data.authorizer import APIScopeAuthorizer, APITokenAuthorizer
+from my_data.context import Context
 from my_data.resource_manager import ResourceManager
 from my_model import MyModel, User
 from pydantic import BaseModel
@@ -154,6 +155,32 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         pagination.validate()
         return pagination
 
+    def _get_resource_manager(
+            self,
+            context: Context) -> ResourceManager[Model]:
+        """Get the resources from the given context for the given attribute.
+
+        Args:
+            context: the context to get the attribute from.
+
+        Returns:
+            The attribute from the context.
+
+        Raises:
+            InvalidContextAttributeError: if the context attribute is invalid.
+        """
+        resource_manager: Optional[ResourceManager[Model]] = \
+            getattr(
+            context,
+            self._context_attribute,
+            None)
+
+        if not resource_manager:
+            raise InvalidContextAttributeError(
+                f'Invalid context attr: "{self._context_attribute}"')
+
+        return resource_manager
+
     def create(
         self,
         resources: list[InputModel],
@@ -171,9 +198,6 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             A list with the created resources in the given OutputModel. This
             way we can omit the fields that we don't want to return, like
             passwords.
-
-        Raises:
-            InvalidContextAttributeError: if the context attribute is invalid.
         """
         authorized_user = self._authorize(
             api_token,
@@ -184,15 +208,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         if authorized_user:
             resources_model: list[Model] = []
             with self._my_data.get_context(user=authorized_user) as context:
-                resource_manager: Optional[ResourceManager[Model]] = \
-                    getattr(
-                    context,
-                    self._context_attribute,
-                    None)
-
-                if not resource_manager:
-                    raise InvalidContextAttributeError(
-                        f'Invalid context attr: "{self._context_attribute}"')
+                resource_manager = self._get_resource_manager(context)
 
                 # Create the resources
                 resources_model = resource_manager.create([
@@ -202,6 +218,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
 
             # If the output model is not the same as the model, we have to
             # convert the resources to the output model.
+            # TODO: Move to method
             return_resources = [
                 self._output_model(**resource.model_dump())
                 for resource in resources_model]
@@ -230,9 +247,6 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             A list with the retrieved resources in the given OutputModel. This
             way we can omit the fields that we don't want to return, like
             passwords.
-
-        Raises:
-            InvalidContextAttributeError: if the context attribute is invalid.
         """
         # Authorize the request
         authorized_user = self._authorize(
@@ -250,16 +264,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         # Retrieve the resources
         if authorized_user:
             with self._my_data.get_context(user=authorized_user) as context:
-                resource_manager: Optional[ResourceManager[Model]] = \
-                    getattr(
-                    context,
-                    self._context_attribute,
-                    None)
+                resource_manager = self._get_resource_manager(context)
 
-                if not resource_manager:
-                    raise InvalidContextAttributeError(
-                        f'Invalid context attr: "{self._context_attribute}"')
-
+                # Create the pagination
                 resource_count = resource_manager.count(filters)
                 pagination = self._get_pagination(
                     page_size=page_size,
@@ -275,6 +282,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
 
                 # If the output model is not the same as the model, we have to
                 # convert the resources to the output model.
+                # TODO: Move to method
                 resources = [
                     self._output_model(**resource.model_dump())
                     for resource in resources_model]
