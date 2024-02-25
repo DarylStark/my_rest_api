@@ -57,6 +57,10 @@ class IntFilter(TypeFilter):
 
         Returns:
             The generated filter.
+
+        Raises:
+            InvalidFilterOperatorError: If the operator is not allowed for
+                integers.
         """
         super_filters = super().get_filter()
         if super_filters is not None:
@@ -84,6 +88,10 @@ class StrFilter(TypeFilter):
 
         Returns:
             The generated filter.
+
+        Raises:
+            InvalidFilterOperatorError: if the operator is not allowed for
+                strings.
         """
         super_filters = super().get_filter()
         if super_filters is not None:
@@ -135,6 +143,11 @@ class FilterGenerator:
 
         Returns:
             The generated filter.
+
+        Raises:
+            InvalidFilterError: if the filter is in invalid format.
+            InvalidFilterFieldError: if the field is not allowed to be
+                filtered on.
         """
         if not self._given_filters:
             return []
@@ -143,7 +156,8 @@ class FilterGenerator:
         given_filters_splitted = self._given_filters.split(',')
         for filter_field in given_filters_splitted:
             match = re.match(
-                r'^(?P<field>\w+)(?P<operator>=[!\w]+=|[=<>!]{1,2})(?P<value>.+)$',
+                r'^(?P<field>\w+)(?P<operator>=[!\w]+=|[=<>!]{1,2})' +
+                r'(?P<value>.+)$',
                 filter_field)
 
             if not match:

@@ -19,6 +19,7 @@ import logging
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from my_data.exceptions import AuthorizationFailed
+from my_model import Tag, User, UserSetting
 
 from my_rest_api.app_config import AppConfig
 from my_rest_api.exceptions import FilterError, PaginationError, SortingError
@@ -30,10 +31,8 @@ from .custom_errors_handlers import (
     custom_filtererror_exception_handler, custom_http_exception_handler,
     custom_paginationerror_exception_handler,
     custom_sortingerror_exception_handler)
-
-from .resource_crud_api_router_generator import ResourceCRUDAPIRouterGenerator
-from my_model import Tag, UserSetting, User
 from .model import UserWithoutPassword
+from .resource_crud_api_router_generator import ResourceCRUDAPIRouterGenerator
 
 # Configure logging
 logging.basicConfig(

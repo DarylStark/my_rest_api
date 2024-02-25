@@ -11,15 +11,15 @@ consistent and that we can easily add new resources to the API.
 
 from typing import Annotated, Generic, Optional, Tuple, Type, TypeVar
 
-from fastapi import APIRouter, Header, Response, Request
+from fastapi import APIRouter, Header, Query, Request, Response
 from my_data.authorizer import APIScopeAuthorizer, APITokenAuthorizer
 from my_data.resource_manager import ResourceManager
-from my_model import User
+from my_model import MyModel, User
 from pydantic import BaseModel
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel
-from my_rest_api.exceptions import InvalidContextAttributeError
 
+from my_rest_api.exceptions import InvalidContextAttributeError
 from my_rest_api.pagination_generator import PaginationGenerator
 
 from .app_config import AppConfig
@@ -27,7 +27,7 @@ from .filter_generator import FilterGenerator
 from .my_rest_api import MyRESTAPI
 from .sorting_generator import SortingGenerator
 
-Model = TypeVar('Model', bound=SQLModel)
+Model = TypeVar('Model', bound=MyModel)
 OutputModel = TypeVar('OutputModel', bound=BaseModel)
 
 
@@ -44,7 +44,19 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
         filter_fields: list[str],
         sort_fields: list[str],
     ) -> None:
-        """Set the needed values for the endpoints."""
+        """Set the needed values for the endpoints.
+
+        Args:
+            endpoint: the endpoint for the resource.
+            model: the model for the resource.
+            output_model: the output model for the resource.
+            context_attribute: the attribute in the context to use for the
+                resource.
+            needed_scopes: the needed scopes for the resource. Should be a
+                tuple with the create, retrieve, update and delete scopes.
+            filter_fields: the fields that can be used for filtering.
+            sort_fields: the fields that can be used for sorting.
+        """
         self._endpoint: str = endpoint
         self._model: Type[Model] = model
         self._output_model: Type[OutputModel] = output_model
@@ -82,7 +94,7 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
             f'/{self._endpoint}',
             endpoint=self.retrieve,
             methods=['GET'],
-            response_model=list[self._output_model])
+            response_model=list[OutputModel])
 
         # Update
 
@@ -103,7 +115,10 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
 
         Args:
             api_token: the API token to use for authorization.
-            scope: the scope to authorize.
+            scopes: the scope to authorize.
+
+        Returns:
+            The authorized user, if any.
         """
         auth = APITokenAuthorizer(
             my_data_object=self._my_data,
@@ -181,29 +196,40 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
             self,
             request: Request,
             response: Response,
-            filter: str | None = None,
+            flt: Annotated[str | None, Query(alias='filter')] = None,
             page_size: int = AppConfig().default_page_size,
             page: int = 1,
             sort: str | None = None,
             x_api_token: Annotated[str | None, Header()] = None
     ) -> list[OutputModel]:
-        """Method to retrieve the resources.
+        """Retrieve the resources.
 
         Args:
-            filter: the filter to use.
+            request: the request object.
+            response: the response object.
+            flt: the filter to use.
+            page_size: the number of items to return in a page.
+            page: the page number to return.
+            sort: the field to sort on.
             x_api_token: the API token to use for authorization.
+
+        Returns:
+            A list with the retrieved resources.
+
+        Raises:
+            InvalidContextAttributeError: if the context attribute is invalid.
         """
         authorized_user = self._authorize(
             x_api_token,
             [self._needed_scopes[1]])
-        filters = self._get_filters(filter)
+        filters = self._get_filters(flt)
         sort_field = self._get_sort_field(sort)
 
         # Retrieve the resources
         resources: list[OutputModel] = []
         if authorized_user:
             with self._my_data.get_context(user=authorized_user) as context:
-                resource_manager: Optional[ResourceManager[self._model]] = \
+                resource_manager: Optional[ResourceManager[Model]] = \
                     getattr(
                     context,
                     self._context_attribute,
@@ -220,7 +246,7 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
                     resource_count=resource_count)
 
                 # Get the resources
-                resources = resource_manager.retrieve(
+                resources_model: list[Model] = resource_manager.retrieve(
                     flt=filters,
                     max_items=page_size,
                     start=pagination.offset,
@@ -228,10 +254,9 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
 
                 # If the output model is not the same as the model, we have to
                 # convert the resources to the output model.
-                if self._output_model is not self._model:
-                    resources = [
-                        self._output_model(**resource.model_dump())
-                        for resource in resources]
+                resources = [
+                    self._output_model(**resource.model_dump())
+                    for resource in resources_model]
 
                 # Add the link headers
                 if request and response:
