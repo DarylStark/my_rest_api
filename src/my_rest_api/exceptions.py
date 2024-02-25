@@ -39,3 +39,11 @@ class InvalidFilterFieldError(FilterError):
 
 class InvalidFilterOperatorError(FilterError):
     """Exception for invalid filter operators."""
+
+
+class ResourceCRUDAPIRouterGeneratorError(MyRESTAPIError):
+    """Exception for resource CRUD API router generator errors."""
+
+
+class InvalidContextAttributeError(ResourceCRUDAPIRouterGeneratorError):
+    """Exception for invalid context attributes."""

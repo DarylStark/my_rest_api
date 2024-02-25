@@ -18,6 +18,7 @@ from my_model import User
 from pydantic import BaseModel
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel
+from my_rest_api.exceptions import InvalidContextAttributeError
 
 from my_rest_api.pagination_generator import PaginationGenerator
 
@@ -199,6 +200,7 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
         sort_field = self._get_sort_field(sort)
 
         # Retrieve the resources
+        resources: list[OutputModel] = []
         if authorized_user:
             with self._my_data.get_context(user=authorized_user) as context:
                 resource_manager: Optional[ResourceManager[self._model]] = \
@@ -208,7 +210,8 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
                     None)
 
                 if not resource_manager:
-                    return []  # TODO: Exception
+                    raise InvalidContextAttributeError(
+                        f'Invalid context attr: "{self._context_attribute}"')
 
                 resource_count = resource_manager.count(filters)
                 pagination = self._get_pagination(
@@ -217,7 +220,7 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
                     resource_count=resource_count)
 
                 # Get the resources
-                resources: list[self._model] = resource_manager.retrieve(
+                resources = resource_manager.retrieve(
                     flt=filters,
                     max_items=page_size,
                     start=pagination.offset,
@@ -231,10 +234,11 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
                         for resource in resources]
 
                 # Add the link headers
-                link_headers = pagination.get_link_headers(str(request.url))
-                response.headers['Link'] = 'Link: ' + ', '.join(link_headers)
+                if request and response:
+                    link_headers = pagination.get_link_headers(
+                        str(request.url))
+                    response.headers['Link'] = 'Link: ' + \
+                        ', '.join(link_headers)
 
-                # Return the resources
-                return resources
-
-        return []
+        # Return the resources
+        return resources
