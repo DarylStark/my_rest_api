@@ -149,7 +149,7 @@ class APITag(APITagIn):
     Attributes:
         id: the id of the tag.
     """
-    id: int
+    id: int | None = None
 
 
 class PaginationError(BaseModel):
