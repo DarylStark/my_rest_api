@@ -94,8 +94,8 @@ class APIAuthStatus(BaseModel):
     expires: Optional[datetime]
 
 
-class UserWithoutPassword(BaseModel):
-    """User object without password.
+class APIUserIn(BaseModel):
+    """User object for the REST API.
 
     Attributes:
         id: the id of the user.
@@ -106,12 +106,50 @@ class UserWithoutPassword(BaseModel):
         role: the role of the user (see UserRole).
     """
 
-    id: int
-    created: datetime = Field(default_factory=datetime.utcnow)
     fullname: str
     username: str
     email: str
     role: UserRole = Field(default=UserRole.USER)
+
+
+class APIUser(APIUserIn):
+    """User object for the REST API.
+
+    Adds the `id` and `created` fields to the User model.
+
+    Attributes:
+        id: the id of the user.
+    """
+
+    id: int | None = None
+    created: datetime = Field(default_factory=datetime.utcnow)
+
+
+class APITagIn(BaseModel):
+    """Tag object for the REST API.
+
+    Attributes:
+        title: the title of the tag.
+        color: the color of the tag.
+    """
+
+    title: str
+    color: str | None = Field(
+        default=None,
+        pattern=r'^[a-fA-F0-9]{6}$',
+        min_length=6,
+        max_length=6)
+
+
+class APITag(APITagIn):
+    """Tag object for the REST API.
+
+    Adds the `id` field to the Tag model.
+
+    Attributes:
+        id: the id of the tag.
+    """
+    id: int
 
 
 class PaginationError(BaseModel):

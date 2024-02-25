@@ -161,59 +161,59 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, InputModel, OutputModel]):
         pagination.validate()
         return pagination
 
-    # def create(
-    #     self,
-    #     resources: Annotated[Tag, Body()],
-    #     x_api_token: Annotated[str | None, Header()] = None
-    # ) -> list[OutputModel]:
-    #     """Create resources.
+    def create(
+        self,
+        resources: list[InputModel],
+        api_token: str | None = None
+    ) -> list[OutputModel]:
+        """Create resources.
 
-    #     Args:
-    #         resources: the resources to create. These are in the OutputModel
-    #             format, so we can omit the fields that we don't want to be
-    #             able to set.
-    #         x_api_token: the API token to use for authorization.
+        Args:
+            resources: the resources to create. These are in the InputModel
+                format, so we can omit the fields that we don't want to be
+                able to set.
+            api_token: the API token to use for authorization.
 
-    #     Returns:
-    #         A list with the created resources in the given OutputModel. This
-    #         way we can omit the fields that we don't want to return, like
-    #         passwords.
-    #     """
-    #     authorized_user = self._authorize(
-    #         x_api_token,
-    #         [self._needed_scopes[0]])
+        Returns:
+            A list with the created resources in the given OutputModel. This
+            way we can omit the fields that we don't want to return, like
+            passwords.
 
-    #     # Createthe resources
-    #     return_resources: list[OutputModel] = []
-    #     if authorized_user:
-    #         with self._my_data.get_context(user=authorized_user) as context:
-    #             resource_manager: Optional[ResourceManager[Model]] = \
-    #                 getattr(
-    #                 context,
-    #                 self._context_attribute,
-    #                 None)
+        Raises:
+            InvalidContextAttributeError: if the context attribute is invalid.
+        """
+        authorized_user = self._authorize(
+            api_token,
+            [self._needed_scopes[0]])
 
-    #             if not resource_manager:
-    #                 raise InvalidContextAttributeError(
-    #                     f'Invalid context attr: "{self._context_attribute}"')
+        # Createthe resources
+        return_resources: list[OutputModel] = []
+        if authorized_user:
+            with self._my_data.get_context(user=authorized_user) as context:
+                resource_manager: Optional[ResourceManager[Model]] = \
+                    getattr(
+                    context,
+                    self._context_attribute,
+                    None)
 
-    #             # Create the resources
-    #             # resources_model: list[Model] = resource_manager.create([
-    #             #     self._model(**resource.model_dump())
-    #             #     for resource in resources
-    #             # ])
-    #             resources_model: list[Model] = resource_manager.create(
-    #                 self._model(**resources.model_dump())
-    #             )
+                if not resource_manager:
+                    raise InvalidContextAttributeError(
+                        f'Invalid context attr: "{self._context_attribute}"')
 
-    #             # If the output model is not the same as the model, we have to
-    #             # convert the resources to the output model.
-    #             return_resources = [
-    #                 self._output_model(**resource.model_dump())
-    #                 for resource in resources_model]
+                # Create the resources
+                resources_model: list[Model] = resource_manager.create([
+                    self._model(**resource.model_dump())
+                    for resource in resources
+                ])
 
-    #     # Return the resources
-    #     return return_resources
+                # If the output model is not the same as the model, we have to
+                # convert the resources to the output model.
+                return_resources = [
+                    self._output_model(**resource.model_dump())
+                    for resource in resources_model]
+
+        # Return the resources
+        return return_resources
 
     def retrieve(
             self,
