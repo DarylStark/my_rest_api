@@ -7,13 +7,12 @@ from my_model import Tag
 
 from .app_config import AppConfig
 from .model import APITag, APITagIn
-from .resource_crud_api_router_generator import ResourceCRUDAPIRouterGenerator
+from .resource_crud_operations import ResourceCRUDOperations
 
 api_router = APIRouter()
 
 
-crud_operations = ResourceCRUDAPIRouterGenerator(
-    endpoint='tags',
+crud_operations = ResourceCRUDOperations(
     model=Tag,
     input_model=APITagIn,
     output_model=APITag,

@@ -5,8 +5,8 @@ from fastapi.testclient import TestClient
 from my_model import Tag
 
 from my_rest_api.exceptions import InvalidContextAttributeError
-from my_rest_api.resource_crud_api_router_generator import \
-    ResourceCRUDAPIRouterGenerator
+from my_rest_api.resource_crud_operations import \
+    ResourceCRUDOperations
 
 
 def test_invalid_context_attribute(
@@ -19,8 +19,7 @@ def test_invalid_context_attribute(
         random_api_token_normal_user: str. A random API token for a normal
         user.
     """
-    generator = ResourceCRUDAPIRouterGenerator(
-        endpoint='tags',
+    operations = ResourceCRUDOperations(
         model=Tag,
         input_model=Tag,
         output_model=Tag,
@@ -31,4 +30,4 @@ def test_invalid_context_attribute(
         sort_fields=['title'],
     )
     with pytest.raises(InvalidContextAttributeError):
-        generator.retrieve(api_token=random_api_token_normal_user)
+        operations.retrieve(api_token=random_api_token_normal_user)

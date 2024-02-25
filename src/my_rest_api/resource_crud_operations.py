@@ -1,18 +1,13 @@
-"""Module with a endpoint generator for the CRUD endpoints for resources.
+"""Module with a class that can perform CRUD operations on resources.
 
-The classes in this module make sure that we can automatically generate the
-endpoints for the CRUD operations for a resource. This is done by creating a
-class that can generate the endpoints for a resource. This class can then be
-used to generate the endpoints for a resource.
-
-By doing this, we can make sure that the endpoints for the CRUD operations are
-consistent and that we can easily add new resources to the API.
+The class in this module can be used to perform CRUD operations on resources.
+It can be used to create, retrieve, update and delete resources. It can also
+be used to retrieve a list of resources, with pagination, filtering and
+sorting.
 """
 
-from ast import In
-from typing import Annotated, Generic, Optional, Type, TypeVar
+from typing import Generic, Optional, Type, TypeVar
 
-from fastapi import APIRouter, Header, Query, Request, Response, Body
 from my_data.authorizer import APIScopeAuthorizer, APITokenAuthorizer
 from my_data.resource_manager import ResourceManager
 from my_model import MyModel, User
@@ -32,12 +27,11 @@ OutputModel = TypeVar('OutputModel', bound=BaseModel)
 InputModel = TypeVar('InputModel', bound=BaseModel)
 
 
-class ResourceCRUDAPIRouterGenerator(Generic[Model, InputModel, OutputModel]):
-    """Base class for Endpoint generators."""
+class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
+    """Class to perform CRUD operations on resources."""
 
     def __init__(
         self,
-        endpoint: str,
         model: Type[Model],
         input_model: Type[InputModel],
         output_model: Type[OutputModel],
@@ -46,7 +40,7 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, InputModel, OutputModel]):
         filter_fields: list[str],
         sort_fields: list[str],
     ) -> None:
-        """Set the needed values for the endpoints.
+        """Set the needed values for the CRUD operators.
 
         Args:
             endpoint: the endpoint for the resource.
@@ -60,7 +54,6 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, InputModel, OutputModel]):
             filter_fields: the fields that can be used for filtering.
             sort_fields: the fields that can be used for sorting.
         """
-        self._endpoint: str = endpoint
         self._model: Type[Model] = model
         self._input_model: Type[InputModel] = input_model
         self._output_model: Type[OutputModel] = output_model

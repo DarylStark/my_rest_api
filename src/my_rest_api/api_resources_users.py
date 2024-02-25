@@ -7,13 +7,12 @@ from my_model import User
 
 from .app_config import AppConfig
 from .model import APIUser, APIUserIn
-from .resource_crud_api_router_generator import ResourceCRUDAPIRouterGenerator
+from .resource_crud_operations import ResourceCRUDOperations
 
 api_router = APIRouter()
 
 
-crud_operations = ResourceCRUDAPIRouterGenerator(
-    endpoint='users',
+crud_operations = ResourceCRUDOperations(
     model=User,
     input_model=APIUserIn,
     output_model=APIUser,
