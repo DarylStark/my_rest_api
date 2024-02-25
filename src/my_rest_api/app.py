@@ -32,6 +32,10 @@ from .custom_errors_handlers import (
     custom_paginationerror_exception_handler,
     custom_sortingerror_exception_handler)
 
+from .resource_crud_api_router_generator import ResourceCRUDAPIRouterGenerator
+from my_model import Tag, UserSetting, User
+from .model import UserWithoutPassword
+
 # Configure logging
 logging.basicConfig(
     level=logging.DEBUG,
@@ -56,7 +60,43 @@ app.exception_handlers[SortingError] = \
 app.exception_handlers[FilterError] = \
     custom_filtererror_exception_handler
 
+# Test EndpointGenerator
+endpoint_users = ResourceCRUDAPIRouterGenerator(
+    endpoint='users',
+    model=User,
+    output_model=UserWithoutPassword,
+    context_attribute='users',
+    needed_scopes=('users.create', 'users.retrieve',
+                   'users.update', 'users.delete'),
+    filter_fields=['id', 'username', 'fullname', 'email'],
+    sort_fields=['id', 'username', 'fullname', 'email', 'role', 'created'])
+endpoint_tags = ResourceCRUDAPIRouterGenerator(
+    endpoint='tags',
+    model=Tag,
+    output_model=Tag,
+    context_attribute='tags',
+    needed_scopes=('tags.create', 'tags.retrieve',
+                   'tags.update', 'tags.delete'),
+    filter_fields=[],
+    sort_fields=[])
+endpoint_user_settings = ResourceCRUDAPIRouterGenerator(
+    endpoint='user_settings',
+    model=UserSetting,
+    output_model=UserSetting,
+    context_attribute='user_settings',
+    needed_scopes=('user_settings.create', 'user_settings.retrieve',
+                   'user_settings.update', 'user_settings.delete'),
+    filter_fields=[],
+    sort_fields=[])
+
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
 app.include_router(auth_api_router, tags=['Authentication'], prefix='/auth')
 app.include_router(users_api_router, tags=['User management'], prefix='/users')
+
+app.include_router(endpoint_users.get_api_router(),
+                   tags=['Resources'], prefix='/resources')
+app.include_router(endpoint_tags.get_api_router(),
+                   tags=['Resources'], prefix='/resources')
+app.include_router(endpoint_user_settings.get_api_router(),
+                   tags=['Resources'], prefix='/resources')

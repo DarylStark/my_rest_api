@@ -17,7 +17,7 @@ def test_retrieve_users_as_root(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users',
+        '/resources/users',
         headers={'X-API-Token': random_api_token_root})
     response = result.json()
     assert result.status_code == 200
@@ -36,7 +36,7 @@ def test_retrieve_users_as_normal_user(
         random_api_token_normal_user: a token for the request.
     """
     result = api_client.get(
-        '/users/users',
+        '/resources/users',
         headers={'X-API-Token': random_api_token_normal_user})
     response = result.json()
     assert result.status_code == 200
@@ -54,7 +54,7 @@ def test_retrieve_users_as_normal_user_with_long_lived_token(
         api_client: the test client for making API requests.
     """
     result = api_client.get(
-        '/users/users',
+        '/resources/users',
         headers={'X-API-Token': '2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv'})
     response = result.json()
     assert result.status_code == 200
@@ -72,7 +72,7 @@ def test_retrieve_users_as_normal_user_with_long_lived_token_missing_scope(
         api_client: the test client for making API requests.
     """
     result = api_client.get(
-        '/users/users',
+        '/resources/users',
         headers={'X-API-Token': 'BynORM5FVkt07BuQSA09lQUIrgCgOqEv'})
     assert result.status_code == 401
 
@@ -115,7 +115,7 @@ def test_retrieve_users_with_filters_as_root(
     """
     filter_argument = f'{field_name}{operator}{value}'
     result = api_client.get(
-        f'/users/users?filter={filter_argument}',
+        f'/resources/users?filter={filter_argument}',
         headers={'X-API-Token': random_api_token_root})
     response = result.json()
     assert result.status_code == 200
@@ -134,7 +134,7 @@ def test_retrieve_users_with_invalid_filter_as_root(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users?filter=invalid_filter',
+        '/resources/users?filter=invalid_filter',
         headers={'X-API-Token': random_api_token_root})
     assert result.status_code == 400
     response = result.json()
@@ -153,7 +153,7 @@ def test_retrieve_users_with_invalid_filter_field_as_root(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users?filter=password_hash=contains=e',
+        '/resources/users?filter=password_hash=contains=e',
         headers={'X-API-Token': random_api_token_root})
     assert result.status_code == 400
     response = result.json()
@@ -173,7 +173,7 @@ def test_retrieving_users_with_sorting_on_username(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users?sort=username',
+        '/resources/users?sort=username',
         headers={'X-API-Token': random_api_token_root})
     response = result.json()
     assert result.status_code == 200
@@ -196,7 +196,7 @@ def test_retrieving_users_with_sorting_on_role(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users?sort=role',
+        '/resources/users?sort=role',
         headers={'X-API-Token': random_api_token_root})
     response = result.json()
     assert result.status_code == 200
@@ -219,7 +219,7 @@ def test_retrieving_users_invalid_sort_field(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users?sort=invalid_field',
+        '/resources/users?sort=invalid_field',
         headers={'X-API-Token': random_api_token_root})
     assert result.status_code == 400
     response = result.json()
@@ -241,7 +241,7 @@ def test_retrieving_users_with_pagination(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users?page_size=2&page=2&sort=username',
+        '/resources/users?page_size=2&page=2&sort=username',
         headers={'X-API-Token': random_api_token_root})
     response = result.json()
     assert result.status_code == 200
@@ -262,7 +262,7 @@ def test_retrieving_users_with_invalid_page_size(
         random_api_token_root: a token for the request.
     """
     result = api_client.get(
-        '/users/users?page_size=1000',
+        '/resources/users?page_size=1000',
         headers={'X-API-Token': random_api_token_root})
     assert result.status_code == 400
     response = result.json()
@@ -285,7 +285,7 @@ def test_retrieving_users_with_invalid_page_number(
         page_number: the page number to test.
     """
     result = api_client.get(
-        f'/users/users?page={page_number}&page_size=2',
+        f'/resources/users?page={page_number}&page_size=2',
         headers={'X-API-Token': random_api_token_root})
     assert result.status_code == 400
     response = result.json()
@@ -318,7 +318,7 @@ def test_retrieving_users_check_http_links(
         expected_links: the links we expect to find in the response.
     """
     result = api_client.get(
-        f'/users/users?page_size=1&page={page_number}',
+        f'/resources/users?page_size=1&page={page_number}',
         headers={'X-API-Token': random_api_token_root})
     response = result.json()
     assert result.status_code == 200
