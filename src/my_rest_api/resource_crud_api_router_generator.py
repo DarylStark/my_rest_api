@@ -17,7 +17,6 @@ from my_data.resource_manager import ResourceManager
 from my_model import MyModel, User
 from pydantic import BaseModel
 from sqlalchemy.sql.elements import ColumnElement
-from sqlmodel import SQLModel
 
 from my_rest_api.exceptions import InvalidContextAttributeError
 from my_rest_api.pagination_generator import PaginationGenerator
