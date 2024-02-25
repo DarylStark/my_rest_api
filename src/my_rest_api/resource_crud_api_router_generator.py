@@ -189,6 +189,7 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, InputModel, OutputModel]):
         # Createthe resources
         return_resources: list[OutputModel] = []
         if authorized_user:
+            resources_model: list[Model] = []
             with self._my_data.get_context(user=authorized_user) as context:
                 resource_manager: Optional[ResourceManager[Model]] = \
                     getattr(
@@ -201,16 +202,16 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, InputModel, OutputModel]):
                         f'Invalid context attr: "{self._context_attribute}"')
 
                 # Create the resources
-                resources_model: list[Model] = resource_manager.create([
+                resources_model = resource_manager.create([
                     self._model(**resource.model_dump())
                     for resource in resources
                 ])
 
-                # If the output model is not the same as the model, we have to
-                # convert the resources to the output model.
-                return_resources = [
-                    self._output_model(**resource.model_dump())
-                    for resource in resources_model]
+            # If the output model is not the same as the model, we have to
+            # convert the resources to the output model.
+            return_resources = [
+                self._output_model(**resource.model_dump())
+                for resource in resources_model]
 
         # Return the resources
         return return_resources
