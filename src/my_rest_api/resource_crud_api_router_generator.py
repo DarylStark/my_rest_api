@@ -194,7 +194,7 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
         """
         authorized_user = self._authorize(
             x_api_token,
-            [self._needed_scopes[0]])
+            [self._needed_scopes[1]])
         filters = self._get_filters(filter)
         sort_field = self._get_sort_field(sort)
 
