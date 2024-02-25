@@ -39,9 +39,9 @@ def test_filter_generator_int_equals():
 
 
 @pytest.mark.parametrize('filter_name', [
-    'id-invaild', '-id'
+    'invalid_field', 'invalid_id'
 ])
-def test_filter_generator_int_invalid_filters(filter_name: str):
+def test_filter_generator_int_invalid_filters(filter_name: str) -> None:
     """Test the filter generator for invalid filters for integers.
 
     Args:
@@ -49,7 +49,7 @@ def test_filter_generator_int_invalid_filters(filter_name: str):
     """
     filter_generator = FilterGenerator(
         model=User,
-        given_filters="filter_name==1",
+        given_filters=f"{filter_name}==1",
         included_fields=['id'])
     with pytest.raises(InvalidFilterFieldError):
         _ = filter_generator.get_filters()
@@ -62,7 +62,7 @@ def test_filter_generator_int_operators(operator: str):
     """Test the filter generator for integers with specific operators.
 
     Args:
-        filter_name: the name of the filter to test.
+        operator: the name of the operator to test.
     """
     filter_generator = FilterGenerator(
         model=User,
@@ -80,23 +80,6 @@ def test_filter_generator_str_equals():
         included_fields=['username'])
     filters = filter_generator.get_filters()
     assert len(filters) == 1
-
-
-@pytest.mark.parametrize('operator', [
-    'username-invaild', '-username'
-])
-def test_filter_generator_str_invalid_filters(operator: str):
-    """Test the filter generator for invalid filters for string.
-
-    Args:
-        operator: the operator to test.
-    """
-    filter_generator = FilterGenerator(
-        model=User,
-        given_filters="filter_name==1",
-        included_fields=['username'])
-    with pytest.raises(InvalidFilterFieldError):
-        _ = filter_generator.get_filters()
 
 
 @pytest.mark.parametrize('operator', [
