@@ -19,20 +19,19 @@ import logging
 from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from my_data.exceptions import AuthorizationFailed
-from my_model import Tag, User, UserSetting
 
 from my_rest_api.app_config import AppConfig
 from my_rest_api.exceptions import FilterError, PaginationError, SortingError
 
 from .api_authentication import api_router as auth_api_router
+from .api_resources_tags import api_router as api_router_resources_tags
+from .api_resources_users import api_router as api_router_resources_users
 from .api_rest_api import api_router as rest_api_router
 from .custom_errors_handlers import (
     custom_authorizationfailed_exception_handler,
     custom_filtererror_exception_handler, custom_http_exception_handler,
     custom_paginationerror_exception_handler,
     custom_sortingerror_exception_handler)
-from .model import UserWithoutPassword
-from .resource_crud_api_router_generator import ResourceCRUDAPIRouterGenerator
 
 # Configure logging
 logging.basicConfig(
@@ -58,42 +57,12 @@ app.exception_handlers[SortingError] = \
 app.exception_handlers[FilterError] = \
     custom_filtererror_exception_handler
 
-# Test EndpointGenerator
-endpoint_users = ResourceCRUDAPIRouterGenerator(
-    endpoint='users',
-    model=User,
-    output_model=UserWithoutPassword,
-    context_attribute='users',
-    needed_scopes=('users.create', 'users.retrieve',
-                   'users.update', 'users.delete'),
-    filter_fields=['id', 'username', 'fullname', 'email'],
-    sort_fields=['id', 'username', 'fullname', 'email', 'role', 'created'])
-endpoint_tags = ResourceCRUDAPIRouterGenerator(
-    endpoint='tags',
-    model=Tag,
-    output_model=Tag,
-    context_attribute='tags',
-    needed_scopes=('tags.create', 'tags.retrieve',
-                   'tags.update', 'tags.delete'),
-    filter_fields=[],
-    sort_fields=[])
-endpoint_user_settings = ResourceCRUDAPIRouterGenerator(
-    endpoint='user_settings',
-    model=UserSetting,
-    output_model=UserSetting,
-    context_attribute='user_settings',
-    needed_scopes=('user_settings.create', 'user_settings.retrieve',
-                   'user_settings.update', 'user_settings.delete'),
-    filter_fields=[],
-    sort_fields=[])
-
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
 app.include_router(auth_api_router, tags=['Authentication'], prefix='/auth')
 
-app.include_router(endpoint_users.get_api_router(),
-                   tags=['Resources'], prefix='/resources')
-app.include_router(endpoint_tags.get_api_router(),
-                   tags=['Resources'], prefix='/resources')
-app.include_router(endpoint_user_settings.get_api_router(),
-                   tags=['Resources'], prefix='/resources')
+# Add the resources endpoints to the application.
+app.include_router(api_router_resources_tags, tags=[
+                   'Resources'], prefix='/resources')
+app.include_router(api_router_resources_users, tags=[
+                   'Resources'], prefix='/resources')

@@ -9,9 +9,10 @@ By doing this, we can make sure that the endpoints for the CRUD operations are
 consistent and that we can easily add new resources to the API.
 """
 
-from typing import Annotated, Generic, Optional, Tuple, Type, TypeVar
+from ast import In
+from typing import Annotated, Generic, Optional, Type, TypeVar
 
-from fastapi import APIRouter, Header, Query, Request, Response
+from fastapi import APIRouter, Header, Query, Request, Response, Body
 from my_data.authorizer import APIScopeAuthorizer, APITokenAuthorizer
 from my_data.resource_manager import ResourceManager
 from my_model import MyModel, User
@@ -28,18 +29,20 @@ from .sorting_generator import SortingGenerator
 
 Model = TypeVar('Model', bound=MyModel)
 OutputModel = TypeVar('OutputModel', bound=BaseModel)
+InputModel = TypeVar('InputModel', bound=BaseModel)
 
 
-class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
+class ResourceCRUDAPIRouterGenerator(Generic[Model, InputModel, OutputModel]):
     """Base class for Endpoint generators."""
 
     def __init__(
         self,
         endpoint: str,
         model: Type[Model],
+        input_model: Type[InputModel],
         output_model: Type[OutputModel],
         context_attribute: str,
-        needed_scopes: Tuple[str, str, str, str],
+        needed_scopes: tuple[str, str, str, str],
         filter_fields: list[str],
         sort_fields: list[str],
     ) -> None:
@@ -48,6 +51,7 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
         Args:
             endpoint: the endpoint for the resource.
             model: the model for the resource.
+            input_model: the input model for the resource.
             output_model: the output model for the resource.
             context_attribute: the attribute in the context to use for the
                 resource.
@@ -58,49 +62,15 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
         """
         self._endpoint: str = endpoint
         self._model: Type[Model] = model
+        self._input_model: Type[InputModel] = input_model
         self._output_model: Type[OutputModel] = output_model
         self._context_attribute: str = context_attribute
-        self._needed_scopes: Tuple[str, str, str, str] = needed_scopes
+        self._needed_scopes: tuple[str, str, str, str] = needed_scopes
         self._filter_fields: list[str] = filter_fields
         self._sort_fields: list[str] = sort_fields
 
         # Set the MyData object
         self._my_data = MyRESTAPI.get_instance().my_data
-
-    def get_api_router(self) -> APIRouter:
-        """Return the API router for the resource.
-
-        This method generates a FastAPI APIRouter for the resource. This router
-        contains the endpoints for the CRUD operations for the resource. The
-        router can be added to the main FastAPI application to make the
-        endpoints available, using the `include_router` method:
-
-        ```python
-        app.include_router(api_router)
-        ```
-
-        Returns:
-            The APIRouter for the resource.
-        """
-        api_router = APIRouter()
-
-        # Add the CRUD operations
-
-        # Create
-
-        # Retrieve
-        api_router.add_api_route(
-            f'/{self._endpoint}',
-            endpoint=self.retrieve,
-            methods=['GET'],
-            response_model=list[OutputModel])
-
-        # Update
-
-        # Delete
-
-        # Return the created API router
-        return api_router
 
     def _authorize(
             self,
@@ -191,41 +161,99 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
         pagination.validate()
         return pagination
 
+    # def create(
+    #     self,
+    #     resources: Annotated[Tag, Body()],
+    #     x_api_token: Annotated[str | None, Header()] = None
+    # ) -> list[OutputModel]:
+    #     """Create resources.
+
+    #     Args:
+    #         resources: the resources to create. These are in the OutputModel
+    #             format, so we can omit the fields that we don't want to be
+    #             able to set.
+    #         x_api_token: the API token to use for authorization.
+
+    #     Returns:
+    #         A list with the created resources in the given OutputModel. This
+    #         way we can omit the fields that we don't want to return, like
+    #         passwords.
+    #     """
+    #     authorized_user = self._authorize(
+    #         x_api_token,
+    #         [self._needed_scopes[0]])
+
+    #     # Createthe resources
+    #     return_resources: list[OutputModel] = []
+    #     if authorized_user:
+    #         with self._my_data.get_context(user=authorized_user) as context:
+    #             resource_manager: Optional[ResourceManager[Model]] = \
+    #                 getattr(
+    #                 context,
+    #                 self._context_attribute,
+    #                 None)
+
+    #             if not resource_manager:
+    #                 raise InvalidContextAttributeError(
+    #                     f'Invalid context attr: "{self._context_attribute}"')
+
+    #             # Create the resources
+    #             # resources_model: list[Model] = resource_manager.create([
+    #             #     self._model(**resource.model_dump())
+    #             #     for resource in resources
+    #             # ])
+    #             resources_model: list[Model] = resource_manager.create(
+    #                 self._model(**resources.model_dump())
+    #             )
+
+    #             # If the output model is not the same as the model, we have to
+    #             # convert the resources to the output model.
+    #             return_resources = [
+    #                 self._output_model(**resource.model_dump())
+    #                 for resource in resources_model]
+
+    #     # Return the resources
+    #     return return_resources
+
     def retrieve(
             self,
-            request: Request,
-            response: Response,
-            flt: Annotated[str | None, Query(alias='filter')] = None,
+            flt: str | None = None,
             page_size: int = AppConfig().default_page_size,
             page: int = 1,
             sort: str | None = None,
-            x_api_token: Annotated[str | None, Header()] = None
-    ) -> list[OutputModel]:
+            api_token: str | None = None
+    ) -> tuple[PaginationGenerator | None, list[OutputModel]]:
         """Retrieve the resources.
 
         Args:
-            request: the request object.
-            response: the response object.
             flt: the filter to use.
             page_size: the number of items to return in a page.
             page: the page number to return.
             sort: the field to sort on.
-            x_api_token: the API token to use for authorization.
+            api_token: the API token to use for authorization.
 
         Returns:
-            A list with the retrieved resources.
+            A list with the retrieved resources in the given OutputModel. This
+            way we can omit the fields that we don't want to return, like
+            passwords.
 
         Raises:
             InvalidContextAttributeError: if the context attribute is invalid.
         """
+        # Authorize the request
         authorized_user = self._authorize(
-            x_api_token,
+            api_token,
             [self._needed_scopes[1]])
+
+        # Get the filters and sort field
         filters = self._get_filters(flt)
         sort_field = self._get_sort_field(sort)
 
-        # Retrieve the resources
+        # Default return values
         resources: list[OutputModel] = []
+        pagination: PaginationGenerator | None = None
+
+        # Retrieve the resources
         if authorized_user:
             with self._my_data.get_context(user=authorized_user) as context:
                 resource_manager: Optional[ResourceManager[Model]] = \
@@ -257,12 +285,5 @@ class ResourceCRUDAPIRouterGenerator(Generic[Model, OutputModel]):
                     self._output_model(**resource.model_dump())
                     for resource in resources_model]
 
-                # Add the link headers
-                if request and response:
-                    link_headers = pagination.get_link_headers(
-                        str(request.url))
-                    response.headers['Link'] = 'Link: ' + \
-                        ', '.join(link_headers)
-
         # Return the resources
-        return resources
+        return (pagination, resources)

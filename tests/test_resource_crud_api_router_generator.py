@@ -22,6 +22,7 @@ def test_invalid_context_attribute(
     generator = ResourceCRUDAPIRouterGenerator(
         endpoint='tags',
         model=Tag,
+        input_model=Tag,
         output_model=Tag,
         context_attribute='invalid',
         needed_scopes=('tags.create', 'tags.retrieve',
@@ -30,7 +31,4 @@ def test_invalid_context_attribute(
         sort_fields=['title'],
     )
     with pytest.raises(InvalidContextAttributeError):
-        generator.retrieve(
-            request=None,  # type: ignore
-            response=None,  # type: ignore
-            x_api_token=random_api_token_normal_user)
+        generator.retrieve(api_token=random_api_token_normal_user)
