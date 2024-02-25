@@ -1,7 +1,6 @@
 """Test the tag management of the REST API."""
 # pylint: disable=too-many-arguments
 
-import pytest
 from fastapi.testclient import TestClient
 
 # TODO: test tag retrieval
