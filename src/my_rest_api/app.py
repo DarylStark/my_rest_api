@@ -25,7 +25,6 @@ from my_rest_api.exceptions import FilterError, PaginationError, SortingError
 
 from .api_authentication import api_router as auth_api_router
 from .api_rest_api import api_router as rest_api_router
-from .api_users import api_router as users_api_router
 from .custom_errors_handlers import (
     custom_authorizationfailed_exception_handler,
     custom_filtererror_exception_handler, custom_http_exception_handler,
@@ -92,7 +91,6 @@ endpoint_user_settings = ResourceCRUDAPIRouterGenerator(
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
 app.include_router(auth_api_router, tags=['Authentication'], prefix='/auth')
-app.include_router(users_api_router, tags=['User management'], prefix='/users')
 
 app.include_router(endpoint_users.get_api_router(),
                    tags=['Resources'], prefix='/resources')
