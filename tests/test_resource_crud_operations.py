@@ -35,14 +35,12 @@ def test_retrieve_invalid_context_attribute(
 
 
 def test_get_link_header_string_without_pagination(
-        api_client: TestClient,  # pylint: disable=unused-argument
-        random_api_token_normal_user: str) -> None:
+        api_client: TestClient  # pylint: disable=unused-argument
+) -> None:
     """Test if we get None when we get link headers without pagination.
 
     Args:
         api_client: TestClient instance. Only imported to create the db.
-        random_api_token_normal_user: str. A random API token for a normal
-            user.
     """
     operations = ResourceCRUDOperations(
         model=Tag,
@@ -61,13 +59,11 @@ def test_get_link_header_string_without_pagination(
 
 def test_get_link_header_string_with_pagination(
         api_client: TestClient,  # pylint: disable=unused-argument
-        random_api_token_normal_user: str) -> None:
+) -> None:
     """Test if we get None when we get link headers without pagination.
 
     Args:
         api_client: TestClient instance. Only imported to create the db.
-        random_api_token_normal_user: str. A random API token for a normal
-            user.
     """
     operations = ResourceCRUDOperations(
         model=Tag,
