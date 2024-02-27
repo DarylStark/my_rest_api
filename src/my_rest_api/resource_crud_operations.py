@@ -393,6 +393,13 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         Args:
             flt: the filter to select the resources to delete.
             api_token: the API token to use for authorization.
+
+        Returns:
+            A instance of the DeletionResult class indicating how many items
+            were deleted.
+
+        Raises:
+            NoResourcesFoundError: if no resources are found to delete.
         """
         authorized_user = self._authorize(
             api_token,
@@ -412,7 +419,8 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                     raise NoResourcesFoundError
 
                 deletion_result = [
-                    int(resource.id) for resource in resources_to_delete]
+                    int(resource.id) for resource in resources_to_delete
+                    if resource.id]
 
                 # Delete the resources
                 resource_manager.delete(resources_to_delete)

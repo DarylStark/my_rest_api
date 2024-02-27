@@ -23,7 +23,7 @@ crud_operations = ResourceCRUDOperations(
     sort_fields=['id', 'color', 'title'])
 
 
-@api_router.get("/tags")
+@api_router.get("/tags", name='Tags - Retrieve')
 def retrieve(
     request: Request,
     response: Response,
@@ -64,7 +64,7 @@ def retrieve(
     return resources
 
 
-@api_router.post("/tags")
+@api_router.post("/tags", name='Tags - Create')
 def create(
     resources: list[APITagIn],
     x_api_token: Annotated[str | None, Header()] = None
@@ -81,7 +81,7 @@ def create(
     return crud_operations.create(resources, x_api_token)
 
 
-@api_router.put("/tags/{tag_id}")
+@api_router.put("/tags/{tag_id}", name='Tags - Update')
 def update(
     tag_id: Annotated[int, Path()],
     new_tag: APITagIn,
@@ -103,7 +103,7 @@ def update(
         api_token=x_api_token)
 
 
-@api_router.delete("/tags/{tag_id}")
+@api_router.delete("/tags/{tag_id}", name='Tags - Delete')
 def delete(
     tag_id: Annotated[int, Path()],
     x_api_token: Annotated[str | None, Header()] = None
@@ -113,6 +113,10 @@ def delete(
     Args:
         tag_id: the tag ID of the tag to delete.
         x_api_token: the API token.
+
+    Returns:
+        A instance of the DeletionResult class indicating how many items
+        were deleted.
     """
     return crud_operations.delete(
         flt=[Tag.id == tag_id],  # type: ignore

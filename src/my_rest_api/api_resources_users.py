@@ -23,7 +23,7 @@ crud_operations = ResourceCRUDOperations(
     sort_fields=['id', 'username', 'fullname', 'email', 'role', 'created'])
 
 
-@api_router.get("/users")
+@api_router.get("/users", name='Users - Retrieve')
 def retrieve(
     request: Request,
     response: Response,
@@ -64,7 +64,7 @@ def retrieve(
     return resources
 
 
-@api_router.post("/users")
+@api_router.post("/users", name='Users - Create')
 def create(
     resources: list[APIUserIn],
     x_api_token: Annotated[str | None, Header()] = None
@@ -81,7 +81,7 @@ def create(
     return crud_operations.create(resources, x_api_token)
 
 
-@api_router.put("/users/{user_id}")
+@api_router.put("/users/{user_id}", name='Users - Update')
 def update(
     user_id: Annotated[int, Path()],
     new_user: APIUserIn,
@@ -103,7 +103,7 @@ def update(
         api_token=x_api_token)
 
 
-@api_router.delete("/users/{user_id}")
+@api_router.delete("/users/{user_id}", name='Users - Delete')
 def delete(
     user_id: Annotated[int, Path()],
     x_api_token: Annotated[str | None, Header()] = None
@@ -113,6 +113,10 @@ def delete(
     Args:
         user_id: the tag ID of the user to delete.
         x_api_token: the API token.
+
+    Returns:
+        A instance of the DeletionResult class indicating how many items
+        were deleted.
     """
     return crud_operations.delete(
         flt=[User.id == user_id],  # type: ignore
