@@ -89,7 +89,11 @@ select = [
     "I",   # isort
     "N",   # pep8-naming
 ]
-ignore = ["B008"]
+ignore = [
+    "B008",      # function call in default argument
+    "PLR2004",   # magic value used in comparison
+    "ANN101",    # missing type annotation for self
+]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
