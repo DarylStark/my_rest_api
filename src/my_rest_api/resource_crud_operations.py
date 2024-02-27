@@ -11,6 +11,7 @@ from typing import Generic, Optional, Type, TypeVar
 from my_data.authorizer import (
     APIScopeAuthorizer,
     APITokenAuthorizer,
+    ShortLivedTokenAuthorizer,
 )
 from my_data.context import Context
 from my_data.resource_manager import ResourceManager
@@ -36,12 +37,24 @@ InputModel = TypeVar('InputModel', bound=BaseModel)
 
 
 class AuthorizationDetails(BaseModel):
-    """Model to store the authorization details."""
+    """Model to store the authorization details.
 
-    create: str
-    retrieve: str
-    update: str
-    delete: str
+    Attributes:
+        create: the scope needed to create a resource.
+        retrieve: the scope needed to retrieve a resource.
+        update: the scope needed to update a resource.
+        delete: the scope needed to delete a resource.
+        allow_short_lived: if short lives scopes are allowed.
+        allow_only_short_lived: if only short lived scopes are allowed. This
+            basically disables the use of long lived scopes.
+    """
+
+    create: str | None = None
+    retrieve: str | None = None
+    update: str | None = None
+    delete: str | None = None
+    allow_short_lived: bool = True
+    allow_only_short_lived: bool = False
 
 
 class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
@@ -82,7 +95,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         self._my_data = MyRESTAPI.get_instance().my_data
 
     def _authorize(
-        self, api_token: str | None, scopes: str | list[str]
+        self, api_token: str | None, scopes: str | list[str | None]
     ) -> Optional[User]:
         """Authorize the request.
 
@@ -97,13 +110,23 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         Returns:
             The authorized user, if any.
         """
-        auth = APITokenAuthorizer(
-            my_data_object=self._my_data,
-            api_token=api_token,
-            authorizer=APIScopeAuthorizer(
-                required_scopes=scopes, allow_short_lived=True
-            ),
-        )
+        if self._needed_scopes.allow_only_short_lived:
+            auth = APITokenAuthorizer(
+                my_data_object=self._my_data,
+                api_token=api_token,
+                authorizer=ShortLivedTokenAuthorizer(),
+            )
+        else:
+            converted_scopes: list[str] = [str(scope) for scope in scopes]
+            auth = APITokenAuthorizer(
+                my_data_object=self._my_data,
+                api_token=api_token,
+                authorizer=APIScopeAuthorizer(
+                    required_scopes=converted_scopes,
+                    allow_short_lived=self._needed_scopes.allow_short_lived,
+                ),
+            )
+
         auth.authorize()
         return auth.user
 
