@@ -15,11 +15,10 @@ from fastapi.testclient import TestClient
 from my_data.data_loader import DataLoader, JSONDataSource
 from my_data.my_data_table_creator import MyDataTableCreator
 from my_model import APIClient, APIToken, TokenModel, User
-from pyotp import random_base32
-
 from my_rest_api.app import app
 from my_rest_api.app_config import AppConfig
 from my_rest_api.my_rest_api import MyRESTAPI
+from pyotp import random_base32
 
 
 def test_filename() -> str:

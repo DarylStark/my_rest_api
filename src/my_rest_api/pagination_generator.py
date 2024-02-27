@@ -4,6 +4,7 @@ from math import ceil
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from my_rest_api.app_config import AppConfig
+
 from .exceptions import InvalidPageError, InvalidPageSizeError
 
 

@@ -1,6 +1,7 @@
 """Module with the configuration model of the application."""
 
 from typing import Any
+
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 

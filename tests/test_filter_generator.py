@@ -2,7 +2,6 @@
 
 import pytest
 from my_model import User
-
 from my_rest_api.exceptions import (
     InvalidFilterFieldError,
     InvalidFilterOperatorError,

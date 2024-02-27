@@ -3,7 +3,6 @@
 import pytest
 from fastapi.testclient import TestClient
 from my_model import Tag
-
 from my_rest_api.exceptions import InvalidContextAttributeError
 from my_rest_api.pagination_generator import PaginationGenerator
 from my_rest_api.resource_crud_operations import ResourceCRUDOperations

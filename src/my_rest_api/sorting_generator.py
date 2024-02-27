@@ -1,7 +1,7 @@
 """Module that contains a class to generate sorting details."""
 
 
-from typing import Generic, TypeVar, Type
+from typing import Generic, Type, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import ColumnElement

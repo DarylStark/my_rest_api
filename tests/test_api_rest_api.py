@@ -1,7 +1,6 @@
 """Test for the REST API endpoints."""
 
 from fastapi.testclient import TestClient
-
 from my_rest_api import __version__ as rest_api_version
 
 

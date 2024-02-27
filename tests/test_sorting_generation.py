@@ -2,10 +2,9 @@
 
 import pytest
 from my_model import User
-from sqlalchemy import ColumnElement
 from my_rest_api.exceptions import InvalidSortFieldError
-
 from my_rest_api.sorting_generator import SortingGenerator
+from sqlalchemy import ColumnElement
 
 
 @pytest.mark.parametrize(

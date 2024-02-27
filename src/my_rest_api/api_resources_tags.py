@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Header, Query, Request, Response, Path
+from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import Tag
 
 from .app_config import AppConfig

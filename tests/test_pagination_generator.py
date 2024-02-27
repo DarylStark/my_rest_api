@@ -1,8 +1,7 @@
 """Tests for the PaginationGenerator class."""
 import pytest
-
 from my_rest_api.exceptions import InvalidPageError, InvalidPageSizeError
-from my_rest_api.pagination_generator import PaginationGenerator, Link
+from my_rest_api.pagination_generator import Link, PaginationGenerator
 
 
 def test_pagination_validator_valid_page() -> None:

@@ -2,8 +2,8 @@
 from fastapi import Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
-from pydantic import BaseModel
 from my_data.exceptions import AuthorizationFailed
+from pydantic import BaseModel
 
 
 async def custom_http_exception_handler(
