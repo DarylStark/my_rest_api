@@ -104,9 +104,11 @@ class APIUserIn(BaseModel):
         role: the role of the user (see UserRole).
     """
 
-    fullname: str
-    username: str
-    email: str
+    fullname: str = Field(pattern=r'^[A-Za-z0-9\- ]+$', max_length=128)
+    username: str = Field(pattern=r'^[a-zA-Z][a-zA-Z0-9_\.]+$', max_length=128)
+    email: str = Field(
+        pattern=r'^[a-z0-9_\-\.]+\@[a-z0-9_\-\.]+\.[a-z\.]+$',
+        max_length=128)
     role: UserRole = Field(default=UserRole.USER)
 
 
