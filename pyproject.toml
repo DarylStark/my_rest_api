@@ -70,6 +70,7 @@ env = [
 line-length = 79
 
 [tool.ruff.lint]
+exclude = ["docs/*.py"]
 select = [
     "E",   # pycodestyle (errors)
     "W",   # pycodestyle (warnings)
