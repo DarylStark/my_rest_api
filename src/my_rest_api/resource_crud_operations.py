@@ -15,7 +15,7 @@ from my_model import MyModel, User
 from pydantic import BaseModel
 from sqlalchemy.sql.elements import ColumnElement
 
-from my_rest_api.exceptions import InvalidContextAttributeError
+from my_rest_api.exceptions import InvalidContextAttributeError, NoResourcesFoundError
 from my_rest_api.pagination_generator import PaginationGenerator
 
 from .app_config import AppConfig
@@ -358,8 +358,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                     flt=flt)
 
                 if len(resources_to_update) == 0:
-                    # TODO: Better exception
-                    raise TypeError
+                    raise NoResourcesFoundError
 
                 # Update the resources
                 for resource in resources_to_update:
