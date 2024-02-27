@@ -18,9 +18,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install Poetry
@@ -33,9 +33,9 @@ jobs:
     needs: test-poetry-lock-file
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install Poetry
@@ -51,23 +51,17 @@ jobs:
     continue-on-error: ${{ inputs.code-quality-may-fail }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install Poetry
         run: pip install poetry
       - name: Install main and dev requirements
         run: poetry install --with dev
-      - name: PyCodeStyle (source code)
-        run: poetry run pycodestyle --show-pep8 src/
-      - name: PyLint (source code)
-        run: poetry run pylint src/
-      - name: Flake8 (source code)
-        run: poetry run flake8 src/
-      - name: PyDocStyle (source code)
-        run: poetry run pydocstyle src/
+      - name: Ruff (source dode)
+        run: poetry run ruff check src/
       - name: MyPy (source code)
         run: poetry run mypy src/
   code-quality-tests:
@@ -77,22 +71,16 @@ jobs:
     continue-on-error: ${{ inputs.code-quality-may-fail }}
     steps:
       - name: Checkout the repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Python 3.11
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
           python-version: "3.11"
       - name: Install Poetry
         run: pip install poetry
       - name: Install main and dev requirements
         run: poetry install --with dev
-      - name: PyCodeStyle (tests)
-        run: poetry run pycodestyle --show-pep8 tests/
-      - name: PyLint (tests)
-        run: poetry run pylint tests/
-      - name: Flake8 (tests)
-        run: poetry run flake8 tests/
-      - name: PyDocStyle (tests)
-        run: poetry run pydocstyle tests/
+      - name: Ruff (tests)
+        run: poetry run ruff check tests/
       - name: MyPy (tests)
         run: poetry run mypy tests/

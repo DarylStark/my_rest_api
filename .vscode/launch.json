@@ -6,12 +6,11 @@
     "configurations": [
         {
             "name": "Debug REST API",
-            "type": "python",
+            "type": "debugpy",
             "request": "launch",
             "module": "uvicorn",
             "args": [
-                "my_rest_api.app:app",
-                "--reload"
+                "my_rest_api.app:app"
             ],
             "jinja": true,
             "justMyCode": true,

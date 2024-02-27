@@ -1,0 +1,130 @@
+"""Module that contains the endpoints for the Tag resource."""
+
+from typing import Annotated
+
+from fastapi import APIRouter, Header, Path, Query, Request, Response
+from my_model import Tag
+
+from .app_config import AppConfig
+from .model import APITag, APITagIn, DeletionResult
+from .resource_crud_operations import (
+    AuthorizationDetails,
+    ResourceCRUDOperations,
+)
+
+api_router = APIRouter()
+
+
+crud_operations = ResourceCRUDOperations(
+    model=Tag,
+    input_model=APITagIn,
+    output_model=APITag,
+    context_attribute='tags',
+    needed_scopes=AuthorizationDetails(
+        create='tags.create',
+        retrieve='tags.retrieve',
+        update='tags.update',
+        delete='tags.delete',
+    ),
+    filter_fields=['id', 'title', 'color'],
+    sort_fields=['id', 'color', 'title'],
+)
+
+
+@api_router.get('/tags', name='Tags - Retrieve')
+def retrieve(
+    request: Request,
+    response: Response,
+    flt: Annotated[str | None, Query(alias='filter')] = None,
+    page_size: int = AppConfig().default_page_size,
+    page: int = 1,
+    sort: str | None = None,
+    x_api_token: Annotated[str | None, Header()] = None,
+) -> list[APITag]:
+    """Get all the tags.
+
+    Args:
+        request: the request object.
+        response: the response object.
+        flt: the filter.
+        page_size: the page size.
+        page: the page.
+        sort: the sort.
+        x_api_token: the API token.
+
+    Returns:
+        A list with the tags.
+    """
+    pagination, resources = crud_operations.retrieve(
+        flt, page_size, page, sort, x_api_token
+    )
+
+    # Add the Link header
+    link_header_string = crud_operations.get_link_header_string(
+        str(request.url), pagination
+    )
+    if link_header_string:
+        response.headers['Link'] = link_header_string
+
+    return resources
+
+
+@api_router.post('/tags', name='Tags - Create')
+def create(
+    resources: list[APITagIn],
+    x_api_token: Annotated[str | None, Header()] = None,
+) -> list[APITag]:
+    """Create new tags.
+
+    Args:
+        resources: the tags to create.
+        x_api_token: the API token.
+
+    Returns:
+        A list with the created tags.
+    """
+    return crud_operations.create(resources, x_api_token)
+
+
+@api_router.put('/tags/{tag_id}', name='Tags - Update')
+def update(
+    tag_id: Annotated[int, Path()],
+    new_tag: APITagIn,
+    x_api_token: Annotated[str | None, Header()] = None,
+) -> list[APITag]:
+    """Update a tag by replacing the object.
+
+    Args:
+        tag_id: the tag ID of the tag to replace.
+        new_tag: the new tag object to place
+        x_api_token: the API token.
+
+    Returns:
+        The updated tag.
+    """
+    return crud_operations.update(
+        updated_model=new_tag,
+        flt=[Tag.id == tag_id],  # type: ignore
+        api_token=x_api_token,
+    )
+
+
+@api_router.delete('/tags/{tag_id}', name='Tags - Delete')
+def delete(
+    tag_id: Annotated[int, Path()],
+    x_api_token: Annotated[str | None, Header()] = None,
+) -> DeletionResult:
+    """Delete a tag.
+
+    Args:
+        tag_id: the tag ID of the tag to delete.
+        x_api_token: the API token.
+
+    Returns:
+        A instance of the DeletionResult class indicating how many items
+        were deleted.
+    """
+    return crud_operations.delete(
+        flt=[Tag.id == tag_id],  # type: ignore
+        api_token=x_api_token,
+    )

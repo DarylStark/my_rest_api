@@ -1,0 +1,270 @@
+{
+    "api_scopes": [
+        {
+            "id": 1,
+            "module": "users",
+            "subject": "create"
+        },
+        {
+            "id": 2,
+            "module": "users",
+            "subject": "retrieve"
+        },
+        {
+            "id": 3,
+            "module": "users",
+            "subject": "update"
+        },
+        {
+            "id": 4,
+            "module": "users",
+            "subject": "delete"
+        },
+        {
+            "id": 5,
+            "module": "users",
+            "subject": "updatepw"
+        },
+        {
+            "id": 6,
+            "module": "tags",
+            "subject": "create"
+        },
+        {
+            "id": 7,
+            "module": "tags",
+            "subject": "retrieve"
+        },
+        {
+            "id": 8,
+            "module": "tags",
+            "subject": "update"
+        },
+        {
+            "id": 9,
+            "module": "tags",
+            "subject": "delete"
+        }
+    ],
+    "users": [
+        {
+            "id": 1,
+            "fullname": "root",
+            "username": "root",
+            "email": "root@example.com",
+            "role": 1,
+            "_password": "root_pw",
+            "_tags": [
+                {
+                    "title": "root_tag_1"
+                },
+                {
+                    "title": "root_tag_2"
+                },
+                {
+                    "title": "root_tag_3"
+                }
+            ],
+            "_api_clients": [
+                {
+                    "app_name": "root_api_client_1",
+                    "app_publisher": "root_api_client_1_publisher"
+                },
+                {
+                    "app_name": "root_api_client_2",
+                    "app_publisher": "root_api_client_2_publisher"
+                },
+                {
+                    "app_name": "root_api_client_3",
+                    "app_publisher": "root_api_client_3_publisher"
+                }
+            ],
+            "_api_tokens": [
+                {
+                    "title": "root_api_token_1",
+                    "token": "MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL",
+                    "enabled": false
+                },
+                {
+                    "title": "root_api_token_2",
+                    "token": "Cbxfv44aNlWRMu4bVqawWu9vofhFWmED",
+                    "expires": "1999-12-31T23:59:59Z"
+                },
+                {
+                    "title": "root_api_token_3"
+                }
+            ],
+            "_user_settings": [
+                {
+                    "setting": "root_test_setting_1",
+                    "value": "test_value_1"
+                },
+                {
+                    "setting": "root_test_setting_2",
+                    "value": "test_value_2"
+                },
+                {
+                    "setting": "root_test_setting_3",
+                    "value": "test_value_3"
+                }
+            ]
+        },
+        {
+            "id": 2,
+            "fullname": "Normal user 1",
+            "username": "normal.user.1",
+            "email": "normal_user_1@example.com",
+            "role": 3,
+            "_password": "normal_user_1_pw",
+            "_tags": [
+                {
+                    "title": "normal_user_1_tag_1"
+                },
+                {
+                    "title": "normal_user_1_tag_2"
+                },
+                {
+                    "title": "normal_user_1_tag_3"
+                }
+            ],
+            "_api_clients": [
+                {
+                    "app_name": "normal_user_1_api_client_1",
+                    "app_publisher": "normal_user_1_api_client_1_publisher"
+                },
+                {
+                    "app_name": "normal_user_1_api_client_2",
+                    "app_publisher": "normal_user_1_api_client_2_publisher"
+                },
+                {
+                    "app_name": "normal_user_1_api_client_3",
+                    "app_publisher": "normal_user_1_api_client_3_publisher"
+                }
+            ],
+            "_api_tokens": [
+                {
+                    "title": "normal_user_1_api_token_1"
+                },
+                {
+                    "title": "normal_user_1_api_token_2"
+                },
+                {
+                    "title": "normal_user_1_api_token_3"
+                }
+            ],
+            "_user_settings": [
+                {
+                    "setting": "normal_user_1_test_setting_1",
+                    "value": "test_value_1"
+                },
+                {
+                    "setting": "normal_user_1_test_setting_2",
+                    "value": "test_value_2"
+                },
+                {
+                    "setting": "normal_user_1_test_setting_3",
+                    "value": "test_value_3"
+                }
+            ]
+        },
+        {
+            "id": 3,
+            "fullname": "Normal user 2",
+            "username": "normal.user.2",
+            "email": "normal_user_2@example.com",
+            "role": 3,
+            "_password": "normal_user_2_pw",
+            "_tags": [
+                {
+                    "title": "normal_user_2_tag_1"
+                },
+                {
+                    "title": "normal_user_2_tag_2"
+                },
+                {
+                    "title": "normal_user_2_tag_3"
+                }
+            ],
+            "_api_clients": [
+                {
+                    "id": 100,
+                    "app_name": "normal_user_2_api_client_1",
+                    "app_publisher": "normal_user_2_api_client_1_publisher"
+                },
+                {
+                    "app_name": "normal_user_2_api_client_2",
+                    "app_publisher": "normal_user_2_api_client_2_publisher"
+                },
+                {
+                    "app_name": "normal_user_2_api_client_3",
+                    "app_publisher": "normal_user_2_api_client_3_publisher"
+                }
+            ],
+            "_api_tokens": [
+                {
+                    "title": "normal_user_2_api_token_1",
+                    "token": "aRlIytpyz61JX2TvczLxJZUsRzk578pE",
+                    "expires": "2099-12-31T23:59:59Z"
+                },
+                {
+                    "id": 10,
+                    "title": "normal_user_2_api_token_2",
+                    "token": "2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv",
+                    "expires": "2099-12-31T23:59:59Z",
+                    "api_client_id": 100
+                },
+                {
+                    "id": 11,
+                    "title": "normal_user_2_api_token_3",
+                    "token": "BynORM5FVkt07BuQSA09lQUIrgCgOqEv",
+                    "expires": "2099-12-31T23:59:59Z",
+                    "api_client_id": 100
+                }
+            ],
+            "_user_settings": [
+                {
+                    "setting": "normal_user_2_test_setting_1",
+                    "value": "test_value_1"
+                },
+                {
+                    "setting": "normal_user_2_test_setting_2",
+                    "value": "test_value_2"
+                },
+                {
+                    "setting": "normal_user_2_test_setting_3",
+                    "value": "test_value_3"
+                }
+            ]
+        },
+        {
+            "id": 4,
+            "fullname": "Service User - for tests",
+            "username": "service.user",
+            "email": "service.user@example.com",
+            "role": 2,
+            "_password": "service_password"
+        }
+    ],
+    "api_token_scopes": [
+        {
+            "api_token_id": 10,
+            "api_scope_id": 1
+        },
+        {
+            "api_token_id": 10,
+            "api_scope_id": 2
+        },
+        {
+            "api_token_id": 10,
+            "api_scope_id": 7
+        },
+        {
+            "api_token_id": 11,
+            "api_scope_id": 3
+        },
+        {
+            "api_token_id": 11,
+            "api_scope_id": 4
+        }
+    ]
+}
