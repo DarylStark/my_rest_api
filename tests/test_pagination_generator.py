@@ -9,7 +9,6 @@ def test_pagination_validator_valid_page() -> None:
 
     Test if the pagination validator works with a valid page number.
     """
-
     # Test the pagination generator
     generator = PaginationGenerator(page_size=10, page=1, total_items=100)
     assert generator.total_pages == 10

@@ -2,7 +2,7 @@
 
 import re
 from abc import ABC, abstractmethod
-from typing import Any, Type, get_args
+from typing import Type, get_args
 
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel
