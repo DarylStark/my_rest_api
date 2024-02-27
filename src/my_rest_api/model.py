@@ -176,3 +176,13 @@ class SortError(BaseModel):
 
     message: str
     allowed_sort_fields: list[str]
+
+
+class DeletionResult(BaseModel):
+    """Model for the result of a deletion operation.
+
+    Attributes:
+        deleted_ids: a list with IDs that were deleted.
+    """
+
+    deleted: list[int]

@@ -385,3 +385,38 @@ def test_update_users_via_put_as_root(
     assert response[0]['fullname'] == 'root new'
 
 # TODO: More update tests
+
+
+def test_delete_users_as_root(
+        api_client: TestClient,
+        random_api_token_root: str) -> None:
+    """Test delete users as root.
+
+    Should delete a User object.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
+    """
+    # Create a user to delete
+    result = api_client.post(
+        '/resources/users',
+        headers={'X-API-Token': random_api_token_root},
+        json=[{
+            'username': 'user.to.delete',
+            'fullname': 'user to delete',
+            'email': 'delete_me@example.com',
+            'role': 3
+        }])
+    creation_response = result.json()
+
+    # Delete the user
+    result = api_client.delete(
+        f'/resources/users/{creation_response[0]["id"]}',
+        headers={'X-API-Token': random_api_token_root})
+    response = result.json()
+    assert result.status_code == 200
+    assert len(response['deleted']) == 1
+    assert creation_response[0]["id"] in response['deleted']
+
+# TODO: More deletion tests

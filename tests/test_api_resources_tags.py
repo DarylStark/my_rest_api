@@ -349,3 +349,36 @@ def test_update_tags_via_put_as_root(
     assert response[0]['color'] == 'ff0000'
 
 # TODO: More update tests
+
+
+def test_delete_tags_as_root(
+        api_client: TestClient,
+        random_api_token_root: str) -> None:
+    """Test delete tags as root.
+
+    Should delete a Tag object.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
+    """
+    # Create a Tag to delete
+    result = api_client.post(
+        '/resources/tags',
+        headers={'X-API-Token': random_api_token_root},
+        json=[{
+            'title': 'tag_to_delete',
+            'color': 'ff0000'
+        }])
+    creation_response = result.json()
+
+    # Delete the tag
+    result = api_client.delete(
+        f'/resources/tags/{creation_response[0]["id"]}',
+        headers={'X-API-Token': random_api_token_root})
+    response = result.json()
+    assert result.status_code == 200
+    assert len(response['deleted']) == 1
+    assert creation_response[0]["id"] in response['deleted']
+
+# TODO: More deletion tests

@@ -17,6 +17,7 @@ from sqlalchemy.sql.elements import ColumnElement
 
 from my_rest_api.exceptions import (InvalidContextAttributeError,
                                     NoResourcesFoundError)
+from my_rest_api.model import DeletionResult
 from my_rest_api.pagination_generator import PaginationGenerator
 
 from .app_config import AppConfig
@@ -383,7 +384,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         self,
         flt: list[ColumnElement[bool]],
         api_token: str | None = None,
-    ) -> None:
+    ) -> DeletionResult:
         """Delete resources.
 
         Does not return anything; there is nothing to return. If something
@@ -398,6 +399,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             [self._needed_scopes[3]])
 
         # Delete the resources
+        deletion_result: list[int] = []
         if authorized_user:
             with self._my_data.get_context(user=authorized_user) as context:
                 resource_manager = self._get_resource_manager(context)
@@ -409,5 +411,11 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 if len(resources_to_delete) == 0:
                     raise NoResourcesFoundError
 
+                deletion_result = [
+                    int(resource.id) for resource in resources_to_delete]
+
                 # Delete the resources
                 resource_manager.delete(resources_to_delete)
+
+        # Return the result
+        return DeletionResult(deleted=deletion_result)

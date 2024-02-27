@@ -6,7 +6,7 @@ from fastapi import APIRouter, Header, Query, Request, Response, Path
 from my_model import Tag
 
 from .app_config import AppConfig
-from .model import APITag, APITagIn
+from .model import APITag, APITagIn, DeletionResult
 from .resource_crud_operations import ResourceCRUDOperations
 
 api_router = APIRouter()
@@ -107,13 +107,13 @@ def update(
 def delete(
     tag_id: Annotated[int, Path()],
     x_api_token: Annotated[str | None, Header()] = None
-) -> None:
+) -> DeletionResult:
     """Delete a tag.
 
     Args:
         tag_id: the tag ID of the tag to delete.
         x_api_token: the API token.
     """
-    crud_operations.delete(
+    return crud_operations.delete(
         flt=[Tag.id == tag_id],  # type: ignore
         api_token=x_api_token)
