@@ -181,6 +181,28 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
 
         return resource_manager
 
+    def _convert_model_to_output_model(
+            self,
+            models: list[Model]) -> list[OutputModel]:
+        """Convert the model to the output model.
+
+        The models that are given by the MyData Context can be different from
+        what we have to display in the REST API. This method can be used to
+        convert the models to the output model.
+
+        It doesn't check if the given list is in the correct format. If it
+        isn't, it might raise an Exception when trying to convert it.
+
+        Args:
+            models: the models to convert.
+
+        Returns:
+            The output model.
+        """
+        return [
+            self._output_model(**resource.model_dump())
+            for resource in models]
+
     def create(
         self,
         resources: list[InputModel],
@@ -216,12 +238,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                     for resource in resources
                 ])
 
-            # If the output model is not the same as the model, we have to
-            # convert the resources to the output model.
-            # TODO: Move to method
-            return_resources = [
-                self._output_model(**resource.model_dump())
-                for resource in resources_model]
+            # Convert to the output model
+            return_resources = self._convert_model_to_output_model(
+                resources_model)
 
         # Return the resources
         return return_resources
@@ -280,12 +299,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                     start=pagination.offset,
                     sort=sort_field)
 
-                # If the output model is not the same as the model, we have to
-                # convert the resources to the output model.
-                # TODO: Move to method
-                resources = [
-                    self._output_model(**resource.model_dump())
-                    for resource in resources_model]
+                # Convert to the output model
+                resources = self._convert_model_to_output_model(
+                    resources_model)
 
         # Return the resources
         return (pagination, resources)
