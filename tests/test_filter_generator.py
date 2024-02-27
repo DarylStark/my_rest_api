@@ -9,7 +9,7 @@ from my_rest_api.exceptions import (
 from my_rest_api.filter_generator import FilterGenerator
 
 
-def test_filter_generator_invalid_field():
+def test_filter_generator_invalid_field() -> None:
     """Test the filter generator for fields that are not included."""
     filter_generator = FilterGenerator(
         model=User, given_filters='username==root', included_fields=['id']
@@ -18,7 +18,7 @@ def test_filter_generator_invalid_field():
         _ = filter_generator.get_filters()
 
 
-def test_filter_generator_non_existing_field():
+def test_filter_generator_non_existing_field() -> None:
     """Test the filter generator for fields that are not in the model."""
     filter_generator = FilterGenerator(
         model=User,
@@ -29,7 +29,7 @@ def test_filter_generator_non_existing_field():
         _ = filter_generator.get_filters()
 
 
-def test_filter_generator_int_equals():
+def test_filter_generator_int_equals() -> None:
     """Test the filter generator for integers."""
     filter_generator = FilterGenerator(
         model=User, given_filters='id==1', included_fields=['id']
@@ -53,7 +53,7 @@ def test_filter_generator_int_invalid_filters(filter_name: str) -> None:
 
 
 @pytest.mark.parametrize('operator', ['<', '<=', '>', '>=', '!='])
-def test_filter_generator_int_operators(operator: str):
+def test_filter_generator_int_operators(operator: str) -> None:
     """Test the filter generator for integers with specific operators.
 
     Args:
@@ -66,7 +66,7 @@ def test_filter_generator_int_operators(operator: str):
     assert len(filters) == 1
 
 
-def test_filter_generator_str_equals():
+def test_filter_generator_str_equals() -> None:
     """Test the filter generator for strings."""
     filter_generator = FilterGenerator(
         model=User,
@@ -78,7 +78,7 @@ def test_filter_generator_str_equals():
 
 
 @pytest.mark.parametrize('operator', ['=contains=', '=!contains='])
-def test_filter_generator_str_operators(operator: str):
+def test_filter_generator_str_operators(operator: str) -> None:
     """Test the filter generator for strings with specific operators.
 
     Args:
@@ -100,7 +100,7 @@ def test_filter_generator_str_operators(operator: str):
         '=is=',
     ],
 )
-def test_filter_generator_str_wrong_operator(operator: str):
+def test_filter_generator_str_wrong_operator(operator: str) -> None:
     """Test a wrong filter operator for strings.
 
     Should fail.
@@ -124,7 +124,7 @@ def test_filter_generator_str_wrong_operator(operator: str):
         '<>',
     ],
 )
-def test_filter_generator_int_wrong_operator(operator: str):
+def test_filter_generator_int_wrong_operator(operator: str) -> None:
     """Test a wrong filter operator for integers.
 
     Should fail.

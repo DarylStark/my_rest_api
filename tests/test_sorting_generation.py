@@ -17,7 +17,7 @@ from sqlalchemy import ColumnElement
 )
 def test_sorting_generator_field(
     field: str, expected_field: ColumnElement[User]
-):
+) -> None:
     """Test the sorting field.
 
     Args:
@@ -32,7 +32,7 @@ def test_sorting_generator_field(
     assert sorting_generator.sort_field is expected_field
 
 
-def test_sorting_generator_invalid_field():
+def test_sorting_generator_invalid_field() -> None:
     """Test the sorting field with an invalid field."""
     sorting_generator = SortingGenerator(
         model=User,
@@ -43,7 +43,7 @@ def test_sorting_generator_invalid_field():
         _ = sorting_generator.sort_field
 
 
-def test_sorting_generator_non_existing_field():
+def test_sorting_generator_non_existing_field() -> None:
     """Test the sorting field with a non existing field."""
     sorting_generator = SortingGenerator(
         model=User,
