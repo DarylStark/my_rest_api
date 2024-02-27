@@ -64,3 +64,32 @@ addopts = ['--cov=my_rest_api', '--cov-report=html', '--cov-report=lcov']
 env = [
     "MY_REST_API_DATABASE_STR=sqlite:////tmp/my_rest_api.pytest.db"
 ]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle (errors)
+    "W",   # pycodestyle (warnings)
+    "PL",  # pylint
+    "B",   # flake8-bugbear
+    "SIM", # flake8-simplify
+    "LOG", # flake8-logging
+    "Q",   # flake8-quotes
+    "ANN", # flak8-annotations
+    "ICN", # flake8-import-conventions
+    "SLF", # flake8-self
+    "TD",  # flake8-todo
+    "FIX", # flake8-fixme
+    "D",   # pydocstyle
+    "F",   # Pyflakes
+    "UP",  # pyupgrade
+    "I",   # isort
+    "N",   # pep8-naming
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.lint.flake8-quotes]
+docstring-quotes = "double"
+inline-quotes = "single"
+multiline-quotes = 'single'
