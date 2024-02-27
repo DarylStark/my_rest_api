@@ -203,6 +203,26 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             self._output_model(**resource.model_dump())
             for resource in models]
 
+    def get_link_header_string(
+            self,
+            request_url: str,
+            pagination: Optional[PaginationGenerator]) -> Optional[str]:
+        """Retrieve the Link header string.
+
+        Args:
+            request_url: the URL of the request.
+            pagination: the pagination object with the correct details to
+                create the Link header string. If this is set to None, the
+                method will return None.
+
+        Returns:
+            The Link header string if pagination is given. Otherwise None.
+        """
+        if not pagination:
+            return None
+        link_headers = pagination.get_link_headers(str(request_url))
+        return 'Link: ' + ', '.join(link_headers)
+
     def create(
         self,
         resources: list[InputModel],
