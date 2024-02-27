@@ -55,6 +55,7 @@ def retrieve(
         x_api_token)
 
     # Add the Link header
+    # TODO: Make this a reusable function
     if pagination:
         link_headers = pagination.get_link_headers(
             str(request.url))

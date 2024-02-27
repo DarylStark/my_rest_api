@@ -26,18 +26,22 @@
             "subject": "updatepw"
         },
         {
+            "id": 6,
             "module": "tags",
             "subject": "create"
         },
         {
+            "id": 7,
             "module": "tags",
             "subject": "retrieve"
         },
         {
+            "id": 8,
             "module": "tags",
             "subject": "update"
         },
         {
+            "id": 9,
             "module": "tags",
             "subject": "delete"
         }
@@ -249,6 +253,10 @@
         {
             "api_token_id": 10,
             "api_scope_id": 2
+        },
+        {
+            "api_token_id": 10,
+            "api_scope_id": 7
         },
         {
             "api_token_id": 11,

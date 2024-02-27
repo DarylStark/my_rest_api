@@ -352,3 +352,7 @@ def test_create_users_as_root(
     assert result.status_code == 200
     assert len(response) == 1
     assert response[0]['id'] is not None
+
+    # TODO: Remove created resource to make sure tests don't fail
+
+# TODO: More creational tests
