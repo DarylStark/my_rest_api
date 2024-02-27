@@ -332,7 +332,7 @@ def test_update_tags_via_put_as_root(
     Should update a Tag object with a new object.
     """
     result = api_client.put(
-        '/resources/tags/root_tag_1',
+        '/resources/tags/1',
         headers={'X-API-Token': random_api_token_root},
         json={
             'title': 'root_tag_1',

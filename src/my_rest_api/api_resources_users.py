@@ -81,16 +81,16 @@ def create(
     return crud_operations.create(resources, x_api_token)
 
 
-@api_router.put("/users/{username}")
-def update(
-    username: Annotated[str, Path()],
+@api_router.put("/users/{user_id}")
+def update_on_user_id(
+    user_id: Annotated[int, Path()],
     new_user: APIUserIn,
     x_api_token: Annotated[str | None, Header()] = None
 ) -> list[APIUser]:
     """Update a user by replacing the object.
 
     Args:
-        username: the username of the user to update.
+        user_id: the user ID of the user to replace.
         new_user: the new user object to place.
         x_api_token: the API token.
 
@@ -99,5 +99,5 @@ def update(
     """
     return crud_operations.update(
         updated_model=new_user,
-        flt=[User.username == username],
+        flt=[User.id == user_id],
         api_token=x_api_token)

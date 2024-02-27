@@ -366,7 +366,7 @@ def test_update_users_via_put_as_root(
     Should update a User object with a new object.
     """
     result = api_client.put(
-        '/resources/users/root',
+        '/resources/users/1',
         headers={'X-API-Token': random_api_token_root},
         json={
             'fullname': 'root new',

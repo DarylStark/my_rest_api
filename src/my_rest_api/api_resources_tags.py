@@ -81,16 +81,16 @@ def create(
     return crud_operations.create(resources, x_api_token)
 
 
-@api_router.put("/tags/{title}")
+@api_router.put("/tags/{tag_id}")
 def update(
-    title: Annotated[str, Path()],
+    tag_id: Annotated[int, Path()],
     new_tag: APITagIn,
     x_api_token: Annotated[str | None, Header()] = None
 ) -> list[APITag]:
     """Update a tag by replacing the object.
 
     Args:
-        title: the title of the tag to update.
+        tag_id: the tag ID of the tag to replace.
         new_tag: the new tag object to place
         x_api_token: the API token.
 
@@ -99,5 +99,5 @@ def update(
     """
     return crud_operations.update(
         updated_model=new_tag,
-        flt=[Tag.title == title],
+        flt=[Tag.id == tag_id],
         api_token=x_api_token)
