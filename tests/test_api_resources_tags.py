@@ -149,7 +149,7 @@ def test_retrieve_tags_with_invalid_filter_as_root(
 def test_retrieve_tags_with_invalid_filter_field_as_root(
     api_client: TestClient, random_api_token_root: str
 ) -> None:
-    """Test retrieving tags with invalid filter field
+    """Test retrieving tags with invalid filter field.
 
     Should fail.
 
