@@ -11,7 +11,6 @@ from typing import Generic, Optional, Type, TypeVar
 from my_data.authorizer import (
     APIScopeAuthorizer,
     APITokenAuthorizer,
-    Authorizer,
 )
 from my_data.context import Context
 from my_data.resource_manager import ResourceManager
