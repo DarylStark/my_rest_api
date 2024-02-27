@@ -92,6 +92,7 @@ ignore = [
     "TD003",     # missing link
     "TD002",     # missing author
     "PLR0913",   # too many arguments
+    "FIX002",    # fixme found - skipped for now
 ]
 
 [tool.ruff.lint.pydocstyle]
