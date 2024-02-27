@@ -18,7 +18,7 @@ class TypeFilter(ABC):
     """Abstract class for type filters."""
 
     def __init__(
-        self, model: Type[SQLModel], field_name: str, operator: str, value: Any
+        self, model: Type[SQLModel], field_name: str, operator: str, value: str
     ) -> None:
         """Initialize the class.
 
@@ -65,13 +65,13 @@ class IntFilter(TypeFilter):
             return super_filters
 
         if self._operator == '<':
-            return getattr(self._model, self._field_name) < self._value
+            return getattr(self._model, self._field_name) < int(self._value)
         if self._operator == '<=':
-            return getattr(self._model, self._field_name) <= self._value
+            return getattr(self._model, self._field_name) <= int(self._value)
         if self._operator == '>':
-            return getattr(self._model, self._field_name) > self._value
+            return getattr(self._model, self._field_name) > int(self._value)
         if self._operator == '>=':
-            return getattr(self._model, self._field_name) >= self._value
+            return getattr(self._model, self._field_name) >= int(self._value)
 
         raise InvalidFilterOperatorError(
             f'Operator "{self._operator}" is not allowed for integers.'
