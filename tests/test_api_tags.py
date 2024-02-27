@@ -330,6 +330,10 @@ def test_update_tags_via_put_as_root(
     """Test updating tags as root with the PUT HTTP method.
 
     Should update a Tag object with a new object.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
     """
     result = api_client.put(
         '/resources/tags/1',

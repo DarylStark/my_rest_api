@@ -364,6 +364,10 @@ def test_update_users_via_put_as_root(
     """Test updating users as root with the PUT HTTP method.
 
     Should update a User object with a new object.
+
+    Args:
+        api_client: the test client for making API requests.
+        random_api_token_root: a token for the request.
     """
     result = api_client.put(
         '/resources/users/1',
