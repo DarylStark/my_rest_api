@@ -7,7 +7,10 @@ from my_model import Tag
 
 from .app_config import AppConfig
 from .model import APITag, APITagIn, DeletionResult
-from .resource_crud_operations import ResourceCRUDOperations
+from .resource_crud_operations import (
+    AuthorizationDetails,
+    ResourceCRUDOperations,
+)
 
 api_router = APIRouter()
 
@@ -17,11 +20,11 @@ crud_operations = ResourceCRUDOperations(
     input_model=APITagIn,
     output_model=APITag,
     context_attribute='tags',
-    needed_scopes=(
-        'tags.create',
-        'tags.retrieve',
-        'tags.update',
-        'tags.delete',
+    needed_scopes=AuthorizationDetails(
+        create='tags.create',
+        retrieve='tags.retrieve',
+        update='tags.update',
+        delete='tags.delete',
     ),
     filter_fields=['id', 'title', 'color'],
     sort_fields=['id', 'color', 'title'],

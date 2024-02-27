@@ -7,7 +7,10 @@ from my_model import User
 
 from .app_config import AppConfig
 from .model import APIUser, APIUserIn, DeletionResult
-from .resource_crud_operations import ResourceCRUDOperations
+from .resource_crud_operations import (
+    AuthorizationDetails,
+    ResourceCRUDOperations,
+)
 
 api_router = APIRouter()
 
@@ -17,11 +20,11 @@ crud_operations = ResourceCRUDOperations(
     input_model=APIUserIn,
     output_model=APIUser,
     context_attribute='users',
-    needed_scopes=(
-        'users.create',
-        'users.retrieve',
-        'users.update',
-        'users.delete',
+    needed_scopes=AuthorizationDetails(
+        create='users.create',
+        retrieve='users.retrieve',
+        update='users.update',
+        delete='users.delete',
     ),
     filter_fields=['id', 'username', 'fullname', 'email'],
     sort_fields=['id', 'username', 'fullname', 'email', 'role', 'created'],

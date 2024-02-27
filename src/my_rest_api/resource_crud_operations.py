@@ -8,7 +8,11 @@ sorting.
 
 from typing import Generic, Optional, Type, TypeVar
 
-from my_data.authorizer import APIScopeAuthorizer, APITokenAuthorizer
+from my_data.authorizer import (
+    APIScopeAuthorizer,
+    APITokenAuthorizer,
+    Authorizer,
+)
 from my_data.context import Context
 from my_data.resource_manager import ResourceManager
 from my_model import MyModel, User
@@ -32,6 +36,15 @@ OutputModel = TypeVar('OutputModel', bound=BaseModel)
 InputModel = TypeVar('InputModel', bound=BaseModel)
 
 
+class AuthorizationDetails(BaseModel):
+    """Model to store the authorization details."""
+
+    create: str
+    retrieve: str
+    update: str
+    delete: str
+
+
 class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
     """Class to perform CRUD operations on resources."""
 
@@ -41,7 +54,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         input_model: Type[InputModel],
         output_model: Type[OutputModel],
         context_attribute: str,
-        needed_scopes: tuple[str, str, str, str],
+        needed_scopes: AuthorizationDetails,
         filter_fields: list[str],
         sort_fields: list[str],
     ) -> None:
@@ -62,7 +75,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         self._input_model: Type[InputModel] = input_model
         self._output_model: Type[OutputModel] = output_model
         self._context_attribute: str = context_attribute
-        self._needed_scopes: tuple[str, str, str, str] = needed_scopes
+        self._needed_scopes: AuthorizationDetails = needed_scopes
         self._filter_fields: list[str] = filter_fields
         self._sort_fields: list[str] = sort_fields
 
@@ -236,7 +249,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             way we can omit the fields that we don't want to return, like
             passwords.
         """
-        authorized_user = self._authorize(api_token, [self._needed_scopes[0]])
+        authorized_user = self._authorize(
+            api_token, [self._needed_scopes.create]
+        )
 
         # Createthe resources
         return_resources: list[OutputModel] = []
@@ -284,7 +299,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             passwords.
         """
         # Authorize the request
-        authorized_user = self._authorize(api_token, [self._needed_scopes[1]])
+        authorized_user = self._authorize(
+            api_token, [self._needed_scopes.retrieve]
+        )
 
         # Get the filters and sort field
         filters = self._get_filters(flt)
@@ -343,7 +360,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         Raises:
             NoResourcesFoundError: if no resources are found to update.
         """
-        authorized_user = self._authorize(api_token, [self._needed_scopes[2]])
+        authorized_user = self._authorize(
+            api_token, [self._needed_scopes.update]
+        )
 
         # Update the resource
         return_models: list[OutputModel] = []
@@ -392,7 +411,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         Raises:
             NoResourcesFoundError: if no resources are found to delete.
         """
-        authorized_user = self._authorize(api_token, [self._needed_scopes[3]])
+        authorized_user = self._authorize(
+            api_token, [self._needed_scopes.delete]
+        )
 
         # Delete the resources
         deletion_result: list[int] = []
