@@ -98,8 +98,6 @@ class APIUserIn(BaseModel):
     """User object for the REST API.
 
     Attributes:
-        id: the id of the user.
-        created: the datetime when this user was created.
         fullname: the fullname for the user.
         username: the username for the user.
         email: the emailaddress of the user.
@@ -119,6 +117,7 @@ class APIUser(APIUserIn):
 
     Attributes:
         id: the id of the user.
+        created: the creation datetime of the object
     """
 
     id: int | None = None
