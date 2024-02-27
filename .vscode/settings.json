@@ -9,7 +9,7 @@
     // Python formatting
     "editor.formatOnSave": true,
     "[python]": {
-        "editor.defaultFormatter": "ms-python.autopep8"
+        "editor.defaultFormatter": "charliermarsh.ruff"
     },
     // Python unit testing
     "python.testing.pytestEnabled": true,
