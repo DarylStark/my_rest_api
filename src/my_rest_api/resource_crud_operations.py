@@ -342,6 +342,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         Returns:
             The updated resource in the given OutputModel. This way we can
             omit the fields that we don't want to return, like passwords.
+
+        Raises:
+            NoResourcesFoundError: if no resources are found to update.
         """
         authorized_user = self._authorize(
             api_token,
