@@ -51,11 +51,7 @@ class Link:
 class PaginationGenerator:
     """Class for pagination."""
 
-    def __init__(
-            self,
-            page_size: int,
-            page: int,
-            total_items: int) -> None:
+    def __init__(self, page_size: int, page: int, total_items: int) -> None:
         """Initialize the class.
 
         Args:
@@ -77,8 +73,7 @@ class PaginationGenerator:
             InvalidPageError: if the page number is invalid.
         """
         if self.page < 1 or self.page > self.total_pages:
-            raise InvalidPageError(
-                'Invalid page number.', self.total_pages)
+            raise InvalidPageError('Invalid page number.', self.total_pages)
 
     def validate_page_size(self) -> None:
         """Validate the page size.
@@ -88,7 +83,8 @@ class PaginationGenerator:
         """
         if self.page_size < 1 or self.page_size > AppConfig().max_page_size:
             raise InvalidPageSizeError(
-                'Invalid page size.', AppConfig().max_page_size)
+                'Invalid page size.', AppConfig().max_page_size
+            )
 
     def validate(self) -> None:
         """Validate the page and page size."""
@@ -117,16 +113,28 @@ class PaginationGenerator:
         self.validate()
 
         links: list[str] = [
-            str(Link(request_url, 'first').update_params(
-                {'page': ['1']})),
-            str(Link(request_url, 'last').update_params(
-                {'page': [str(self.total_pages)]}))
+            str(Link(request_url, 'first').update_params({'page': ['1']})),
+            str(
+                Link(request_url, 'last').update_params(
+                    {'page': [str(self.total_pages)]}
+                )
+            ),
         ]
         if self.page > 1:
-            links.append(str(Link(request_url, 'prev').update_params(
-                {'page': [str(self.page - 1)]})))
+            links.append(
+                str(
+                    Link(request_url, 'prev').update_params(
+                        {'page': [str(self.page - 1)]}
+                    )
+                )
+            )
         if self.total_pages > self.page:
-            links.append(str(Link(request_url, 'next').update_params(
-                {'page': [str(self.page + 1)]})))
+            links.append(
+                str(
+                    Link(request_url, 'next').update_params(
+                        {'page': [str(self.page + 1)]}
+                    )
+                )
+            )
 
         return links

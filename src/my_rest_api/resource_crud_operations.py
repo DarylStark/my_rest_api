@@ -15,8 +15,10 @@ from my_model import MyModel, User
 from pydantic import BaseModel
 from sqlalchemy.sql.elements import ColumnElement
 
-from my_rest_api.exceptions import (InvalidContextAttributeError,
-                                    NoResourcesFoundError)
+from my_rest_api.exceptions import (
+    InvalidContextAttributeError,
+    NoResourcesFoundError,
+)
 from my_rest_api.model import DeletionResult
 from my_rest_api.pagination_generator import PaginationGenerator
 
@@ -68,9 +70,8 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         self._my_data = MyRESTAPI.get_instance().my_data
 
     def _authorize(
-            self,
-            api_token: str | None,
-            scopes: str | list[str]) -> Optional[User]:
+        self, api_token: str | None, scopes: str | list[str]
+    ) -> Optional[User]:
         """Authorize the request.
 
         This authorize method uses the APITokenAuthorizer to authorize the
@@ -88,8 +89,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             my_data_object=self._my_data,
             api_token=api_token,
             authorizer=APIScopeAuthorizer(
-                required_scopes=scopes,
-                allow_short_lived=True))
+                required_scopes=scopes, allow_short_lived=True
+            ),
+        )
         auth.authorize()
         return auth.user
 
@@ -109,13 +111,12 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         filter_generator = FilterGenerator(
             model=self._model,
             given_filters=flt,
-            included_fields=self._filter_fields)
+            included_fields=self._filter_fields,
+        )
         filters = filter_generator.get_filters()
         return filters
 
-    def _get_sort_field(
-            self,
-            sort: str | None) -> ColumnElement[Model] | None:
+    def _get_sort_field(self, sort: str | None) -> ColumnElement[Model] | None:
         """Parse the given sort string.
 
         Args:
@@ -127,14 +128,12 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         sorting_generator = SortingGenerator(
             model=self._model,
             allowed_sort_fields=self._sort_fields,
-            sort_value=sort)
+            sort_value=sort,
+        )
         return sorting_generator.sort_field
 
     def _get_pagination(
-        self,
-        page_size: int,
-        page: int,
-        resource_count: int
+        self, page_size: int, page: int, resource_count: int
     ) -> PaginationGenerator:
         """Get the pagination generator.
 
@@ -150,15 +149,14 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             A pagination generator for the given values.
         """
         pagination = PaginationGenerator(
-            page_size=page_size,
-            page=page,
-            total_items=resource_count)
+            page_size=page_size, page=page, total_items=resource_count
+        )
         pagination.validate()
         return pagination
 
     def _get_resource_manager(
-            self,
-            context: Context) -> ResourceManager[Model]:
+        self, context: Context
+    ) -> ResourceManager[Model]:
         """Get the resources from the given context for the given attribute.
 
         Args:
@@ -170,21 +168,20 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         Raises:
             InvalidContextAttributeError: if the context attribute is invalid.
         """
-        resource_manager: Optional[ResourceManager[Model]] = \
-            getattr(
-            context,
-            self._context_attribute,
-            None)
+        resource_manager: Optional[ResourceManager[Model]] = getattr(
+            context, self._context_attribute, None
+        )
 
         if not resource_manager:
             raise InvalidContextAttributeError(
-                f'Invalid context attr: "{self._context_attribute}"')
+                f'Invalid context attr: "{self._context_attribute}"'
+            )
 
         return resource_manager
 
     def _convert_model_to_output_model(
-            self,
-            models: list[Model]) -> list[OutputModel]:
+        self, models: list[Model]
+    ) -> list[OutputModel]:
         """Convert the model to the output model.
 
         The models that are given by the MyData Context can be different from
@@ -201,13 +198,12 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             The output model.
         """
         return [
-            self._output_model(**resource.model_dump())
-            for resource in models]
+            self._output_model(**resource.model_dump()) for resource in models
+        ]
 
     def get_link_header_string(
-            self,
-            request_url: str,
-            pagination: Optional[PaginationGenerator]) -> Optional[str]:
+        self, request_url: str, pagination: Optional[PaginationGenerator]
+    ) -> Optional[str]:
         """Retrieve the Link header string.
 
         Args:
@@ -225,9 +221,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         return 'Link: ' + ', '.join(link_headers)
 
     def create(
-        self,
-        resources: list[InputModel],
-        api_token: str | None = None
+        self, resources: list[InputModel], api_token: str | None = None
     ) -> list[OutputModel]:
         """Create resources.
 
@@ -242,9 +236,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             way we can omit the fields that we don't want to return, like
             passwords.
         """
-        authorized_user = self._authorize(
-            api_token,
-            [self._needed_scopes[0]])
+        authorized_user = self._authorize(api_token, [self._needed_scopes[0]])
 
         # Createthe resources
         return_resources: list[OutputModel] = []
@@ -254,25 +246,28 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 resource_manager = self._get_resource_manager(context)
 
                 # Create the resources
-                resources_model = resource_manager.create([
-                    self._model(**resource.model_dump())
-                    for resource in resources
-                ])
+                resources_model = resource_manager.create(
+                    [
+                        self._model(**resource.model_dump())
+                        for resource in resources
+                    ]
+                )
 
             # Convert to the output model
             return_resources = self._convert_model_to_output_model(
-                resources_model)
+                resources_model
+            )
 
         # Return the resources
         return return_resources
 
     def retrieve(
-            self,
-            flt: str | None = None,
-            page_size: int = AppConfig().default_page_size,
-            page: int = 1,
-            sort: str | None = None,
-            api_token: str | None = None
+        self,
+        flt: str | None = None,
+        page_size: int = AppConfig().default_page_size,
+        page: int = 1,
+        sort: str | None = None,
+        api_token: str | None = None,
     ) -> tuple[PaginationGenerator | None, list[OutputModel]]:
         """Retrieve the resources.
 
@@ -289,9 +284,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             passwords.
         """
         # Authorize the request
-        authorized_user = self._authorize(
-            api_token,
-            [self._needed_scopes[1]])
+        authorized_user = self._authorize(api_token, [self._needed_scopes[1]])
 
         # Get the filters and sort field
         filters = self._get_filters(flt)
@@ -311,18 +304,21 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 pagination = self._get_pagination(
                     page_size=page_size,
                     page=page,
-                    resource_count=resource_count)
+                    resource_count=resource_count,
+                )
 
                 # Get the resources
                 resources_model: list[Model] = resource_manager.retrieve(
                     flt=filters,
                     max_items=page_size,
                     start=pagination.offset,
-                    sort=sort_field)
+                    sort=sort_field,
+                )
 
                 # Convert to the output model
                 resources = self._convert_model_to_output_model(
-                    resources_model)
+                    resources_model
+                )
 
         # Return the resources
         return (pagination, resources)
@@ -347,9 +343,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         Raises:
             NoResourcesFoundError: if no resources are found to update.
         """
-        authorized_user = self._authorize(
-            api_token,
-            [self._needed_scopes[2]])
+        authorized_user = self._authorize(api_token, [self._needed_scopes[2]])
 
         # Update the resource
         return_models: list[OutputModel] = []
@@ -358,8 +352,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 resource_manager = self._get_resource_manager(context)
 
                 # Get the resources to update
-                resources_to_update = resource_manager.retrieve(
-                    flt=flt)
+                resources_to_update = resource_manager.retrieve(flt=flt)
 
                 if len(resources_to_update) == 0:
                     raise NoResourcesFoundError
@@ -367,15 +360,13 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 # Update the resources
                 for resource in resources_to_update:
                     for field in updated_model.model_fields:
-                        setattr(
-                            resource,
-                            field,
-                            getattr(updated_model, field))
+                        setattr(resource, field, getattr(updated_model, field))
 
                 # Update the resource
                 updated_models = resource_manager.update(resources_to_update)
                 return_models = self._convert_model_to_output_model(
-                    updated_models)
+                    updated_models
+                )
 
         # Return the resource
         return return_models
@@ -401,9 +392,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         Raises:
             NoResourcesFoundError: if no resources are found to delete.
         """
-        authorized_user = self._authorize(
-            api_token,
-            [self._needed_scopes[3]])
+        authorized_user = self._authorize(api_token, [self._needed_scopes[3]])
 
         # Delete the resources
         deletion_result: list[int] = []
@@ -412,15 +401,16 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 resource_manager = self._get_resource_manager(context)
 
                 # Get the resources to update
-                resources_to_delete = resource_manager.retrieve(
-                    flt=flt)
+                resources_to_delete = resource_manager.retrieve(flt=flt)
 
                 if len(resources_to_delete) == 0:
                     raise NoResourcesFoundError
 
                 deletion_result = [
-                    int(resource.id) for resource in resources_to_delete
-                    if resource.id]
+                    int(resource.id)
+                    for resource in resources_to_delete
+                    if resource.id
+                ]
 
                 # Delete the resources
                 resource_manager.delete(resources_to_delete)

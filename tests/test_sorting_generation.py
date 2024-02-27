@@ -8,12 +8,16 @@ from my_rest_api.exceptions import InvalidSortFieldError
 from my_rest_api.sorting_generator import SortingGenerator
 
 
-@pytest.mark.parametrize('field, expected_field', [
-    ('id', User.id), ('username', User.username), ('fullname', User.fullname)
-])
+@pytest.mark.parametrize(
+    'field, expected_field',
+    [
+        ('id', User.id),
+        ('username', User.username),
+        ('fullname', User.fullname),
+    ],
+)
 def test_sorting_generator_field(
-    field: str,
-    expected_field: ColumnElement[User]
+    field: str, expected_field: ColumnElement[User]
 ):
     """Test the sorting field.
 
@@ -24,7 +28,8 @@ def test_sorting_generator_field(
     sorting_generator = SortingGenerator(
         model=User,
         allowed_sort_fields=['id', 'username', 'fullname'],
-        sort_value=field)
+        sort_value=field,
+    )
     assert sorting_generator.sort_field is expected_field
 
 
@@ -33,7 +38,8 @@ def test_sorting_generator_invalid_field():
     sorting_generator = SortingGenerator(
         model=User,
         allowed_sort_fields=['id', 'username', 'fullname'],
-        sort_value='invalid')
+        sort_value='invalid',
+    )
     with pytest.raises(InvalidSortFieldError):
         _ = sorting_generator.sort_field
 
@@ -43,6 +49,7 @@ def test_sorting_generator_non_existing_field():
     sorting_generator = SortingGenerator(
         model=User,
         allowed_sort_fields=['id', 'username', 'fullname'],
-        sort_value='non_existing')
+        sort_value='non_existing',
+    )
     with pytest.raises(InvalidSortFieldError):
         _ = sorting_generator.sort_field

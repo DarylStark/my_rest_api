@@ -7,20 +7,18 @@ from typing import Any, Type, get_args
 from sqlalchemy.sql.elements import ColumnElement
 from sqlmodel import SQLModel
 
-from my_rest_api.exceptions import (InvalidFilterError,
-                                    InvalidFilterFieldError,
-                                    InvalidFilterOperatorError)
+from my_rest_api.exceptions import (
+    InvalidFilterError,
+    InvalidFilterFieldError,
+    InvalidFilterOperatorError,
+)
 
 
 class TypeFilter(ABC):
     """Abstract class for type filters."""
 
     def __init__(
-        self,
-        model: Type[SQLModel],
-        field_name: str,
-        operator: str,
-        value: Any
+        self, model: Type[SQLModel], field_name: str, operator: str, value: Any
     ) -> None:
         """Initialize the class.
 
@@ -98,13 +96,13 @@ class StrFilter(TypeFilter):
             return super_filters
 
         if self._operator == '=contains=':
-            return getattr(
-                self._model,
-                self._field_name).like(f'%{self._value}%')
+            return getattr(self._model, self._field_name).like(
+                f'%{self._value}%'
+            )
         if self._operator == '=!contains=':
-            return getattr(
-                self._model,
-                self._field_name).notlike(f'%{self._value}%')
+            return getattr(self._model, self._field_name).notlike(
+                f'%{self._value}%'
+            )
 
         raise InvalidFilterOperatorError(
             f'Operator "{self._operator}" is not allowed for strings.'
@@ -156,38 +154,45 @@ class FilterGenerator:
         given_filters_splitted = self._given_filters.split(',')
         for filter_field in given_filters_splitted:
             match = re.match(
-                r'^(?P<field>\w+)(?P<operator>=[!\w]+=|[=<>!]{1,2})' +
-                r'(?P<value>.+)$',
-                filter_field)
+                r'^(?P<field>\w+)(?P<operator>=[!\w]+=|[=<>!]{1,2})'
+                + r'(?P<value>.+)$',
+                filter_field,
+            )
 
             if not match:
                 raise InvalidFilterError(
-                    f'Filter "{filter_field}" is in invalid format.')
+                    f'Filter "{filter_field}" is in invalid format.'
+                )
 
             # Get filter specifics
             field = str(match.group('field'))
             operator = match.group('operator')
             value = match.group('value')
-            if (field not in self._model.model_fields or
-                    field not in self._included_fields):
+            if (
+                field not in self._model.model_fields
+                or field not in self._included_fields
+            ):
                 raise InvalidFilterFieldError(
-                    f'Field "{field}" is not allowed to be filtered on.')
+                    f'Field "{field}" is not allowed to be filtered on.'
+                )
 
             # Get the field-type
             object_field = self._model.model_fields[field]
-            types = ([t for t in get_args(object_field.annotation) if t]
-                     if get_args(object_field.annotation)
-                     else [object_field.annotation,])
+            types = (
+                [t for t in get_args(object_field.annotation) if t]
+                if get_args(object_field.annotation)
+                else [
+                    object_field.annotation,
+                ]
+            )
 
             # Add the needed filters
             for field_type in types:
                 if field_type in self.registered_type_filters:
                     filter_class = self.registered_type_filters[field_type]
                     extra_filter = filter_class(
-                        self._model,
-                        field,
-                        operator,
-                        value).get_filter()
+                        self._model, field, operator, value
+                    ).get_filter()
                     if extra_filter is not None:
                         filters.append(extra_filter)
 

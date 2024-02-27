@@ -1,4 +1,4 @@
-"""Module with custom error handlers for the REST API."""""
+"""Module with custom error handlers for the REST API."""
 from fastapi import Request
 from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
@@ -7,8 +7,9 @@ from my_data.exceptions import AuthorizationFailed
 
 
 async def custom_http_exception_handler(
-        request: Request,  # pylint: disable=unused-argument
-        exc: HTTPException) -> JSONResponse:
+    request: Request,  # pylint: disable=unused-argument
+    exc: HTTPException,
+) -> JSONResponse:
     """Exception handler for HTTP exceptions.
 
     If the `detail` in `exc` is a Pydantic basemodel, it will be converted to
@@ -27,15 +28,12 @@ async def custom_http_exception_handler(
     if isinstance(exc.detail, BaseModel):
         content = exc.detail.model_dump()
 
-    return JSONResponse(
-        status_code=exc.status_code,
-        content=content
-    )
+    return JSONResponse(status_code=exc.status_code, content=content)
 
 
 async def custom_authorizationfailed_exception_handler(
-        request: Request,  # pylint: disable=unused-argument,
-        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+    request: Request,  # pylint: disable=unused-argument,
+    exc: AuthorizationFailed,  # pylint: disable=unused-argument,
 ) -> JSONResponse:
     """Exception handler for failed authorization.
 
@@ -51,13 +49,13 @@ async def custom_authorizationfailed_exception_handler(
         status_code=401,
         content={
             'error': 'Not authorized',
-        }
+        },
     )
 
 
 async def custom_paginationerror_exception_handler(
-        request: Request,  # pylint: disable=unused-argument,
-        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+    request: Request,  # pylint: disable=unused-argument,
+    exc: AuthorizationFailed,  # pylint: disable=unused-argument,
 ) -> JSONResponse:
     """Exception handler for failed pagination.
 
@@ -75,17 +73,13 @@ async def custom_paginationerror_exception_handler(
         error = exc.args[0]
         max_page = exc.args[1]
     return JSONResponse(
-        status_code=400,
-        content={
-            'error': error,
-            'max_page': max_page
-        }
+        status_code=400, content={'error': error, 'max_page': max_page}
     )
 
 
 async def custom_sortingerror_exception_handler(
-        request: Request,  # pylint: disable=unused-argument,
-        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+    request: Request,  # pylint: disable=unused-argument,
+    exc: AuthorizationFailed,  # pylint: disable=unused-argument,
 ) -> JSONResponse:
     """Exception handler for failed sorting.
 
@@ -104,15 +98,13 @@ async def custom_sortingerror_exception_handler(
         allowed_sort_fields = exc.args[1]
     return JSONResponse(
         status_code=400,
-        content={
-            'error': error,
-            'allowed_sort_fields': allowed_sort_fields
-        })
+        content={'error': error, 'allowed_sort_fields': allowed_sort_fields},
+    )
 
 
 async def custom_filtererror_exception_handler(
-        request: Request,  # pylint: disable=unused-argument,
-        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+    request: Request,  # pylint: disable=unused-argument,
+    exc: AuthorizationFailed,  # pylint: disable=unused-argument,
 ) -> JSONResponse:
     """Exception handler for failed filtering.
 
@@ -127,16 +119,12 @@ async def custom_filtererror_exception_handler(
     error = 'Filtering error'
     if len(exc.args) == 1:
         error = exc.args[0]
-    return JSONResponse(
-        status_code=400,
-        content={
-            'error': error
-        })
+    return JSONResponse(status_code=400, content={'error': error})
 
 
 async def custom_noresourcesfounderror_exception_handler(
-        request: Request,  # pylint: disable=unused-argument,
-        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+    request: Request,  # pylint: disable=unused-argument,
+    exc: AuthorizationFailed,  # pylint: disable=unused-argument,
 ) -> JSONResponse:
     """Exception handler for when no resources are found.
 
@@ -150,6 +138,5 @@ async def custom_noresourcesfounderror_exception_handler(
     """
     return JSONResponse(
         status_code=404,
-        content={
-            'error': 'No resources found that match the criteria.'
-        })
+        content={'error': 'No resources found that match the criteria.'},
+    )

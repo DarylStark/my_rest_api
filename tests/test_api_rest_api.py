@@ -17,5 +17,4 @@ def test_version(api_client: TestClient):
     response = api_client.get('/version')
     contents = response.json()
     assert response.status_code == 200
-    assert contents == {
-        'version': rest_api_version}
+    assert contents == {'version': rest_api_version}

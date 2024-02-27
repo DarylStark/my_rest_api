@@ -14,10 +14,12 @@ T = TypeVar('T', bound=BaseModel)
 class SortingGenerator(Generic[T]):
     """Generates sorting details for a model."""
 
-    def __init__(self,
-                 model: Type[T],
-                 allowed_sort_fields: list[str],
-                 sort_value: str | None):
+    def __init__(
+        self,
+        model: Type[T],
+        allowed_sort_fields: list[str],
+        sort_value: str | None,
+    ):
         """Initialize the SortingGenerator object.
 
         Args:
@@ -51,5 +53,6 @@ class SortingGenerator(Generic[T]):
             else:
                 raise InvalidSortFieldError(
                     f'Invalid sort field: "{self.sort_value}"',
-                    self.allowed_sort_fields)
+                    self.allowed_sort_fields,
+                )
         return sort_field

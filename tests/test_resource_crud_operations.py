@@ -6,13 +6,13 @@ from my_model import Tag
 
 from my_rest_api.exceptions import InvalidContextAttributeError
 from my_rest_api.pagination_generator import PaginationGenerator
-from my_rest_api.resource_crud_operations import \
-    ResourceCRUDOperations
+from my_rest_api.resource_crud_operations import ResourceCRUDOperations
 
 
 def test_retrieve_invalid_context_attribute(
-        api_client: TestClient,  # pylint: disable=unused-argument
-        random_api_token_normal_user: str) -> None:
+    api_client: TestClient,  # pylint: disable=unused-argument
+    random_api_token_normal_user: str,
+) -> None:
     """Test that an invalid context attribute raises an error on retrieval.
 
     Args:
@@ -25,8 +25,12 @@ def test_retrieve_invalid_context_attribute(
         input_model=Tag,
         output_model=Tag,
         context_attribute='invalid',
-        needed_scopes=('tags.create', 'tags.retrieve',
-                       'tags.update', 'tags.delete'),
+        needed_scopes=(
+            'tags.create',
+            'tags.retrieve',
+            'tags.update',
+            'tags.delete',
+        ),
         filter_fields=['title'],
         sort_fields=['title'],
     )
@@ -35,7 +39,7 @@ def test_retrieve_invalid_context_attribute(
 
 
 def test_get_link_header_string_without_pagination(
-        api_client: TestClient  # pylint: disable=unused-argument
+    api_client: TestClient,  # pylint: disable=unused-argument
 ) -> None:
     """Test if we get None when we get link headers without pagination.
 
@@ -47,18 +51,25 @@ def test_get_link_header_string_without_pagination(
         input_model=Tag,
         output_model=Tag,
         context_attribute='invalid',
-        needed_scopes=('tags.create', 'tags.retrieve',
-                       'tags.update', 'tags.delete'),
+        needed_scopes=(
+            'tags.create',
+            'tags.retrieve',
+            'tags.update',
+            'tags.delete',
+        ),
         filter_fields=['title'],
         sort_fields=['title'],
     )
-    assert operations.get_link_header_string(
-        request_url='http://localhost',
-        pagination=None) is None
+    assert (
+        operations.get_link_header_string(
+            request_url='http://localhost', pagination=None
+        )
+        is None
+    )
 
 
 def test_get_link_header_string_with_pagination(
-        api_client: TestClient,  # pylint: disable=unused-argument
+    api_client: TestClient,  # pylint: disable=unused-argument
 ) -> None:
     """Test if we get None when we get link headers without pagination.
 
@@ -70,8 +81,12 @@ def test_get_link_header_string_with_pagination(
         input_model=Tag,
         output_model=Tag,
         context_attribute='invalid',
-        needed_scopes=('tags.create', 'tags.retrieve',
-                       'tags.update', 'tags.delete'),
+        needed_scopes=(
+            'tags.create',
+            'tags.retrieve',
+            'tags.update',
+            'tags.delete',
+        ),
         filter_fields=['title'],
         sort_fields=['title'],
     )
@@ -79,8 +94,8 @@ def test_get_link_header_string_with_pagination(
     pagination = PaginationGenerator(10, 5, 500)
 
     link_headers = operations.get_link_header_string(
-        request_url='http://localhost',
-        pagination=pagination)
+        request_url='http://localhost', pagination=pagination
+    )
     assert link_headers is not None
     assert link_headers.startswith('Link: ')
     assert 'rel="first"' in link_headers

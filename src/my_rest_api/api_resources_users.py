@@ -17,13 +17,18 @@ crud_operations = ResourceCRUDOperations(
     input_model=APIUserIn,
     output_model=APIUser,
     context_attribute='users',
-    needed_scopes=('users.create', 'users.retrieve',
-                   'users.update', 'users.delete'),
+    needed_scopes=(
+        'users.create',
+        'users.retrieve',
+        'users.update',
+        'users.delete',
+    ),
     filter_fields=['id', 'username', 'fullname', 'email'],
-    sort_fields=['id', 'username', 'fullname', 'email', 'role', 'created'])
+    sort_fields=['id', 'username', 'fullname', 'email', 'role', 'created'],
+)
 
 
-@api_router.get("/users", name='Users - Retrieve')
+@api_router.get('/users', name='Users - Retrieve')
 def retrieve(
     request: Request,
     response: Response,
@@ -31,7 +36,7 @@ def retrieve(
     page_size: int = AppConfig().default_page_size,
     page: int = 1,
     sort: str | None = None,
-    x_api_token: Annotated[str | None, Header()] = None
+    x_api_token: Annotated[str | None, Header()] = None,
 ) -> list[APIUser]:
     """Get all the users.
 
@@ -48,26 +53,23 @@ def retrieve(
         A list with the users.
     """
     pagination, resources = crud_operations.retrieve(
-        flt,
-        page_size,
-        page,
-        sort,
-        x_api_token)
+        flt, page_size, page, sort, x_api_token
+    )
 
     # Add the Link header
     link_header_string = crud_operations.get_link_header_string(
-        str(request.url),
-        pagination)
+        str(request.url), pagination
+    )
     if link_header_string:
         response.headers['Link'] = link_header_string
 
     return resources
 
 
-@api_router.post("/users", name='Users - Create')
+@api_router.post('/users', name='Users - Create')
 def create(
     resources: list[APIUserIn],
-    x_api_token: Annotated[str | None, Header()] = None
+    x_api_token: Annotated[str | None, Header()] = None,
 ) -> list[APIUser]:
     """Create new users.
 
@@ -81,11 +83,11 @@ def create(
     return crud_operations.create(resources, x_api_token)
 
 
-@api_router.put("/users/{user_id}", name='Users - Update')
+@api_router.put('/users/{user_id}', name='Users - Update')
 def update(
     user_id: Annotated[int, Path()],
     new_user: APIUserIn,
-    x_api_token: Annotated[str | None, Header()] = None
+    x_api_token: Annotated[str | None, Header()] = None,
 ) -> list[APIUser]:
     """Update a user by replacing the object.
 
@@ -100,13 +102,14 @@ def update(
     return crud_operations.update(
         updated_model=new_user,
         flt=[User.id == user_id],  # type: ignore
-        api_token=x_api_token)
+        api_token=x_api_token,
+    )
 
 
-@api_router.delete("/users/{user_id}", name='Users - Delete')
+@api_router.delete('/users/{user_id}', name='Users - Delete')
 def delete(
     user_id: Annotated[int, Path()],
-    x_api_token: Annotated[str | None, Header()] = None
+    x_api_token: Annotated[str | None, Header()] = None,
 ) -> DeletionResult:
     """Delete a user.
 
@@ -120,4 +123,5 @@ def delete(
     """
     return crud_operations.delete(
         flt=[User.id == user_id],  # type: ignore
-        api_token=x_api_token)
+        api_token=x_api_token,
+    )

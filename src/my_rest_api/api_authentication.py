@@ -4,17 +4,25 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Header
 from fastapi.exceptions import HTTPException
 from my_data.authenticator import CredentialsAuthenticator, UserAuthenticator
-from my_data.authorizer import (APITokenAuthorizer, InvalidTokenAuthorizer,
-                                ShortLivedTokenAuthorizer,
-                                ValidTokenAuthorizer)
+from my_data.authorizer import (
+    APITokenAuthorizer,
+    InvalidTokenAuthorizer,
+    ShortLivedTokenAuthorizer,
+    ValidTokenAuthorizer,
+)
 from my_data.exceptions import AuthenticationFailed
 from my_data.my_data import MyData
 
 from .app_config import AppConfig
 from .dependencies import my_data_object
-from .model import (APIAuthStatus, APIAuthStatusToken, AuthenticationDetails,
-                    AuthenticationResult, AuthenticationResultStatus,
-                    LogoutResult)
+from .model import (
+    APIAuthStatus,
+    APIAuthStatusToken,
+    AuthenticationDetails,
+    AuthenticationResult,
+    AuthenticationResultStatus,
+    LogoutResult,
+)
 
 api_router = APIRouter()
 
@@ -23,7 +31,7 @@ api_router = APIRouter()
 def login(
     authentication: AuthenticationDetails,
     x_api_token: Annotated[str | None, Header()] = None,
-    my_data: MyData = Depends(my_data_object)
+    my_data: MyData = Depends(my_data_object),
 ) -> AuthenticationResult:
     """Login to the REST API.
 
@@ -44,7 +52,8 @@ def login(
     auth = APITokenAuthorizer(
         my_data_object=my_data,
         api_token=x_api_token,
-        authorizer=InvalidTokenAuthorizer())
+        authorizer=InvalidTokenAuthorizer(),
+    )
     auth.authorize()
 
     authenticator = UserAuthenticator(
@@ -52,8 +61,8 @@ def login(
         authenticator=CredentialsAuthenticator(
             username=authentication.username,
             password=authentication.password,
-            second_factor=authentication.second_factor
-        )
+            second_factor=authentication.second_factor,
+        ),
     )
     try:
         authenticator.authenticate()
@@ -61,20 +70,23 @@ def login(
         raise HTTPException(
             status_code=403,
             detail=AuthenticationResult(
-                status=AuthenticationResultStatus.FAILURE)
+                status=AuthenticationResultStatus.FAILURE
+            ),
         ) from exc
 
     return AuthenticationResult(
         status=AuthenticationResultStatus.SUCCESS,
         api_token=authenticator.create_api_token(
             session_timeout_in_seconds=AppConfig().session_timeout_in_seconds,
-            title=''))
+            title='',
+        ),
+    )
 
 
 @api_router.get('/logout')
 def logout(
     x_api_token: Annotated[str | None, Header()] = None,
-    my_data: MyData = Depends(my_data_object)
+    my_data: MyData = Depends(my_data_object),
 ) -> LogoutResult:
     """Logout from the REST API.
 
@@ -88,7 +100,8 @@ def logout(
     auth = APITokenAuthorizer(
         my_data_object=my_data,
         api_token=x_api_token,
-        authorizer=ShortLivedTokenAuthorizer())
+        authorizer=ShortLivedTokenAuthorizer(),
+    )
     auth.authorize()
 
     user = auth.user
@@ -101,8 +114,9 @@ def logout(
 
 @api_router.get('/status')
 def status(
-        x_api_token: Annotated[str | None, Header()] = None,
-        my_data: MyData = Depends(my_data_object)) -> APIAuthStatus:
+    x_api_token: Annotated[str | None, Header()] = None,
+    my_data: MyData = Depends(my_data_object),
+) -> APIAuthStatus:
     """Get API token information.
 
     Args:
@@ -115,16 +129,19 @@ def status(
     auth = APITokenAuthorizer(
         my_data_object=my_data,
         api_token=x_api_token,
-        authorizer=ValidTokenAuthorizer())
+        authorizer=ValidTokenAuthorizer(),
+    )
     auth.authorize()
 
-    token_type = (APIAuthStatusToken.LONG_LIVED
-                  if auth.is_long_lived_token
-                  else APIAuthStatusToken.SHORT_LIVED)
+    token_type = (
+        APIAuthStatusToken.LONG_LIVED
+        if auth.is_long_lived_token
+        else APIAuthStatusToken.SHORT_LIVED
+    )
 
     return APIAuthStatus(
         token_type=token_type,
         title=auth.api_token.title if auth.api_token else None,
         created=auth.api_token.created if auth.api_token else None,
-        expires=auth.api_token.expires if auth.api_token else None
+        expires=auth.api_token.expires if auth.api_token else None,
     )

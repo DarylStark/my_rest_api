@@ -52,7 +52,8 @@ class MyRESTAPI:
             db_connection_str=AppConfig().database_str,
             database_args=AppConfig().database_args,
             service_username=AppConfig().service_user,
-            service_password=AppConfig().service_password)
+            service_password=AppConfig().service_password,
+        )
         self.data.create_engine(force=True)
 
     @property

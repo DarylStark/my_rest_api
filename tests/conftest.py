@@ -109,12 +109,12 @@ def cleanup() -> Generator[None, None, None]:
 
 @pytest.fixture(scope='session')
 def api_client(
-        cleanup: None,  # pylint: disable=unused-argument
-        random_second_factor: str,
-        random_api_token_root: str,
-        random_api_token_normal_user: str,
-        random_api_token_normal_user_logout: str,
-        random_api_token_normal_user_long_lived: str
+    cleanup: None,  # pylint: disable=unused-argument
+    random_second_factor: str,
+    random_api_token_root: str,
+    random_api_token_normal_user: str,
+    random_api_token_normal_user_logout: str,
+    random_api_token_normal_user_long_lived: str,
 ) -> TestClient:
     """Return a TestClient instance for the FastAPI application.
 
@@ -139,7 +139,8 @@ def api_client(
     # Import data from the data JSON
     DataLoader(
         my_data_object=my_rest_api.my_data,
-        data_source=JSONDataSource(test_filename())).load()
+        data_source=JSONDataSource(test_filename()),
+    ).load()
 
     # Make sure that the root user has a short lived API token
     root_user: Optional[User] = None
@@ -154,7 +155,8 @@ def api_client(
                 api_client=None,
                 user=root_user,
                 title='test short lived api token',
-                expires=datetime.now() + timedelta(seconds=3600))
+                expires=datetime.now() + timedelta(seconds=3600),
+            )
             api_token.token = random_api_token_root
             context.api_tokens.create(api_token)
 
@@ -166,14 +168,17 @@ def api_client(
 
     if normal_user_1:
         with my_rest_api.my_data.get_context(user=normal_user_1) as context:
-            for token in (random_api_token_normal_user,
-                          random_api_token_normal_user_logout):
+            for token in (
+                random_api_token_normal_user,
+                random_api_token_normal_user_logout,
+            ):
                 # Set a API token for the user.
                 api_token = APIToken(
                     api_client=None,
                     user=normal_user_1,
                     title='test short lived api token',
-                    expires=datetime.now() + timedelta(seconds=3600))
+                    expires=datetime.now() + timedelta(seconds=3600),
+                )
                 api_token.token = token
                 context.api_tokens.create(api_token)
 
@@ -181,15 +186,16 @@ def api_client(
             client = APIClient(
                 app_name='test_app',
                 app_publisher='Daryl Stark',
-                user=normal_user_1)
+                user=normal_user_1,
+            )
             context.api_clients.create(client)
 
             long_lived_token = APIToken(
                 title='test token',
-                expires=datetime.now() +
-                timedelta(seconds=3600),
+                expires=datetime.now() + timedelta(seconds=3600),
                 token=random_api_token_normal_user_long_lived,
-                api_client=client)
+                api_client=client,
+            )
 
             context.api_tokens.create(long_lived_token)
 
