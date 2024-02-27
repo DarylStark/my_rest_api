@@ -356,3 +356,28 @@ def test_create_users_as_root(
     # TODO: Remove created resource to make sure tests don't fail
 
 # TODO: More creational tests
+
+
+def test_update_users_via_put_as_root(
+        api_client: TestClient,
+        random_api_token_root: str) -> None:
+    """Test updating users as root with the PUT HTTP method.
+
+    Should update a User object with a new object.
+    """
+    result = api_client.put(
+        '/resources/users/root',
+        headers={'X-API-Token': random_api_token_root},
+        json={
+            'fullname': 'root new',
+            'username': 'root',
+            'email': 'root@example.com',
+            'role': 1
+        })
+    response = result.json()
+    assert result.status_code == 200
+    assert len(response) == 1
+    assert response[0]['id'] is not None
+    assert response[0]['fullname'] == 'root new'
+
+# TODO: More update tests
