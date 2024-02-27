@@ -99,5 +99,5 @@ def update_on_user_id(
     """
     return crud_operations.update(
         updated_model=new_user,
-        flt=[User.id == user_id],
+        flt=[User.id == user_id],  # type: ignore
         api_token=x_api_token)

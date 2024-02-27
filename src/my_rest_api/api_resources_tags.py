@@ -99,5 +99,5 @@ def update(
     """
     return crud_operations.update(
         updated_model=new_tag,
-        flt=[Tag.id == tag_id],
+        flt=[Tag.id == tag_id],  # type: ignore
         api_token=x_api_token)

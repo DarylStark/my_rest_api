@@ -150,6 +150,7 @@ class APITag(APITagIn):
     Attributes:
         id: the id of the tag.
     """
+
     id: int | None = None
 
 

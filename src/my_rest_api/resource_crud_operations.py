@@ -15,7 +15,8 @@ from my_model import MyModel, User
 from pydantic import BaseModel
 from sqlalchemy.sql.elements import ColumnElement
 
-from my_rest_api.exceptions import InvalidContextAttributeError, NoResourcesFoundError
+from my_rest_api.exceptions import (InvalidContextAttributeError,
+                                    NoResourcesFoundError)
 from my_rest_api.pagination_generator import PaginationGenerator
 
 from .app_config import AppConfig
@@ -44,7 +45,6 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         """Set the needed values for the CRUD operators.
 
         Args:
-            endpoint: the endpoint for the resource.
             model: the model for the resource.
             input_model: the input model for the resource.
             output_model: the output model for the resource.
