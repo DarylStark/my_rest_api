@@ -19,7 +19,7 @@ class SortingGenerator(Generic[T]):
         model: Type[T],
         allowed_sort_fields: list[str],
         sort_value: str | None,
-    ):
+    ) -> None:
         """Initialize the SortingGenerator object.
 
         Args:

@@ -93,6 +93,7 @@ ignore = [
     "B008",      # function call in default argument
     "PLR2004",   # magic value used in comparison
     "ANN101",    # missing type annotation for self
+    "ANN102",    # missing type annotation for cls
 ]
 
 [tool.ruff.lint.pydocstyle]
