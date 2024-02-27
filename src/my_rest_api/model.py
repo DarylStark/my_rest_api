@@ -184,3 +184,27 @@ class DeletionResult(BaseModel):
     """
 
     deleted: list[int]
+
+
+class APIUserSettingIn(BaseModel):
+    """UserSetting object for the REST API body.
+
+    Attributes:
+        setting: the name of the setting.
+        value: the value for the setting.
+    """
+
+    setting: str = Field(max_length=32)
+    value: str = Field(max_length=32)
+
+
+class APIUserSetting(APIUserSettingIn):
+    """UserSetting object for the REST API response.
+
+    Adds the `id` field to the UserSetting model.
+
+    Attributes:
+        id: the id of the tag.
+    """
+
+    id: int | None = None

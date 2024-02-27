@@ -22,6 +22,9 @@ from my_data.exceptions import AuthorizationFailed
 
 from .api_authentication import api_router as auth_api_router
 from .api_resources_tags import api_router as api_router_resources_tags
+from .api_resources_user_settings import (
+    api_router as api_router_resources_user_settings,
+)
 from .api_resources_users import api_router as api_router_resources_users
 from .api_rest_api import api_router as rest_api_router
 from .app_config import AppConfig
@@ -76,4 +79,9 @@ app.include_router(
 )
 app.include_router(
     api_router_resources_users, tags=['Resources'], prefix='/resources'
+)
+app.include_router(
+    api_router_resources_user_settings,
+    tags=['Resources'],
+    prefix='/resources',
 )
