@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Header, Query, Request, Response
+from fastapi import APIRouter, Header, Query, Request, Response, Path
 from my_model import Tag
 
 from .app_config import AppConfig
@@ -79,3 +79,25 @@ def create(
         A list with the created tags.
     """
     return crud_operations.create(resources, x_api_token)
+
+
+@api_router.put("/tags/{title}")
+def update(
+    title: Annotated[str, Path()],
+    new_tag: APITagIn,
+    x_api_token: Annotated[str | None, Header()] = None
+) -> list[APITag]:
+    """Update a tag by replacing the object.
+
+    Args:
+        title: the title of the tag to update.
+        new_tag: the new tag object to place
+        x_api_token: the API token.
+
+    Returns:
+        The updated tag.
+    """
+    return crud_operations.update(
+        updated_model=new_tag,
+        flt=[Tag.title == title],
+        api_token=x_api_token)

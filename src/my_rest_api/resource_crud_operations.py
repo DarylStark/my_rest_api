@@ -325,3 +325,54 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
 
         # Return the resources
         return (pagination, resources)
+
+    def update(
+        self,
+        updated_model: InputModel,
+        flt: list[ColumnElement[bool]],
+        api_token: str | None = None,
+    ) -> list[OutputModel]:
+        """Update the resource.
+
+        Args:
+            updated_model: the updated model to use.
+            flt: the filter to select the resources to update.
+            api_token: the API token to use for authorization.
+
+        Returns:
+            The updated resource in the given OutputModel. This way we can
+            omit the fields that we don't want to return, like passwords.
+        """
+        authorized_user = self._authorize(
+            api_token,
+            [self._needed_scopes[2]])
+
+        # Update the resource
+        return_models: list[OutputModel] = []
+        if authorized_user:
+            with self._my_data.get_context(user=authorized_user) as context:
+                resource_manager = self._get_resource_manager(context)
+
+                # Get the resources to update
+                resources_to_update = resource_manager.retrieve(
+                    flt=flt)
+
+                if len(resources_to_update) == 0:
+                    # TODO: Better exception
+                    raise TypeError
+
+                # Update the resources
+                for resource in resources_to_update:
+                    for field in updated_model.model_fields:
+                        setattr(
+                            resource,
+                            field,
+                            getattr(updated_model, field))
+
+                # Update the resource
+                updated_models = resource_manager.update(resources_to_update)
+                return_models = self._convert_model_to_output_model(
+                    updated_models)
+
+        # Return the resource
+        return return_models

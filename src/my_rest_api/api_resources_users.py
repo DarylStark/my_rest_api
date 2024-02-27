@@ -2,7 +2,7 @@
 
 from typing import Annotated
 
-from fastapi import APIRouter, Header, Query, Request, Response
+from fastapi import APIRouter, Header, Query, Request, Response, Path
 from my_model import User
 
 from .app_config import AppConfig
@@ -79,3 +79,25 @@ def create(
         A list with the created users.
     """
     return crud_operations.create(resources, x_api_token)
+
+
+@api_router.put("/users/{username}")
+def update(
+    username: Annotated[str, Path()],
+    new_user: APIUserIn,
+    x_api_token: Annotated[str | None, Header()] = None
+) -> list[APIUser]:
+    """Update a user by replacing the object.
+
+    Args:
+        username: the username of the user to update.
+        new_user: the new user object to place.
+        x_api_token: the API token.
+
+    Returns:
+        The updated user.
+    """
+    return crud_operations.update(
+        updated_model=new_user,
+        flt=[User.username == username],
+        api_token=x_api_token)
