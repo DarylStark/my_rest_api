@@ -82,7 +82,7 @@ def create(
 
 
 @api_router.put("/users/{user_id}")
-def update_on_user_id(
+def update(
     user_id: Annotated[int, Path()],
     new_user: APIUserIn,
     x_api_token: Annotated[str | None, Header()] = None
