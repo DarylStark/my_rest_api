@@ -101,3 +101,19 @@ def update(
         updated_model=new_tag,
         flt=[Tag.id == tag_id],  # type: ignore
         api_token=x_api_token)
+
+
+@api_router.delete("/tags/{tag_id}")
+def delete(
+    tag_id: Annotated[int, Path()],
+    x_api_token: Annotated[str | None, Header()] = None
+) -> None:
+    """Delete a tag.
+
+    Args:
+        tag_id: the tag ID of the tag to delete.
+        x_api_token: the API token.
+    """
+    crud_operations.delete(
+        flt=[Tag.id == tag_id],  # type: ignore
+        api_token=x_api_token)

@@ -101,3 +101,19 @@ def update_on_user_id(
         updated_model=new_user,
         flt=[User.id == user_id],  # type: ignore
         api_token=x_api_token)
+
+
+@api_router.delete("/users/{user_id}")
+def delete(
+    user_id: Annotated[int, Path()],
+    x_api_token: Annotated[str | None, Header()] = None
+) -> None:
+    """Delete a user.
+
+    Args:
+        user_id: the tag ID of the user to delete.
+        x_api_token: the API token.
+    """
+    crud_operations.delete(
+        flt=[User.id == user_id],  # type: ignore
+        api_token=x_api_token)

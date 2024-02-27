@@ -378,3 +378,36 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
 
         # Return the resource
         return return_models
+
+    def delete(
+        self,
+        flt: list[ColumnElement[bool]],
+        api_token: str | None = None,
+    ) -> None:
+        """Delete resources.
+
+        Does not return anything; there is nothing to return. If something
+        goed wrong, a Exception will be raised.
+
+        Args:
+            flt: the filter to select the resources to delete.
+            api_token: the API token to use for authorization.
+        """
+        authorized_user = self._authorize(
+            api_token,
+            [self._needed_scopes[3]])
+
+        # Delete the resources
+        if authorized_user:
+            with self._my_data.get_context(user=authorized_user) as context:
+                resource_manager = self._get_resource_manager(context)
+
+                # Get the resources to update
+                resources_to_delete = resource_manager.retrieve(
+                    flt=flt)
+
+                if len(resources_to_delete) == 0:
+                    raise NoResourcesFoundError
+
+                # Delete the resources
+                resource_manager.delete(resources_to_delete)
