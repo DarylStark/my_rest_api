@@ -80,13 +80,7 @@ jobs:
         run: pip install poetry
       - name: Install main and dev requirements
         run: poetry install --with dev
-      - name: PyCodeStyle (tests)
-        run: poetry run pycodestyle --show-pep8 tests/
-      - name: PyLint (tests)
-        run: poetry run pylint tests/
-      - name: Flake8 (tests)
-        run: poetry run flake8 tests/
-      - name: PyDocStyle (tests)
-        run: poetry run pydocstyle tests/
+      - name: Ruff (tests)
+        run: poetry run ruff check tests/
       - name: MyPy (tests)
         run: poetry run mypy tests/
