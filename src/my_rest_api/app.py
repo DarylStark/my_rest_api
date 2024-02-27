@@ -20,18 +20,19 @@ from fastapi import FastAPI
 from fastapi.exceptions import HTTPException
 from my_data.exceptions import AuthorizationFailed
 
-from my_rest_api.app_config import AppConfig
-from my_rest_api.exceptions import FilterError, PaginationError, SortingError
-
 from .api_authentication import api_router as auth_api_router
 from .api_resources_tags import api_router as api_router_resources_tags
 from .api_resources_users import api_router as api_router_resources_users
 from .api_rest_api import api_router as rest_api_router
+from .app_config import AppConfig
 from .custom_errors_handlers import (
     custom_authorizationfailed_exception_handler,
     custom_filtererror_exception_handler, custom_http_exception_handler,
+    custom_noresourcesfounderror_exception_handler,
     custom_paginationerror_exception_handler,
     custom_sortingerror_exception_handler)
+from .exceptions import (FilterError, NoResourcesFoundError, PaginationError,
+                         SortingError)
 
 # Configure logging
 logging.basicConfig(
@@ -56,6 +57,8 @@ app.exception_handlers[SortingError] = \
     custom_sortingerror_exception_handler
 app.exception_handlers[FilterError] = \
     custom_filtererror_exception_handler
+app.exception_handlers[NoResourcesFoundError] = \
+    custom_noresourcesfounderror_exception_handler
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])

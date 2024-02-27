@@ -132,3 +132,24 @@ async def custom_filtererror_exception_handler(
         content={
             'error': error
         })
+
+
+async def custom_noresourcesfounderror_exception_handler(
+        request: Request,  # pylint: disable=unused-argument,
+        exc: AuthorizationFailed  # pylint: disable=unused-argument,
+) -> JSONResponse:
+    """Exception handler for when no resources are found.
+
+    Args:
+        request: The incoming request object.
+        exc: The raised HTTP exception.
+
+    Returns:
+        JSONResponse: The JSON response with the appropriate status code and
+            content.
+    """
+    return JSONResponse(
+        status_code=404,
+        content={
+            'error': 'No resources found that match the criteria.'
+        })
