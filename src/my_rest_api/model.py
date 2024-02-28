@@ -32,6 +32,7 @@ class AuthenticationDetails(BaseModel):
     username: str
     password: str
     second_factor: str | None = None
+    title: str | None = None
 
 
 class AuthenticationResultStatus(str, Enum):

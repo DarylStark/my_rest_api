@@ -1,4 +1,5 @@
 """API endpoints for authentication."""
+from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header
@@ -74,11 +75,15 @@ def login(
             ),
         ) from exc
 
+    token_title: str = (
+        authentication.title
+        or f'Session from {datetime.now().strftime("%Y-%m-%d, %H:%M:%S")}'
+    )
     return AuthenticationResult(
         status=AuthenticationResultStatus.SUCCESS,
         api_token=authenticator.create_api_token(
             session_timeout_in_seconds=AppConfig().session_timeout_in_seconds,
-            title='',
+            title=token_title,
         ),
     )
 
