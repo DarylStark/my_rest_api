@@ -44,6 +44,26 @@
             "id": 9,
             "module": "tags",
             "subject": "delete"
+        },
+        {
+            "id": 10,
+            "module": "user_settings",
+            "subject": "create"
+        },
+        {
+            "id": 11,
+            "module": "user_settings",
+            "subject": "retrieve"
+        },
+        {
+            "id": 12,
+            "module": "user_settings",
+            "subject": "update"
+        },
+        {
+            "id": 13,
+            "module": "user_settings",
+            "subject": "delete"
         }
     ],
     "users": [
@@ -56,42 +76,38 @@
             "_password": "root_pw",
             "_tags": [
                 {
-                    "title": "root_tag_1"
+                    "title": "root_tag_1",
+                    "color": "ff0000"
                 },
                 {
-                    "title": "root_tag_2"
+                    "title": "root_tag_2",
+                    "color": "00ff00"
                 },
                 {
-                    "title": "root_tag_3"
+                    "title": "root_tag_3",
+                    "color": "0000ff"
                 }
             ],
             "_api_clients": [
                 {
+                    "id": 1,
                     "app_name": "root_api_client_1",
                     "app_publisher": "root_api_client_1_publisher"
-                },
-                {
-                    "app_name": "root_api_client_2",
-                    "app_publisher": "root_api_client_2_publisher"
-                },
-                {
-                    "app_name": "root_api_client_3",
-                    "app_publisher": "root_api_client_3_publisher"
                 }
             ],
             "_api_tokens": [
                 {
-                    "title": "root_api_token_1",
+                    "id": 1,
+                    "title": "root_long_lived_token",
                     "token": "MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL",
-                    "enabled": false
+                    "api_client_id": 1,
+                    "expires": "2027-12-31T23:59:59.999Z"
                 },
                 {
-                    "title": "root_api_token_2",
+                    "id": 2,
+                    "title": "root_short_lived_token",
                     "token": "Cbxfv44aNlWRMu4bVqawWu9vofhFWmED",
-                    "expires": "1999-12-31T23:59:59Z"
-                },
-                {
-                    "title": "root_api_token_3"
+                    "expires": "2027-12-31T23:59:59.999Z"
                 }
             ],
             "_user_settings": [
@@ -111,134 +127,62 @@
         },
         {
             "id": 2,
-            "fullname": "Normal user 1",
-            "username": "normal.user.1",
-            "email": "normal_user_1@example.com",
+            "fullname": "Normal user",
+            "username": "normal.user",
+            "email": "normal_user@example.com",
             "role": 3,
-            "_password": "normal_user_1_pw",
+            "_password": "normal_user",
             "_tags": [
                 {
-                    "title": "normal_user_1_tag_1"
+                    "title": "normal_user_tag_1"
                 },
                 {
-                    "title": "normal_user_1_tag_2"
+                    "title": "normal_user_tag_2"
                 },
                 {
-                    "title": "normal_user_1_tag_3"
+                    "title": "normal_user_tag_3"
                 }
             ],
             "_api_clients": [
                 {
-                    "app_name": "normal_user_1_api_client_1",
-                    "app_publisher": "normal_user_1_api_client_1_publisher"
-                },
-                {
-                    "app_name": "normal_user_1_api_client_2",
-                    "app_publisher": "normal_user_1_api_client_2_publisher"
-                },
-                {
-                    "app_name": "normal_user_1_api_client_3",
-                    "app_publisher": "normal_user_1_api_client_3_publisher"
+                    "id": 2,
+                    "app_name": "normal_user_api_client_1",
+                    "app_publisher": "normal_user_api_client_1_publisher"
                 }
             ],
             "_api_tokens": [
                 {
-                    "title": "normal_user_1_api_token_1"
+                    "id": 3,
+                    "title": "normal_user_long_lived_token",
+                    "token": "6VZGMOdNUAhCzYhipVJJjHTsYIzwBrlg",
+                    "api_client_id": 2,
+                    "expires": "2027-12-31T23:59:59.999Z"
                 },
                 {
-                    "title": "normal_user_1_api_token_2"
-                },
-                {
-                    "title": "normal_user_1_api_token_3"
+                    "id": 4,
+                    "title": "normal_user_short_lived_token",
+                    "token": "pabq1d533eMucNPr5pHPuDMqxKRw1SE0",
+                    "expires": "2027-12-31T23:59:59.999Z"
                 }
             ],
             "_user_settings": [
                 {
-                    "setting": "normal_user_1_test_setting_1",
+                    "setting": "normal_user_test_setting_1",
                     "value": "test_value_1"
                 },
                 {
-                    "setting": "normal_user_1_test_setting_2",
+                    "setting": "normal_user_test_setting_2",
                     "value": "test_value_2"
                 },
                 {
-                    "setting": "normal_user_1_test_setting_3",
+                    "setting": "normal_user_test_setting_3",
                     "value": "test_value_3"
                 }
             ]
         },
         {
             "id": 3,
-            "fullname": "Normal user 2",
-            "username": "normal.user.2",
-            "email": "normal_user_2@example.com",
-            "role": 3,
-            "_password": "normal_user_2_pw",
-            "_tags": [
-                {
-                    "title": "normal_user_2_tag_1"
-                },
-                {
-                    "title": "normal_user_2_tag_2"
-                },
-                {
-                    "title": "normal_user_2_tag_3"
-                }
-            ],
-            "_api_clients": [
-                {
-                    "id": 100,
-                    "app_name": "normal_user_2_api_client_1",
-                    "app_publisher": "normal_user_2_api_client_1_publisher"
-                },
-                {
-                    "app_name": "normal_user_2_api_client_2",
-                    "app_publisher": "normal_user_2_api_client_2_publisher"
-                },
-                {
-                    "app_name": "normal_user_2_api_client_3",
-                    "app_publisher": "normal_user_2_api_client_3_publisher"
-                }
-            ],
-            "_api_tokens": [
-                {
-                    "title": "normal_user_2_api_token_1",
-                    "token": "aRlIytpyz61JX2TvczLxJZUsRzk578pE",
-                    "expires": "2099-12-31T23:59:59Z"
-                },
-                {
-                    "id": 10,
-                    "title": "normal_user_2_api_token_2",
-                    "token": "2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv",
-                    "expires": "2099-12-31T23:59:59Z",
-                    "api_client_id": 100
-                },
-                {
-                    "id": 11,
-                    "title": "normal_user_2_api_token_3",
-                    "token": "BynORM5FVkt07BuQSA09lQUIrgCgOqEv",
-                    "expires": "2099-12-31T23:59:59Z",
-                    "api_client_id": 100
-                }
-            ],
-            "_user_settings": [
-                {
-                    "setting": "normal_user_2_test_setting_1",
-                    "value": "test_value_1"
-                },
-                {
-                    "setting": "normal_user_2_test_setting_2",
-                    "value": "test_value_2"
-                },
-                {
-                    "setting": "normal_user_2_test_setting_3",
-                    "value": "test_value_3"
-                }
-            ]
-        },
-        {
-            "id": 4,
-            "fullname": "Service User - for tests",
+            "fullname": "Service User",
             "username": "service.user",
             "email": "service.user@example.com",
             "role": 2,

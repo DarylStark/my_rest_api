@@ -7,22 +7,22 @@ from fastapi.testclient import TestClient
 @pytest.mark.parametrize(
     'endpoint, expected_code, expected_count, flt',
     (
-        ('users', 200, 4, None),
+        ('users', 200, 3, None),
         ('users', 200, 1, 'id==1'),
-        ('users', 200, 3, 'id!=1'),
-        ('users', 200, 3, 'id<4'),
-        ('users', 200, 3, 'id>1'),
-        ('users', 200, 3, 'id<=3'),
-        ('users', 200, 3, 'id>=2'),
+        ('users', 200, 2, 'id!=1'),
+        ('users', 200, 1, 'id<2'),
+        ('users', 200, 2, 'id>1'),
+        ('users', 200, 2, 'id<=2'),
+        ('users', 200, 2, 'id>=2'),
         ('users', 200, 1, 'username==root'),
-        ('users', 200, 2, 'username=contains=normal'),
-        ('users', 200, 3, 'username=!contains=service'),
+        ('users', 200, 1, 'username=contains=normal'),
+        ('users', 200, 2, 'username=!contains=service'),
         ('users', 200, 1, 'fullname==root'),
-        ('users', 200, 2, 'fullname=contains=normal'),
-        ('users', 200, 3, 'fullname=!contains=service'),
-        ('users', 200, 1, 'email==normal_user_1@example.com'),
-        ('users', 200, 2, 'email=contains=normal_user'),
-        ('users', 200, 3, 'email=!contains=service'),
+        ('users', 200, 1, 'fullname=contains=normal'),
+        ('users', 200, 2, 'fullname=!contains=service'),
+        ('users', 200, 1, 'email==normal_user@example.com'),
+        ('users', 200, 1, 'email=contains=normal_user'),
+        ('users', 200, 2, 'email=!contains=service'),
         ('tags', 200, 3, None),
         ('tags', 200, 1, 'id==1'),
         ('tags', 200, 2, 'id!=1'),
@@ -34,12 +34,11 @@ from fastapi.testclient import TestClient
         ('tags', 200, 1, 'title=contains=tag_1'),
         ('tags', 200, 2, 'title=!contains=tag_1'),
         ('user_settings', 200, 3, None),
-        ('api_clients', 200, 3, None),
+        ('api_clients', 200, 1, None),
     ),
 )
 def test_retrieval_as_root_short_lived(
     api_client: TestClient,
-    random_api_token_root: str,
     endpoint: str,
     expected_code: int,
     expected_count: int,
@@ -55,6 +54,7 @@ def test_retrieval_as_root_short_lived(
         expected_count: the expected count of items.
         flt: the filter to use.
     """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
     # Compile the arguments for the endpoint
     args: dict[str, str] = {}
     if flt:
@@ -71,7 +71,7 @@ def test_retrieval_as_root_short_lived(
     # Do the request
     result = api_client.get(
         endpoint,
-        headers={'X-API-Token': random_api_token_root},
+        headers={'X-API-Token': _token},
     )
     response = result.json()
 
