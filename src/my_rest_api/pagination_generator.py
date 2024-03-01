@@ -73,7 +73,9 @@ class PaginationGenerator:
         Raises:
             InvalidPageError: if the page number is invalid.
         """
-        if self.page < 1 or self.page > self.total_pages:
+        if (self.page < 1) or (
+            self.page > self.total_pages and self.total_pages > 0
+        ):
             raise InvalidPageError('Invalid page number.', self.total_pages)
 
     def validate_page_size(self) -> None:

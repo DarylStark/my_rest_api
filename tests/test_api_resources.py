@@ -34,7 +34,31 @@ from fastapi.testclient import TestClient
         ('tags', 200, 1, 'title=contains=tag_1'),
         ('tags', 200, 2, 'title=!contains=tag_1'),
         ('user_settings', 200, 3, None),
+        ('user_settings', 200, 1, 'id==1'),
+        ('user_settings', 200, 2, 'id!=1'),
+        ('user_settings', 200, 2, 'id>1'),
+        ('user_settings', 200, 2, 'id<3'),
+        ('user_settings', 200, 2, 'id>=2'),
+        ('user_settings', 200, 2, 'id<=2'),
+        ('user_settings', 200, 1, 'setting==root_test_setting_1'),
+        ('user_settings', 200, 3, 'setting=contains=root_test_setting'),
+        ('user_settings', 200, 2, 'setting=!contains=_1'),
+        ('user_settings', 200, 1, 'value==test_value_1'),
+        ('user_settings', 200, 3, 'value=contains=test_value'),
+        ('user_settings', 200, 2, 'value=!contains=_1'),
         ('api_clients', 200, 1, None),
+        ('api_clients', 200, 1, 'id==1'),
+        ('api_clients', 200, 0, 'id!=1'),
+        ('api_clients', 200, 0, 'id>1'),
+        ('api_clients', 200, 1, 'id<3'),
+        ('api_clients', 200, 0, 'id>=2'),
+        ('api_clients', 200, 1, 'id<=2'),
+        ('api_clients', 200, 1, 'app_name==root_api_client_1'),
+        ('api_clients', 200, 1, 'app_name=contains=api_client'),
+        ('api_clients', 200, 0, 'app_name=!contains=api_client'),
+        ('api_clients', 200, 1, 'app_publisher==root_api_client_1_publisher'),
+        ('api_clients', 200, 1, 'app_publisher=contains=publisher'),
+        ('api_clients', 200, 0, 'app_publisher=!contains=publisher'),
     ),
 )
 def test_retrieval_as_root_short_lived(
@@ -45,6 +69,10 @@ def test_retrieval_as_root_short_lived(
     flt: str | None,
 ) -> None:
     """Test that the retrieval endpoint works.
+
+    Happy path test; should always be a success and return some data. We test
+    all the possible filters for the retrieval endpoint for all the possible
+    resources.
 
     Args:
         api_client: the test client.
