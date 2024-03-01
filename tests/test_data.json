@@ -200,6 +200,38 @@
         {
             "api_token_id": 1,
             "api_scope_id": 4
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 5
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 6
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 7
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 8
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 9
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 10
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 11
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 12
         }
     ]
 }
