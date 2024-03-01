@@ -209,3 +209,37 @@ class APIUserSetting(APIUserSettingIn):
     """
 
     id: int | None = None
+
+
+class APIAPIClientIn(BaseModel):
+    """Client object for the REST API.
+
+    Attributes:
+        created: the creation datetime of the object.
+        expires: the expiration datetime of the object.
+        enabled: whether the client is enabled.
+        app_name: the name of the app.
+        app_publisher: the publisher of the app.
+        redirect_url: the URL to redirect to after authentication.
+    """
+
+    created: datetime = Field(default_factory=datetime.utcnow)
+    expires: datetime = Field(default_factory=datetime.utcnow)
+    enabled: bool = True
+    app_name: str = Field(max_length=64)
+    app_publisher: str = Field(max_length=64)
+    redirect_url: str | None = Field(
+        default=None, pattern=r'^https?://', max_length=1024
+    )
+
+
+class APIAPIClient(APIAPIClientIn):
+    """APIClient object for the REST API response.
+
+    Adds the `id` field to the APIClient model.
+
+    Attributes:
+        id: the id of the api_client.
+    """
+
+    id: int | None = None
