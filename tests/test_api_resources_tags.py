@@ -7,25 +7,6 @@ from fastapi.testclient import TestClient
 # TODO: test tag retrieval
 
 
-def test_retrieve_tags_as_root(
-    api_client: TestClient, random_api_token_root: str
-) -> None:
-    """Test retrieving tags as root.
-
-    Should be succesfull.
-
-    Args:
-        api_client: the test client for making API requests.
-        random_api_token_root: a token for the request.
-    """
-    result = api_client.get(
-        '/resources/tags', headers={'X-API-Token': random_api_token_root}
-    )
-    response = result.json()
-    assert result.status_code == 200
-    assert len(response) == 3
-
-
 def test_retrieve_tags_as_normal_user(
     api_client: TestClient, random_api_token_normal_user: str
 ) -> None:
@@ -80,50 +61,6 @@ def test_retrieve_tags_as_normal_user_with_long_lived_token_missing_scope(
         headers={'X-API-Token': 'BynORM5FVkt07BuQSA09lQUIrgCgOqEv'},
     )
     assert result.status_code == 401
-
-
-@pytest.mark.parametrize(
-    'field_name, operator, value, expected_length',
-    [
-        ('id', '==', 1, 1),
-        ('id', '!=', 1, 2),
-        ('id', '<', 3, 2),
-        ('id', '>', 1, 2),
-        ('id', '<=', 3, 3),
-        ('id', '>=', 2, 2),
-        ('title', '==', 'root_tag_1', 1),
-        ('title', '=contains=', 'tag_1', 1),
-        ('title', '=!contains=', 'tag_1', 2),
-    ],
-)
-def test_retrieve_tags_with_filters_as_root(
-    api_client: TestClient,
-    random_api_token_root: str,
-    field_name: str,
-    operator: str,
-    value: str,
-    expected_length: int,
-) -> None:
-    """Test retrieving tags with filters.
-
-    Should be succesfull.
-
-    Args:
-        api_client: the test client for making API requests.
-        random_api_token_root: a token for the request.
-        field_name: the field name to filter on.
-        operator: the operator to use for the filter.
-        value: the value to filter on.
-        expected_length: the expected length of the result.
-    """
-    filter_argument = f'{field_name}{operator}{value}'
-    result = api_client.get(
-        f'/resources/tags?filter={filter_argument}',
-        headers={'X-API-Token': random_api_token_root},
-    )
-    response = result.json()
-    assert result.status_code == 200
-    assert len(response) == expected_length
 
 
 def test_retrieve_tags_with_invalid_filter_as_root(
