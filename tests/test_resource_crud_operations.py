@@ -13,14 +13,11 @@ from my_rest_api.resource_crud_operations import (
 
 def test_retrieve_invalid_context_attribute(
     api_client: TestClient,  # pylint: disable=unused-argument
-    random_api_token_normal_user: str,
 ) -> None:
     """Test that an invalid context attribute raises an error on retrieval.
 
     Args:
         api_client: TestClient instance. Only imported to create the db.
-        random_api_token_normal_user: str. A random API token for a normal
-            user.
     """
     operations = ResourceCRUDOperations(
         model=Tag,
@@ -37,7 +34,7 @@ def test_retrieve_invalid_context_attribute(
         sort_fields=['title'],
     )
     with pytest.raises(InvalidContextAttributeError):
-        operations.retrieve(api_token=random_api_token_normal_user)
+        operations.retrieve(api_token='pabq1d533eMucNPr5pHPuDMqxKRw1SE0')
 
 
 def test_get_link_header_string_without_pagination(

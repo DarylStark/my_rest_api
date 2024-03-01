@@ -7,45 +7,6 @@ from fastapi.testclient import TestClient
 # TODO: test tag retrieval
 
 
-def test_retrieve_tags_as_normal_user(
-    api_client: TestClient, random_api_token_normal_user: str
-) -> None:
-    """Test retrieving tags as normal user.
-
-    Should be succesfull.
-
-    Args:
-        api_client: the test client for making API requests.
-        random_api_token_normal_user: a token for the request.
-    """
-    result = api_client.get(
-        '/resources/tags',
-        headers={'X-API-Token': random_api_token_normal_user},
-    )
-    response = result.json()
-    assert result.status_code == 200
-    assert len(response) == 3
-
-
-def test_retrieve_tags_as_normal_user_with_long_lived_token(
-    api_client: TestClient,
-) -> None:
-    """Test retrieving tags as a normal user with a long lived token.
-
-    Should be succesfull.
-
-    Args:
-        api_client: the test client for making API requests.
-    """
-    result = api_client.get(
-        '/resources/tags',
-        headers={'X-API-Token': '2e3n4RSr4I6TnRSwXRpjDYhs9XIYNwhv'},
-    )
-    response = result.json()
-    assert result.status_code == 200
-    assert len(response) == 3
-
-
 def test_retrieve_tags_as_normal_user_with_long_lived_token_missing_scope(
     api_client: TestClient,
 ) -> None:

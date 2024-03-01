@@ -19,7 +19,7 @@ def test_login_with_a_valid_api_token_set(
     result = api_client.post(
         '/auth/login',
         json={'username': 'normal.user.1', 'password': 'normal_user_1_pw'},
-        headers={'X-API-Token': random_api_token_normal_user},
+        headers={'X-API-Token': 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'},
     )
     response = result.json()
     assert response['error'] == 'Not authorized'
@@ -36,7 +36,7 @@ def test_login_with_invalid_api_token_set(api_client: TestClient) -> None:
     """
     result = api_client.post(
         '/auth/login',
-        json={'username': 'normal.user.1', 'password': 'normal_user_1_pw'},
+        json={'username': 'normal.user', 'password': 'normal_user'},
         headers={'X-API-Token': 'wrong_token'},
     )
     response = result.json()
@@ -48,7 +48,7 @@ def test_login_with_invalid_api_token_set(api_client: TestClient) -> None:
 @pytest.mark.parametrize(
     'login_json',
     [
-        {'username': 'normal.user.1', 'password': 'normal_user_1_pw'},
+        {'username': 'normal.user', 'password': 'normal_user'},
         {'username': 'root', 'password': 'root_pw'},
     ],
     ids=['normal.user.1', 'root'],
@@ -237,20 +237,17 @@ def test_login_with_service_account(api_client: TestClient) -> None:
     assert result.status_code == 403
 
 
-def test_logout_with_valid_token(
-    api_client: TestClient, random_api_token_normal_user_logout: str
-) -> None:
+def test_logout_with_valid_token(api_client: TestClient) -> None:
     """Test logging out with a valid token.
 
     Should be succesfull.
 
     Args:
         api_client: the test client for making API requests.
-        random_api_token_normal_user_logout: a token for the logout.
     """
     result = api_client.get(
         '/auth/logout',
-        headers={'X-API-Token': random_api_token_normal_user_logout},
+        headers={'X-API-Token': 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'},
     )
     response = result.json()
     assert response['status'] == 'success'
@@ -309,7 +306,7 @@ def test_authentication_status_not_logged_in(api_client: TestClient) -> None:
 
 
 def test_authentication_status_valid_short_lived_token(
-    api_client: TestClient, random_api_token_normal_user: str
+    api_client: TestClient,
 ) -> None:
     """Test the authentication status with a valid token.
 
@@ -317,21 +314,21 @@ def test_authentication_status_valid_short_lived_token(
 
     Args:
         api_client: the test client for making API requests.
-        random_api_token_normal_user: a token for the request.
     """
     result = api_client.get(
-        '/auth/status', headers={'X-API-Token': random_api_token_normal_user}
+        '/auth/status',
+        headers={'X-API-Token': 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'},
     )
     response = result.json()
     assert response['token_type'] == 'short-lived'
-    assert response['title'] == 'test short lived api token'
+    assert response['title'] == 'normal_user_short_lived_token'
     assert response['created'] is not None
     assert response['expires'] is not None
     assert result.status_code == 200
 
 
 def test_authentication_status_valid_long_lived_token(
-    api_client: TestClient, random_api_token_normal_user_long_lived: str
+    api_client: TestClient,
 ) -> None:
     """Test the authentication status with a valid token.
 
@@ -339,15 +336,14 @@ def test_authentication_status_valid_long_lived_token(
 
     Args:
         api_client: the test client for making API requests.
-        random_api_token_normal_user_long_lived: a token for the request.
     """
     result = api_client.get(
         '/auth/status',
-        headers={'X-API-Token': random_api_token_normal_user_long_lived},
+        headers={'X-API-Token': '6VZGMOdNUAhCzYhipVJJjHTsYIzwBrlg'},
     )
     response = result.json()
     assert response['token_type'] == 'long-lived'
-    assert response['title'] == 'test token'
+    assert response['title'] == 'normal_user_long_lived_token'
     assert response['created'] is not None
     assert response['expires'] is not None
     assert result.status_code == 200
