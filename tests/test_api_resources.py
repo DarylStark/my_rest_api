@@ -292,3 +292,180 @@ def test_retrieval_as_root_short_lived_with_invalid_sort_field(
 
     # Validate the answer
     assert result.status_code == 400
+
+
+@pytest.mark.parametrize(
+    'endpoint, page, page_size, expected_count,  next_link, prev_link',
+    (
+        ('users', 1, 1, 1, True, False),
+        ('users', 1, 3, 3, False, False),
+        ('users', 1, 2, 2, True, False),
+        ('users', 2, 2, 1, False, True),
+        ('users', 2, 1, 1, True, True),
+        ('users', 3, 1, 1, False, True),
+        ('users', 1, 3, 3, False, False),
+        ('tags', 1, 1, 1, True, False),
+        ('tags', 2, 1, 1, True, True),
+        ('tags', 3, 1, 1, False, True),
+        ('tags', 1, 2, 2, True, False),
+        ('tags', 2, 2, 1, False, True),
+        ('tags', 1, 3, 3, False, False),
+        ('user_settings', 1, 1, 1, True, False),
+        ('user_settings', 2, 1, 1, True, True),
+        ('user_settings', 3, 1, 1, False, True),
+        ('user_settings', 1, 2, 2, True, False),
+        ('user_settings', 2, 2, 1, False, True),
+        ('user_settings', 1, 3, 3, False, False),
+        ('api_clients', 1, 1, 1, False, False),
+        ('api_clients', 1, 2, 1, False, False),
+    ),
+)
+def test_retrieval_as_root_short_lived_with_pagination(
+    api_client: TestClient,
+    endpoint: str,
+    page: int,
+    page_size: int,
+    expected_count: int,
+    next_link: bool,
+    prev_link: bool,
+) -> None:
+    """Test that the retrieval endpoint works with pagination.
+
+    Happy path test; should always be a success and return some data. We test
+    retrieving data and checking if all the page information is correct.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        page: the page to retrieve.
+        page_size: the page size.
+        expected_count: the expected count of items.
+        next_link: whether there should be a "next" link.
+        prev_link: whether there should be a "previous" link.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+    # Set the endpoint
+    endpoint = create_endpoint_url(
+        endpoint, {'page_size': page_size, 'page': page}
+    )
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+    response = result.json()
+
+    # Validate the answer
+    assert result.status_code == 200
+    assert len(response) == expected_count
+    assert ('next' in result.links) == next_link
+    assert ('prev' in result.links) == prev_link
+    assert 'first' in result.links
+    assert 'last' in result.links
+
+
+@pytest.mark.parametrize(
+    'endpoint, page_size',
+    (
+        ('users', 251),
+        ('users', 500),
+        ('users', 1000),
+        ('users', 0),
+        ('users', -1),
+        ('users', -10),
+        ('users', -25),
+        ('tags', 251),
+        ('tags', 500),
+        ('tags', 1000),
+        ('tags', 0),
+        ('tags', -1),
+        ('tags', -10),
+        ('tags', -25),
+        ('user_settings', 251),
+        ('user_settings', 500),
+        ('user_settings', 1000),
+        ('user_settings', 0),
+        ('user_settings', -1),
+        ('user_settings', -10),
+        ('user_settings', -25),
+        ('api_clients', 251),
+        ('api_clients', 500),
+        ('api_clients', 1000),
+        ('api_clients', 0),
+        ('api_clients', -1),
+        ('api_clients', -10),
+        ('api_clients', -25),
+    ),
+)
+def test_retrieval_as_root_short_lived_with_pagination_invalid_page_size(
+    api_client: TestClient,
+    endpoint: str,
+    page_size: int,
+) -> None:
+    """Test that the retrieval endpoint works with a invalid page size.
+
+    Unhappy path test; should result in a error 400
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        page_size: the page size.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+    # Set the endpoint
+    endpoint = create_endpoint_url(endpoint, {'page_size': page_size})
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 400
+
+
+@pytest.mark.parametrize(
+    'endpoint, page_size, page',
+    (
+        ('users', 10, 0),
+        ('users', 10, 4),
+        ('tags', 10, 0),
+        ('tags', 10, 4),
+        ('user_settings', 10, 0),
+        ('user_settings', 10, 4),
+        ('api_clients', 10, 0),
+        ('api_clients', 10, 4),
+    ),
+)
+def test_retrieval_as_root_short_lived_with_pagination_invalid_page(
+    api_client: TestClient,
+    endpoint: str,
+    page_size: int,
+    page: int,
+) -> None:
+    """Test that the retrieval endpoint works with a invalid page.
+
+    Unhappy path test; should result in a error 400
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        page: the page.
+        page_size: the page size.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+    # Set the endpoint
+    endpoint = create_endpoint_url(
+        endpoint, {'page': page, 'page_size': page_size}
+    )
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 400

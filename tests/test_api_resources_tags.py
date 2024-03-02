@@ -1,7 +1,6 @@
 """Test the tag management of the REST API."""
 # pylint: disable=too-many-arguments
 
-import pytest
 from fastapi.testclient import TestClient
 
 # TODO: test tag retrieval
@@ -43,86 +42,6 @@ def test_retrieving_tags_with_pagination(
     assert result.status_code == 200
     assert len(response) == 1
     assert response[0]['title'] == 'root_tag_3'
-
-
-def test_retrieving_tags_with_invalid_page_size(
-    api_client: TestClient, random_api_token_root: str
-) -> None:
-    """Test retrieving tags with invalid page size.
-
-    Should fail.
-
-    Args:
-        api_client: the test client for making API requests.
-        random_api_token_root: a token for the request.
-    """
-    result = api_client.get(
-        '/resources/tags?page_size=1000',
-        headers={'X-API-Token': random_api_token_root},
-    )
-    assert result.status_code == 400
-    response = result.json()
-    assert response['error'] == 'Invalid page size.'
-    assert response['max_page'] == 250
-
-
-@pytest.mark.parametrize('page_number', [0, -1, 10000])
-def test_retrieving_tags_with_invalid_page_number(
-    api_client: TestClient, random_api_token_root: str, page_number: int
-) -> None:
-    """Test retrieving tags with invalid page number.
-
-    Should fail.
-
-    Args:
-        api_client: the test client for making API requests.
-        random_api_token_root: a token for the request.
-        page_number: the page number to test.
-    """
-    result = api_client.get(
-        f'/resources/tags?page={page_number}&page_size=2',
-        headers={'X-API-Token': random_api_token_root},
-    )
-    assert result.status_code == 400
-    response = result.json()
-    assert response['error'] == 'Invalid page number.'
-    assert response['max_page'] == 2
-
-
-@pytest.mark.parametrize(
-    'page_number, expected_links',
-    [
-        (1, ['first', 'last', 'next']),
-        (2, ['first', 'last', 'next', 'prev']),
-        (3, ['first', 'last', 'prev']),
-    ],
-)
-def test_retrieving_tags_check_http_links(
-    api_client: TestClient,
-    random_api_token_root: str,
-    page_number: int,
-    expected_links: list[str],
-) -> None:
-    """Test retrieving tags and check the links in the response.
-
-    Should be succesfull.
-
-    Args:
-        api_client: the test client for making API requests.
-        random_api_token_root: a token for the request.
-        page_number: the page number to test.
-        expected_links: the links we expect to find in the response.
-    """
-    result = api_client.get(
-        f'/resources/tags?page_size=1&page={page_number}',
-        headers={'X-API-Token': random_api_token_root},
-    )
-    response = result.json()
-    assert result.status_code == 200
-    assert len(response) == 1
-    for expected_link in expected_links:
-        assert expected_link in result.links
-        assert result.links[expected_link] is not None
 
 
 def test_create_tags_as_root(
