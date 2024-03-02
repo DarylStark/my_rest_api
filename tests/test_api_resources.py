@@ -101,13 +101,13 @@ def test_retrieval_as_root_short_lived(
         ('api_clients', 0, 'app_publisher=!contains=publisher'),
     ),
 )
-def test_retrieval_as_root_short_lived_with_filters(
+def test_retrieval_as_root_short_lived_with_valid_filters(
     api_client: TestClient,
     endpoint: str,
     expected_count: int,
     flt: str | None,
 ) -> None:
-    """Test that the retrieval endpoint works with good filters.
+    """Test that the retrieval endpoint works with valid filters.
 
     Happy path test; should always be a success and return some data. We test
     all the possible filters for the retrieval endpoint for all the possible
