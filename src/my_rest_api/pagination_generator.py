@@ -65,7 +65,9 @@ class PaginationGenerator:
         self.total_items = total_items
 
         # Calculate the total pages
-        self.total_pages = ceil(total_items / page_size)
+        self.total_pages = 0
+        if self.page_size > 0:
+            self.total_pages = ceil(total_items / page_size)
 
     def validate_page(self) -> None:
         """Validate the page number.
