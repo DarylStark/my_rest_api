@@ -41,6 +41,10 @@ class InvalidFilterOperatorError(FilterError):
     """Exception for invalid filter operators."""
 
 
+class InvalidFilterValueTypeError(FilterError):
+    """Exception for invalid value types."""
+
+
 class ResourceCRUDOperationsError(MyRESTAPIError):
     """Exception for resource CRUD API router generator errors."""
 

@@ -4,6 +4,27 @@ import pytest
 from fastapi.testclient import TestClient
 
 
+def create_endpoint_url(
+    endpoint: str, arguments: dict[str, str | int] | None = None
+) -> str:
+    """Create the endpoint URL.
+
+    Args:
+        endpoint: the endpoint.
+        arguments: the arguments for the endpoint. Can be omitted if there are
+            no arguments.
+
+    Returns:
+        The endpoint URL.
+    """
+    args_string = ''
+    if arguments and len(arguments):
+        args_string = '&'.join(
+            [f'{argument}={value}' for argument, value in arguments.items()]
+        )
+    return f'/resources/{endpoint}?{args_string}'
+
+
 @pytest.mark.parametrize(
     'endpoint, expected_count',
     (
@@ -30,7 +51,7 @@ def test_retrieval_as_root_short_lived(
     """
     _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
     # Set the endpoint
-    endpoint = f'/resources/{endpoint}'
+    endpoint = create_endpoint_url(endpoint)
 
     # Do the request
     result = api_client.get(
@@ -126,12 +147,7 @@ def test_retrieval_as_root_short_lived_with_valid_filters(
         args['filter'] = flt
 
     # Create the endpoint string
-    args_string = ''
-    if len(args):
-        args_string = '&'.join(
-            [f'{argument}={value}' for argument, value in args.items()]
-        )
-    endpoint = f'/resources/{endpoint}?{args_string}'
+    endpoint = create_endpoint_url(endpoint, args)
 
     # Do the request
     result = api_client.get(
@@ -143,3 +159,136 @@ def test_retrieval_as_root_short_lived_with_valid_filters(
     # Validate the answer
     assert result.status_code == 200
     assert len(response) == expected_count
+
+
+@pytest.mark.parametrize(
+    'endpoint, flt',
+    (
+        ('users', 'id==test'),
+        ('users', 'id=>1'),
+        ('tags', 'title=like=tag_1'),
+        ('tags', 'title=!like=tag_1'),
+        ('user_settings', 'settings=!contains=_1'),
+        ('user_settings', 'value=!_1'),
+        ('api_clients', 'id=contains=1'),
+        ('api_clients', 'id<>0'),
+    ),
+)
+def test_retrieval_as_root_short_lived_with_invalid_filters(
+    api_client: TestClient,
+    endpoint: str,
+    flt: str | None,
+) -> None:
+    """Test that the retrieval endpoint works with invalid filters.
+
+    Unhappy path test; should always fail with error 400.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        flt: the filter to use.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+    # Compile the arguments for the endpoint
+    args: dict[str, str] = {}
+    if flt:
+        args['filter'] = flt
+
+    # Create the endpoint string
+    endpoint = create_endpoint_url(endpoint, args)
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 400
+
+
+@pytest.mark.parametrize(
+    'endpoint, sort_field',
+    (
+        ('users', 'username'),
+        ('users', 'role'),
+        ('tags', 'title'),
+        ('tags', 'id'),
+        ('user_settings', 'setting'),
+        ('user_settings', 'value'),
+        ('api_clients', 'app_name'),
+        ('api_clients', 'app_publisher'),
+    ),
+)
+def test_retrieval_as_root_short_lived_with_valid_sort_field(
+    api_client: TestClient, endpoint: str, sort_field: str
+) -> None:
+    """Test that the retrieval endpoint works with valid sort field.
+
+    Happy test path: should return one item.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        sort_field: the field to sort on.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+
+    # Create the endpoint string
+    endpoint = create_endpoint_url(
+        endpoint, {'sort': sort_field, 'page_size': 1, 'page': 1}
+    )
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+    response = result.json()
+
+    # Validate the answer
+    assert result.status_code == 200
+    assert len(response) == 1
+
+
+@pytest.mark.parametrize(
+    'endpoint, sort_field',
+    (
+        ('users', 'uname'),
+        ('users', '_id'),
+        ('users', 'password_hash'),
+        ('tags', 'name'),
+        ('tags', '!title'),
+        ('user_settings', 'v'),
+        ('user_settings', 'wrong_field'),
+        ('api_clients', 'token'),
+        ('api_clients', 'invalid_field'),
+    ),
+)
+def test_retrieval_as_root_short_lived_with_invalid_sort_field(
+    api_client: TestClient, endpoint: str, sort_field: str
+) -> None:
+    """Test that the retrieval endpoint works with invalid sort field.
+
+    Unhappy test path: should always return error 400.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        sort_field: the field to sort on.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+
+    # Create the endpoint string
+    endpoint = create_endpoint_url(
+        endpoint, {'sort': sort_field, 'page_size': 1, 'page': 1}
+    )
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 400
