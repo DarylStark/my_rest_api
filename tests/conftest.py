@@ -108,7 +108,6 @@ def cleanup() -> Generator[None, None, None]:
 @pytest.fixture(scope='session')
 def api_client(
     cleanup: None,  # pylint: disable=unused-argument
-    random_second_factor: str,
 ) -> TestClient:
     """Return a TestClient instance for the FastAPI application.
 
