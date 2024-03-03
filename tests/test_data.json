@@ -93,7 +93,7 @@
             "_api_tokens": [
                 {
                     "id": 1,
-                    "title": "root_long_lived_token",
+                    "title": "root_long_lived_token_all_permissions",
                     "token": "MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL",
                     "api_client_id": 1,
                     "expires": "2027-12-31T23:59:59.999Z"

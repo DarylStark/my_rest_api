@@ -34,15 +34,16 @@ def create_endpoint_url(
         ('api_clients', 1),
     ),
 )
-def test_retrieval_as_root_short_lived(
+def test_retrieval_short_lived(
     api_client: TestClient,
     endpoint: str,
     expected_count: int,
 ) -> None:
-    """Test that the retrieval endpoint works.
+    """Test that the retrieval endpoints work with a short lived token.
 
     Happy path test; should always be a success and return some data. We test
-    retrieving data without any filters for all resources.
+    retrieving data without any filters for all resources that should return
+    data with a short lived token.
 
     Args:
         api_client: the test client.
@@ -63,6 +64,77 @@ def test_retrieval_as_root_short_lived(
     # Validate the answer
     assert result.status_code == 200
     assert len(response) == expected_count
+
+
+@pytest.mark.parametrize(
+    'endpoint, expected_count',
+    (
+        ('users', 3),
+        ('tags', 3),
+        ('user_settings', 3),
+    ),
+)
+def test_retrieval_long_lived(
+    api_client: TestClient,
+    endpoint: str,
+    expected_count: int,
+) -> None:
+    """Test that the retrieval endpoints work with a long lived token.
+
+    Happy path test; should always be a success and return some data. We test
+    retrieving data without any filters for all resources that should return
+    data with a long lived token.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        expected_count: the expected count of items.
+    """
+    _token = 'MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL'
+    # Set the endpoint
+    endpoint = create_endpoint_url(endpoint)
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+    response = result.json()
+
+    # Validate the answer
+    assert result.status_code == 200
+    assert len(response) == expected_count
+
+
+@pytest.mark.parametrize(
+    'endpoint',
+    ('api_clients',),
+)
+def test_retrieval_as_long_lived_invaild_endpoint(
+    api_client: TestClient,
+    endpoint: str,
+) -> None:
+    """Test that the retrieval endpoints work with a long lived token.
+
+    Unhappy path test; we test if endpoints that require a short lived token
+    fail when given a long lived token.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+    """
+    _token = 'MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL'
+    # Set the endpoint
+    endpoint = create_endpoint_url(endpoint)
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 401
 
 
 @pytest.mark.parametrize(
@@ -122,7 +194,7 @@ def test_retrieval_as_root_short_lived(
         ('api_clients', 0, 'app_publisher=!contains=publisher'),
     ),
 )
-def test_retrieval_as_root_short_lived_with_valid_filters(
+def test_retrieval_short_lived_with_valid_filters(
     api_client: TestClient,
     endpoint: str,
     expected_count: int,
@@ -174,7 +246,7 @@ def test_retrieval_as_root_short_lived_with_valid_filters(
         ('api_clients', 'id<>0'),
     ),
 )
-def test_retrieval_as_root_short_lived_with_invalid_filters(
+def test_retrieval_short_lived_with_invalid_filters(
     api_client: TestClient,
     endpoint: str,
     flt: str | None,
@@ -220,7 +292,7 @@ def test_retrieval_as_root_short_lived_with_invalid_filters(
         ('api_clients', 'app_publisher'),
     ),
 )
-def test_retrieval_as_root_short_lived_with_valid_sort_field(
+def test_retrieval_short_lived_with_valid_sort_field(
     api_client: TestClient, endpoint: str, sort_field: str
 ) -> None:
     """Test that the retrieval endpoint works with valid sort field.
@@ -265,7 +337,7 @@ def test_retrieval_as_root_short_lived_with_valid_sort_field(
         ('api_clients', 'invalid_field'),
     ),
 )
-def test_retrieval_as_root_short_lived_with_invalid_sort_field(
+def test_retrieval_short_lived_with_invalid_sort_field(
     api_client: TestClient, endpoint: str, sort_field: str
 ) -> None:
     """Test that the retrieval endpoint works with invalid sort field.
@@ -320,7 +392,7 @@ def test_retrieval_as_root_short_lived_with_invalid_sort_field(
         ('api_clients', 1, 2, 1, False, False),
     ),
 )
-def test_retrieval_as_root_short_lived_with_pagination(
+def test_retrieval_short_lived_with_pagination(
     api_client: TestClient,
     endpoint: str,
     page: int,
@@ -398,7 +470,7 @@ def test_retrieval_as_root_short_lived_with_pagination(
         ('api_clients', -25),
     ),
 )
-def test_retrieval_as_root_short_lived_with_pagination_invalid_page_size(
+def test_retrieval_short_lived_with_pagination_invalid_page_size(
     api_client: TestClient,
     endpoint: str,
     page_size: int,
@@ -439,7 +511,7 @@ def test_retrieval_as_root_short_lived_with_pagination_invalid_page_size(
         ('api_clients', 10, 4),
     ),
 )
-def test_retrieval_as_root_short_lived_with_pagination_invalid_page(
+def test_retrieval_short_lived_with_pagination_invalid_page(
     api_client: TestClient,
     endpoint: str,
     page_size: int,
