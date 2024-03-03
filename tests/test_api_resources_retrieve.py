@@ -110,7 +110,7 @@ def test_retrieval_long_lived(
     'endpoint',
     ('api_clients',),
 )
-def test_retrieval_as_long_lived_invaild_endpoint(
+def test_retrieval_long_lived_invaild_endpoint(
     api_client: TestClient,
     endpoint: str,
 ) -> None:
@@ -131,6 +131,105 @@ def test_retrieval_as_long_lived_invaild_endpoint(
     result = api_client.get(
         endpoint,
         headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 401
+
+
+@pytest.mark.parametrize(
+    'endpoint',
+    (
+        ('users'),
+        ('tags'),
+        ('user_settings'),
+    ),
+)
+def test_retrieval_long_lived_missing_scope(
+    api_client: TestClient, endpoint: str
+) -> None:
+    """Test retrieval with a long lived token without the correct scopes.
+
+    Unhappy path test; we test if endpoints that can work with a long lived
+    token fail when the needed scope is missing.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+    """
+    _token = '6VZGMOdNUAhCzYhipVJJjHTsYIzwBrlg'
+    # Set the endpoint
+    endpoint = create_endpoint_url(endpoint)
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 401
+
+
+@pytest.mark.parametrize(
+    'endpoint',
+    (
+        ('users'),
+        ('tags'),
+        ('user_settings'),
+        ('api_clients'),
+    ),
+)
+def test_retrieval_missing_token(
+    api_client: TestClient, endpoint: str
+) -> None:
+    """Test retrieval without a token.
+
+    Unhappy path test; we test if endpoints fail if we don't specify a token.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+    """
+    # Set the endpoint
+    endpoint = create_endpoint_url(endpoint)
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+    )
+
+    # Validate the answer
+    assert result.status_code == 401
+
+
+@pytest.mark.parametrize(
+    'endpoint',
+    (
+        ('users'),
+        ('tags'),
+        ('user_settings'),
+        ('api_clients'),
+    ),
+)
+def test_retrieval_invalid_token(
+    api_client: TestClient, endpoint: str
+) -> None:
+    """Test retrieval with a invalid token.
+
+    Unhappy path test; we test if endpoints fail if we give a invalid token.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+    """
+    # Set the endpoint
+    endpoint = create_endpoint_url(endpoint)
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': 'invalid_token'},
     )
 
     # Validate the answer
