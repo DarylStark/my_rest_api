@@ -1,4 +1,4 @@
-"""Tests for the resources/ endpoints."""
+"""Tests for retrieving resources using the REST API."""
 
 import pytest
 from fastapi.testclient import TestClient
