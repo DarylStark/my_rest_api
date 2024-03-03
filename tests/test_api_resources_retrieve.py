@@ -313,7 +313,7 @@ def test_retrieval_short_lived_with_valid_filters(
     """
     _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
     # Compile the arguments for the endpoint
-    args: dict[str, str] = {}
+    args: dict[str, str | int] = {}
     if flt:
         args['filter'] = flt
 
@@ -361,7 +361,7 @@ def test_retrieval_short_lived_with_invalid_filters(
     """
     _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
     # Compile the arguments for the endpoint
-    args: dict[str, str] = {}
+    args: dict[str, str | int] = {}
     if flt:
         args['filter'] = flt
 
