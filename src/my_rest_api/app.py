@@ -78,6 +78,9 @@ app.include_router(auth_api_router, tags=['Authentication'], prefix='/auth')
 
 # Add the resources endpoints to the application.
 app.include_router(
+    api_router_resources_api_clients, tags=['Resources'], prefix='/resources'
+)
+app.include_router(
     api_router_resources_tags, tags=['Resources'], prefix='/resources'
 )
 app.include_router(
@@ -87,7 +90,4 @@ app.include_router(
     api_router_resources_user_settings,
     tags=['Resources'],
     prefix='/resources',
-)
-app.include_router(
-    api_router_resources_api_clients, tags=['Resources'], prefix='/resources'
 )
