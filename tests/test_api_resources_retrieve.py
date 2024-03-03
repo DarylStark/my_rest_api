@@ -66,6 +66,42 @@ def test_retrieval_short_lived(
     assert len(response) == expected_count
 
 
+@pytest.mark.parametrize('endpoint, expected_count', (('users', 1),))
+def test_retrieval_short_lived_normal_user(
+    api_client: TestClient,
+    endpoint: str,
+    expected_count: int,
+) -> None:
+    """Test that the retrieval endpoints work with a short lived token.
+
+    Happy path test; should always be a success and return some data. We test
+    retrieving data without any filters for all resources that should return
+    data with a short lived token. We test this with a token for normal users
+    that only have access to their own data. We test if we only retrieve the
+    data for the normal user.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        expected_count: the expected count of items.
+    """
+    _token = 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'
+    # Set the endpoint
+    endpoint = create_endpoint_url('users')
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+    response = result.json()
+
+    # Validate the answer
+    assert result.status_code == 200
+    assert len(response) == 1
+    assert response[0]['username'] == 'normal.user'
+
+
 @pytest.mark.parametrize(
     'endpoint, expected_count',
     (
