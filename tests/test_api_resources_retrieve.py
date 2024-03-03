@@ -337,12 +337,16 @@ def test_retrieval_short_lived_with_valid_filters(
     (
         ('users', 'id==test'),
         ('users', 'id=>1'),
+        ('users', 'invalid_filter'),
         ('tags', 'title=like=tag_1'),
         ('tags', 'title=!like=tag_1'),
+        ('tags', 'invalid_filter'),
         ('user_settings', 'settings=!contains=_1'),
         ('user_settings', 'value=!_1'),
+        ('user_settings', 'invalid_filter'),
         ('api_clients', 'id=contains=1'),
         ('api_clients', 'id<>0'),
+        ('api_clients', 'invalid_filter'),
     ),
 )
 def test_retrieval_short_lived_with_invalid_filters(
