@@ -15,7 +15,30 @@ from fastapi.testclient import TestClient
                 {
                     'fullname': 'test user 1',
                     'username': 'test_user_1',
-                    'email': 'pytest@example.com',
+                    'email': 'test_user_1@example.com',
+                    'role': 3,
+                },
+            ],
+        ),
+        (
+            'users',
+            [
+                {
+                    'fullname': 'test user 1',
+                    'username': 'test_user_1',
+                    'email': 'test_user_1@example.com',
+                    'role': 3,
+                },
+                {
+                    'fullname': 'test user 2',
+                    'username': 'test_user_2',
+                    'email': 'test_user_2@example.com',
+                    'role': 3,
+                },
+                {
+                    'fullname': 'test user 3',
+                    'username': 'test_user_3',
+                    'email': 'test_user_3@example.com',
                     'role': 3,
                 },
             ],
@@ -32,8 +55,24 @@ from fastapi.testclient import TestClient
             'tags',
             [
                 {
+                    'title': 'test_tag_1',
+                    'color': '00ff00',
+                },
+            ],
+        ),
+        (
+            'tags',
+            [
+                {
+                    'title': 'test_tag_1',
+                    'color': '0000ff',
+                },
+                {
                     'title': 'test_tag_2',
                     'color': '00ff00',
+                },
+                {
+                    'title': 'test_tag_3',
                 },
             ],
         ),
@@ -47,11 +86,45 @@ from fastapi.testclient import TestClient
             ],
         ),
         (
+            'user_settings',
+            [
+                {
+                    'setting': 'test_setting_1',
+                    'value': 'yes',
+                },
+                {
+                    'setting': 'test_setting_2',
+                    'value': 'no',
+                },
+                {
+                    'setting': 'test_setting_3',
+                    'value': 'maybe',
+                },
+            ],
+        ),
+        (
             'api_clients',
             [
                 {
                     'app_name': 'test_app_1',
                     'app_publisher': 'test_app_publisher_1',
+                },
+            ],
+        ),
+        (
+            'api_clients',
+            [
+                {
+                    'app_name': 'test_app_1',
+                    'app_publisher': 'test_app_publisher_1',
+                },
+                {
+                    'app_name': 'test_app_2',
+                    'app_publisher': 'test_app_publisher_2',
+                },
+                {
+                    'app_name': 'test_app_3',
+                    'app_publisher': 'test_app_publisher_3',
                 },
             ],
         ),
@@ -95,4 +168,3 @@ def test_create_resource_short_lived_root(
             f'/resources/{endpoint}/{resource_id}',
             headers={'X-API-Token': _token},
         )
-        pass
