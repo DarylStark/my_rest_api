@@ -158,6 +158,12 @@
                     "title": "normal_user_short_lived_token",
                     "token": "pabq1d533eMucNPr5pHPuDMqxKRw1SE0",
                     "expires": "2027-12-31T23:59:59.999Z"
+                },
+                {
+                    "id": 5,
+                    "title": "normal_user_short_lived_token_for_logout",
+                    "token": "0jQW6vv732Flb4j56e92eja0npqyFsPQ",
+                    "expires": "2027-12-31T23:59:59.999Z"
                 }
             ],
             "_user_settings": [

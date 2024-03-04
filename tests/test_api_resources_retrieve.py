@@ -98,7 +98,7 @@ def test_retrieval_short_lived_normal_user(
 
     # Validate the answer
     assert result.status_code == 200
-    assert len(response) == 1
+    assert len(response) == expected_count
     assert response[0]['username'] == 'normal.user'
 
 

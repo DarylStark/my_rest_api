@@ -247,7 +247,7 @@ def test_logout_with_valid_token(api_client: TestClient) -> None:
     """
     result = api_client.get(
         '/auth/logout',
-        headers={'X-API-Token': 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'},
+        headers={'X-API-Token': '0jQW6vv732Flb4j56e92eja0npqyFsPQ'},
     )
     response = result.json()
     assert response['status'] == 'success'
