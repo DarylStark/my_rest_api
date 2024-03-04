@@ -103,4 +103,46 @@ def test_update_short_lived_root(
         headers={'X-API-Token': _token},
         json=original_data_dict,
     )
-    pass
+
+
+@pytest.mark.parametrize(
+    'endpoint, object',
+    (
+        (
+            'users',
+            {
+                'id': 1,
+                'fullname': 'test user 1 updated',
+                'username': 'test_user_1_updated',
+                'email': 'test_user_1_updated@example.com',
+                'role': 3,
+            },
+        ),
+    ),
+)
+def test_update_short_lived_normal_user_not_self(
+    api_client: TestClient, endpoint: str, object: dict[str, Any]
+) -> None:
+    """Test that the update endpoints work with a short lived token.
+
+    Tests with a normal user to update a user that is not itself. This should
+    always fail with a 404 since the object is not found.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        object: the objects to create.
+    """
+    _token = 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'
+
+    id = object.pop('id')
+
+    # Do the request
+    result = api_client.put(
+        f'/resources/{endpoint}/{id}',
+        headers={'X-API-Token': _token},
+        json=object,
+    )
+
+    # Validate the answer
+    assert result.status_code == 404
