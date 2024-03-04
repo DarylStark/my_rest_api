@@ -146,3 +146,108 @@ def test_update_short_lived_normal_user_not_self(
 
     # Validate the answer
     assert result.status_code == 404
+
+
+@pytest.mark.parametrize(
+    'endpoint, object',
+    (
+        (
+            'users',
+            {
+                'id': 2,
+                'fullname': 'test user 1 updated',
+                'username': 'test_user_1_updated',
+                'email': 'test_user_1_updated@example.com',
+                'role': 3,
+            },
+        ),
+    ),
+)
+def test_update_short_lived_normal_user_self(
+    api_client: TestClient, endpoint: str, object: dict[str, Any]
+) -> None:
+    """Test that the update endpoints work with a short lived token.
+
+    Tests with a normal user to update itself. Should always be a success.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        object: the objects to create.
+    """
+    _token = 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'
+
+    id = object.pop('id')
+
+    # Get the original data
+    result = api_client.get(
+        f'/resources/{endpoint}?filter=id=={id}',
+        headers={'X-API-Token': _token},
+    )
+    original_data = result.json()[0]
+    original_data_dict = {
+        key: original_data[key] for key in object if key in original_data
+    }
+
+    # Do the request
+    result = api_client.put(
+        f'/resources/{endpoint}/{id}',
+        headers={'X-API-Token': _token},
+        json=object,
+    )
+    response = result.json()
+
+    # Validate the answer
+    assert result.status_code == 200
+    for key, value in object.items():
+        assert response[0][key] == value
+
+    # Restore the original data
+    result = api_client.put(
+        f'/resources/{endpoint}/{id}',
+        headers={'X-API-Token': _token},
+        json=original_data_dict,
+    )
+
+
+@pytest.mark.xfail
+@pytest.mark.parametrize(
+    'new_role',
+    (1, 2, 3),
+)
+def test_update_short_lived_normal_user_elevate_role(
+    api_client: TestClient, new_role: int
+) -> None:
+    """Test that the update endpoints work with a short lived token.
+
+    Tests with a normal user if it can change it's role. It shouldn't be
+    allowed to do this.
+
+    Args:
+        api_client: the test client.
+        new_role: the new role to set.
+    """
+    _token = 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'
+    id = 2
+
+    # Get the original data
+    result = api_client.get(
+        f'/resources/users?filter=id=={id}',
+        headers={'X-API-Token': _token},
+    )
+    original_data = result.json()[0]
+    original_data_dict = {
+        key: original_data[key]
+        for key in ['username', 'fullname', 'email', 'role']
+    }
+    original_data_dict['role'] = new_role
+
+    # Do the request
+    result = api_client.put(
+        f'/resources/users/{id}',
+        headers={'X-API-Token': _token},
+        json=original_data_dict,
+    )
+
+    # Validate the answer
+    assert result.status_code == 403
