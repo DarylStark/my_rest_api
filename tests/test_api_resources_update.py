@@ -1,4 +1,4 @@
-"""Tests for adding resources using the REST API."""
+"""Tests for updating resources using the REST API."""
 
 from typing import Any
 
