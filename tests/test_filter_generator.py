@@ -133,7 +133,7 @@ def test_filter_generator_int_wrong_operator(operator: str) -> None:
         operator: the operator to test.
     """
     filter_generator = FilterGenerator(
-        model=User, given_filters=f'id{operator}root', included_fields=['id']
+        model=User, given_filters=f'id{operator}1', included_fields=['id']
     )
     with pytest.raises(InvalidFilterOperatorError):
         _ = filter_generator.get_filters()

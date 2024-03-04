@@ -91,7 +91,7 @@ def test_login_with_correct_credentials_needed_2fa(
 
 
 def test_login_with_correct_credentials_and_2fa(
-    api_client: TestClient, random_second_factor: str
+    api_client: TestClient,
 ) -> None:
     """Test logging in with correct credentials and 2FA.
 
@@ -99,14 +99,14 @@ def test_login_with_correct_credentials_and_2fa(
 
     Args:
         api_client: the test client for making API requests.
-        random_second_factor: a random second factor.
     """
+    random_second_factor = 'UHAO7AS4BFQV5Y4FHPN5QGV6GADEVHPX'
     result = api_client.post('/auth/login')
     result = api_client.post(
         '/auth/login',
         json={
-            'username': 'normal.user.2',
-            'password': 'normal_user_2_pw',
+            'username': 'normal.user.2fa',
+            'password': 'normal_user',
             'second_factor': TOTP(random_second_factor).now(),
         },
     )

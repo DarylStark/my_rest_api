@@ -188,6 +188,15 @@
             "email": "service.user@example.com",
             "role": 2,
             "_password": "service_password"
+        },
+        {
+            "id": 4,
+            "fullname": "Normal user 2fa",
+            "username": "normal.user.2fa",
+            "email": "normal_user.2fa@example.com",
+            "role": 3,
+            "second_factor": "UHAO7AS4BFQV5Y4FHPN5QGV6GADEVHPX",
+            "_password": "normal_user"
         }
     ],
     "api_token_scopes": [

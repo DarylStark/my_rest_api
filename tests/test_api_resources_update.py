@@ -210,7 +210,7 @@ def test_update_short_lived_normal_user_self(
     )
 
 
-@pytest.mark.xfail
+@pytest.mark.skip(reason='Should be implemented in MyData first')
 @pytest.mark.parametrize(
     'new_role',
     (1, 2, 3),
