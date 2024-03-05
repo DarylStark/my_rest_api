@@ -170,7 +170,6 @@ def test_create_short_lived_root(
         )
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize(
     'endpoint, objects',
     (
@@ -210,7 +209,7 @@ def test_create_short_lived_normal_user(
     )
 
     # Validate the answer
-    assert result.status_code == 403
+    assert result.status_code == 401
 
 
 @pytest.mark.parametrize(

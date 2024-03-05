@@ -17,10 +17,18 @@ the `app` object. This allows the application to be run from a single module.
 import logging
 
 from fastapi import FastAPI
-from fastapi.exceptions import HTTPException
-from my_data.exceptions import AuthorizationFailed
+from my_data.exceptions import (
+    AuthenticationFailed,
+    AuthorizationFailed,
+    PermissionDeniedException,
+)
 
 from .api_authentication import api_router as auth_api_router
+from .api_errors import (
+    authentication_error_handler,
+    authorization_error_handler,
+    myrestapi_error_handler,
+)
 from .api_resources_api_clients import (
     api_router as api_router_resources_api_clients,
 )
@@ -31,20 +39,7 @@ from .api_resources_user_settings import (
 from .api_resources_users import api_router as api_router_resources_users
 from .api_rest_api import api_router as rest_api_router
 from .app_config import AppConfig
-from .custom_errors_handlers import (
-    custom_authorizationfailed_exception_handler,
-    custom_filtererror_exception_handler,
-    custom_http_exception_handler,
-    custom_noresourcesfounderror_exception_handler,
-    custom_paginationerror_exception_handler,
-    custom_sortingerror_exception_handler,
-)
-from .exceptions import (
-    FilterError,
-    NoResourcesFoundError,
-    PaginationError,
-    SortingError,
-)
+from .exceptions import MyRESTAPIError
 
 # Configure logging
 logging.basicConfig(
@@ -59,18 +54,10 @@ config = AppConfig()
 app = FastAPI(debug=config.debug, title='My REST API')
 
 # Add customer exception handlers
-app.exception_handlers[HTTPException] = custom_http_exception_handler
-app.exception_handlers[
-    AuthorizationFailed
-] = custom_authorizationfailed_exception_handler
-app.exception_handlers[
-    PaginationError
-] = custom_paginationerror_exception_handler
-app.exception_handlers[SortingError] = custom_sortingerror_exception_handler
-app.exception_handlers[FilterError] = custom_filtererror_exception_handler
-app.exception_handlers[
-    NoResourcesFoundError
-] = custom_noresourcesfounderror_exception_handler
+app.exception_handlers[MyRESTAPIError] = myrestapi_error_handler
+app.exception_handlers[AuthenticationFailed] = authentication_error_handler
+app.exception_handlers[AuthorizationFailed] = authorization_error_handler
+app.exception_handlers[PermissionDeniedException] = authorization_error_handler
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])

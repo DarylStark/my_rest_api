@@ -3,7 +3,6 @@ from datetime import datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header
-from fastapi.exceptions import HTTPException
 from my_data.authenticator import CredentialsAuthenticator, UserAuthenticator
 from my_data.authorizer import (
     APITokenAuthorizer,
@@ -11,7 +10,6 @@ from my_data.authorizer import (
     ShortLivedTokenAuthorizer,
     ValidTokenAuthorizer,
 )
-from my_data.exceptions import AuthenticationFailed
 from my_data.my_data import MyData
 
 from .app_config import AppConfig
@@ -65,15 +63,7 @@ def login(
             second_factor=authentication.second_factor,
         ),
     )
-    try:
-        authenticator.authenticate()
-    except AuthenticationFailed as exc:
-        raise HTTPException(
-            status_code=403,
-            detail=AuthenticationResult(
-                status=AuthenticationResultStatus.FAILURE
-            ),
-        ) from exc
+    authenticator.authenticate()
 
     token_title: str = (
         authentication.title

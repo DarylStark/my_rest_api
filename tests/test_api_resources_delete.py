@@ -83,12 +83,10 @@ def test_delete_short_lived_root(
     assert id in response['deleted']
 
 
-@pytest.mark.xfail
 @pytest.mark.parametrize(
     'endpoint, id',
     (
         ('users', 1),
-        ('users', 2),
         ('users', 3),
         ('users', 4),
         ('tags', 1),

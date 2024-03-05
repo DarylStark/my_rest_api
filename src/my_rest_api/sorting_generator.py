@@ -52,7 +52,6 @@ class SortingGenerator(Generic[T]):
                 sort_field = attribute
             else:
                 raise InvalidSortFieldError(
-                    f'Invalid sort field: "{self.sort_value}"',
-                    self.allowed_sort_fields,
+                    f'Invalid sort field: "{self.sort_value}"'
                 )
         return sort_field

@@ -78,7 +78,9 @@ class PaginationGenerator:
         if (self.page < 1) or (
             self.page > self.total_pages and self.total_pages > 0
         ):
-            raise InvalidPageError('Invalid page number.', self.total_pages)
+            raise InvalidPageError(
+                f'Invalid page number. Max page: {self.total_pages}'
+            )
 
     def validate_page_size(self) -> None:
         """Validate the page size.
@@ -88,7 +90,8 @@ class PaginationGenerator:
         """
         if self.page_size < 1 or self.page_size > AppConfig().max_page_size:
             raise InvalidPageSizeError(
-                'Invalid page size.', AppConfig().max_page_size
+                'Invalid page size. Maximum page size is'
+                + f'{AppConfig().max_page_size}'
             )
 
     def validate(self) -> None:
