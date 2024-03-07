@@ -243,3 +243,23 @@ class APIAPIClient(APIAPIClientIn):
     """
 
     id: int | None = None
+
+
+class APIAPIToken(BaseModel):
+    """API Token object for the REST API.
+
+    Attributes:
+        id: the id of the api_token.
+        created: the creation datetime of the object.
+        expires: the expiration datetime of the object.
+        api_client_id: the id of the api client.
+        enabled: whether the token is enabled.
+        title: the title of the token.
+    """
+
+    id: int | None = None
+    created: datetime = Field(default_factory=datetime.utcnow)
+    expires: datetime = Field(default_factory=datetime.utcnow)
+    api_client_id: int | None = Field(default=None)
+    enabled: bool = True
+    title: str = Field(max_length=64)

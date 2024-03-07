@@ -32,6 +32,9 @@ from .api_errors import (
 from .api_resources_api_clients import (
     api_router as api_router_resources_api_clients,
 )
+from .api_resources_api_tokens import (
+    api_router as api_router_resources_api_tokens,
+)
 from .api_resources_tags import api_router as api_router_resources_tags
 from .api_resources_user_settings import (
     api_router as api_router_resources_user_settings,
@@ -66,6 +69,9 @@ app.include_router(auth_api_router, tags=['Authentication'], prefix='/auth')
 # Add the resources endpoints to the application.
 app.include_router(
     api_router_resources_api_clients, tags=['Resources'], prefix='/resources'
+)
+app.include_router(
+    api_router_resources_api_tokens, tags=['Resources'], prefix='/resources'
 )
 app.include_router(
     api_router_resources_tags, tags=['Resources'], prefix='/resources'
