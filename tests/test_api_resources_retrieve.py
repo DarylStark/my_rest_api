@@ -32,6 +32,7 @@ def create_endpoint_url(
         ('tags', 3),
         ('user_settings', 3),
         ('api_clients', 1),
+        ('api_tokens', 2),
     ),
 )
 def test_retrieval_short_lived(
@@ -108,6 +109,7 @@ def test_retrieval_short_lived_normal_user(
         ('users', 4),
         ('tags', 3),
         ('user_settings', 3),
+        ('api_tokens', 2),
     ),
 )
 def test_retrieval_long_lived(
@@ -179,6 +181,7 @@ def test_retrieval_long_lived_invaild_endpoint(
         ('users'),
         ('tags'),
         ('user_settings'),
+        ('api_tokens'),
     ),
 )
 def test_retrieval_long_lived_missing_scope(
@@ -214,6 +217,7 @@ def test_retrieval_long_lived_missing_scope(
         ('tags'),
         ('user_settings'),
         ('api_clients'),
+        ('api_tokens'),
     ),
 )
 def test_retrieval_missing_token(
@@ -246,6 +250,7 @@ def test_retrieval_missing_token(
         ('tags'),
         ('user_settings'),
         ('api_clients'),
+        ('api_tokens'),
     ),
 )
 def test_retrieval_invalid_token(
@@ -327,6 +332,17 @@ def test_retrieval_invalid_token(
         ('api_clients', 1, 'app_publisher==root_api_client_1_publisher'),
         ('api_clients', 1, 'app_publisher=contains=publisher'),
         ('api_clients', 0, 'app_publisher=!contains=publisher'),
+        ('api_tokens', 1, 'id==1'),
+        ('api_tokens', 1, 'id!=1'),
+        ('api_tokens', 1, 'id>1'),
+        ('api_tokens', 1, 'id<2'),
+        ('api_tokens', 2, 'id>=1'),
+        ('api_tokens', 2, 'id<=2'),
+        ('api_tokens', 1, 'title==root_long_lived_token_all_permissions'),
+        ('api_tokens', 1, 'title=contains=long_lived'),
+        ('api_tokens', 1, 'title=!contains=long_lived'),
+        ('api_tokens', 1, 'api_client_id==1'),
+        ('api_tokens', 0, 'api_client_id!=1'),
     ),
 )
 def test_retrieval_short_lived_with_valid_filters(
@@ -383,6 +399,9 @@ def test_retrieval_short_lived_with_valid_filters(
         ('api_clients', 'id=contains=1'),
         ('api_clients', 'id<>0'),
         ('api_clients', 'invalid_filter'),
+        ('api_tokens', 'id=contains=1'),
+        ('api_tokens', 'id<>0'),
+        ('api_tokens', 'invalid_filter'),
     ),
 )
 def test_retrieval_short_lived_with_invalid_filters(
@@ -429,6 +448,10 @@ def test_retrieval_short_lived_with_invalid_filters(
         ('user_settings', 'value'),
         ('api_clients', 'app_name'),
         ('api_clients', 'app_publisher'),
+        ('api_tokens', 'id'),
+        ('api_tokens', 'title'),
+        ('api_tokens', 'created'),
+        ('api_tokens', 'expires'),
     ),
 )
 def test_retrieval_short_lived_with_valid_sort_field(
@@ -474,6 +497,8 @@ def test_retrieval_short_lived_with_valid_sort_field(
         ('user_settings', 'wrong_field'),
         ('api_clients', 'token'),
         ('api_clients', 'invalid_field'),
+        ('api_tokens', 'token'),
+        ('api_tokens', 'invalid_field'),
     ),
 )
 def test_retrieval_short_lived_with_invalid_sort_field(
@@ -529,6 +554,8 @@ def test_retrieval_short_lived_with_invalid_sort_field(
         ('user_settings', 1, 3, 3, False, False),
         ('api_clients', 1, 1, 1, False, False),
         ('api_clients', 1, 2, 1, False, False),
+        ('api_tokens', 1, 1, 1, True, False),
+        ('api_tokens', 2, 1, 1, False, True),
     ),
 )
 def test_retrieval_short_lived_with_pagination(
@@ -607,6 +634,13 @@ def test_retrieval_short_lived_with_pagination(
         ('api_clients', -1),
         ('api_clients', -10),
         ('api_clients', -25),
+        ('api_tokens', 251),
+        ('api_tokens', 500),
+        ('api_tokens', 1000),
+        ('api_tokens', 0),
+        ('api_tokens', -1),
+        ('api_tokens', -10),
+        ('api_tokens', -25),
     ),
 )
 def test_retrieval_short_lived_with_pagination_invalid_page_size(
@@ -648,6 +682,8 @@ def test_retrieval_short_lived_with_pagination_invalid_page_size(
         ('user_settings', 10, 4),
         ('api_clients', 10, 0),
         ('api_clients', 10, 4),
+        ('api_tokens', 10, 0),
+        ('api_tokens', 10, 4),
     ),
 )
 def test_retrieval_short_lived_with_pagination_invalid_page(

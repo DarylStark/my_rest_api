@@ -96,6 +96,8 @@ def test_delete_short_lived_root(
         ('user_settings', 2),
         ('user_settings', 3),
         ('api_clients', 1),
+        ('api_tokens', 1),
+        ('api_tokens', 2),
     ),
 )
 def test_delete_short_lived_normal_user_not_owned(
@@ -227,6 +229,9 @@ def test_delete_long_lived_invalid_enpoint(
         ('user_settings', 4),
         ('user_settings', 5),
         ('user_settings', 6),
+        ('api_tokens', 3),
+        ('api_tokens', 4),
+        ('api_tokens', 5),
     ),
 )
 def test_delete_long_lived_missing_token(
@@ -273,6 +278,8 @@ def test_delete_long_lived_missing_token(
         ('user_settings', 6),
         ('api_clients', 1),
         ('api_clients', 2),
+        ('api_tokens', 1),
+        ('api_tokens', 2),
     ),
 )
 def test_delete_long_lived_invalid_token(
@@ -297,3 +304,50 @@ def test_delete_long_lived_invalid_token(
 
     # Validate the answer
     assert result.status_code == 401
+
+
+@pytest.mark.parametrize(
+    'token',
+    ['MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL', 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'],
+)
+def test_delete_api_token(api_client: TestClient, token: str) -> None:
+    """Test that deletion of API tokens work.
+
+    Happy path test.
+
+    We do this in a seperate test because API tokens have no endpoint to
+    create them, so we can't use the same test as the other resources.
+
+    Args:
+        api_client: the test client.
+        token: the token to use for the test.
+    """
+    # Log in
+    result = api_client.post(
+        '/auth/login',
+        json={
+            'username': 'root',
+            'password': 'root_pw',
+            'title': 'test_delete_api_token',
+        },
+    )
+    assert result.status_code == 200
+
+    # Find the API token
+    result = api_client.get(
+        '/resources/api_tokens?filter=title==test_delete_api_token',
+        headers={'X-API-Token': token},
+    )
+    response = result.json()
+    assert result.status_code == 200
+    assert len(response) == 1
+    _token = response[0]
+
+    # Do the request
+    result = api_client.delete(
+        f'/resources/api_tokens/{_token["id"]}', headers={'X-API-Token': token}
+    )
+
+    # Validate the answer
+    assert result.status_code == 200
+    assert result.json() == {'deleted': [_token['id']]}

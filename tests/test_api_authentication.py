@@ -62,6 +62,12 @@ def test_login_with_correct_credentials_no_2fa(
     result = api_client.post('/auth/login', json=login_json)
     assert result.status_code == 200
 
+    # Logout again
+    result = api_client.get(
+        '/auth/logout',
+        headers={'X-API-Token': result.json()['api_token']},
+    )
+
 
 @pytest.mark.parametrize(
     'login_json',
