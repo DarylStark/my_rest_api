@@ -13,11 +13,9 @@ import pytest
 from fastapi.testclient import TestClient
 from my_data.data_loader import DataLoader, JSONDataSource
 from my_data.my_data_table_creator import MyDataTableCreator
-from my_model import TokenModel
 from my_rest_api.app import app
 from my_rest_api.app_config import AppConfig
 from my_rest_api.my_rest_api import MyRESTAPI
-from pyotp import random_base32
 
 
 def test_filename() -> str:
@@ -27,64 +25,6 @@ def test_filename() -> str:
         The filename of the test data file.
     """
     return os.path.join(os.path.dirname(__file__), 'test_data.json')
-
-
-@pytest.fixture(scope='session')
-def random_second_factor() -> str:
-    """Fixture for generating a random second factor.
-
-    Returns:
-        str: a randomly generated second factor.
-    """
-    return random_base32()
-
-
-@pytest.fixture(scope='session')
-def random_api_token_root() -> str:
-    """Fixture to return a API token for a root user.
-
-    Returns:
-        str: a random generated API token.
-    """
-    temp_model = TokenModel()
-    return temp_model.set_random_token()
-
-
-@pytest.fixture(scope='session')
-def random_api_token_normal_user() -> str:
-    """Fixture to return a API token for a normal user.
-
-    Returns:
-        str: a random generated API token.
-    """
-    temp_model = TokenModel()
-    return temp_model.set_random_token()
-
-
-@pytest.fixture(scope='session')
-def random_api_token_normal_user_logout() -> str:
-    """Fixture to return a API token for a normal user.
-
-    This fixture is only used by the `logout` test to see if we can logout. We
-    use a different token for this test to make sure that the logout is not
-    impacting other tests.
-
-    Returns:
-        str: a random generated API token.
-    """
-    temp_model = TokenModel()
-    return temp_model.set_random_token()
-
-
-@pytest.fixture(scope='session')
-def random_api_token_normal_user_long_lived() -> str:
-    """Fixture to return a long lived API token for a normal user.
-
-    Returns:
-        str: a random generated API token.
-    """
-    temp_model = TokenModel()
-    return temp_model.set_random_token()
 
 
 @pytest.fixture(scope='session')
