@@ -65,7 +65,9 @@ class PaginationGenerator:
         self.total_items = total_items
 
         # Calculate the total pages
-        self.total_pages = ceil(total_items / page_size)
+        self.total_pages = 0
+        if self.page_size > 0:
+            self.total_pages = ceil(total_items / page_size)
 
     def validate_page(self) -> None:
         """Validate the page number.
@@ -73,8 +75,12 @@ class PaginationGenerator:
         Raises:
             InvalidPageError: if the page number is invalid.
         """
-        if self.page < 1 or self.page > self.total_pages:
-            raise InvalidPageError('Invalid page number.', self.total_pages)
+        if (self.page < 1) or (
+            self.page > self.total_pages and self.total_pages > 0
+        ):
+            raise InvalidPageError(
+                f'Invalid page number. Max page: {self.total_pages}'
+            )
 
     def validate_page_size(self) -> None:
         """Validate the page size.
@@ -84,7 +90,8 @@ class PaginationGenerator:
         """
         if self.page_size < 1 or self.page_size > AppConfig().max_page_size:
             raise InvalidPageSizeError(
-                'Invalid page size.', AppConfig().max_page_size
+                'Invalid page size. Maximum page size is'
+                + f'{AppConfig().max_page_size}'
             )
 
     def validate(self) -> None:

@@ -11,6 +11,7 @@ from my_rest_api.exceptions import (
     InvalidFilterError,
     InvalidFilterFieldError,
     InvalidFilterOperatorError,
+    InvalidFilterValueTypeError,
 )
 
 
@@ -18,7 +19,12 @@ class TypeFilter(ABC):
     """Abstract class for type filters."""
 
     def __init__(
-        self, model: Type[SQLModel], field_name: str, operator: str, value: str
+        self,
+        model: Type[SQLModel],
+        field_name: str,
+        operator: str,
+        value: str,
+        field_type: type,
     ) -> None:
         """Initialize the class.
 
@@ -27,11 +33,13 @@ class TypeFilter(ABC):
             field_name: the name of the field to generate the filter for.
             operator: the operator for the filter.
             value: the value to filter on.
+            field_type: the type of the field.
         """
         self._model = model
         self._field_name = field_name
         self._value = value
         self._operator = operator
+        self._field_type = field_type
 
     @abstractmethod
     def get_filter(self) -> ColumnElement[bool] | None:
@@ -40,6 +48,15 @@ class TypeFilter(ABC):
         Returns:
             The generated filter.
         """
+        if not isinstance(self._value, self._field_type):
+            try:
+                self._value = self._field_type(self._value)
+            except ValueError as exc:
+                raise InvalidFilterValueTypeError(
+                    f'Value "{self._value}" was not convertable to '
+                    + f'"{self._field_type}"'
+                ) from exc
+
         if self._operator == '==':
             return getattr(self._model, self._field_name) == self._value
         if self._operator == '!=':
@@ -65,13 +82,13 @@ class IntFilter(TypeFilter):
             return super_filters
 
         if self._operator == '<':
-            return getattr(self._model, self._field_name) < int(self._value)
+            return getattr(self._model, self._field_name) < self._value
         if self._operator == '<=':
-            return getattr(self._model, self._field_name) <= int(self._value)
+            return getattr(self._model, self._field_name) <= self._value
         if self._operator == '>':
-            return getattr(self._model, self._field_name) > int(self._value)
+            return getattr(self._model, self._field_name) > self._value
         if self._operator == '>=':
-            return getattr(self._model, self._field_name) >= int(self._value)
+            return getattr(self._model, self._field_name) >= self._value
 
         raise InvalidFilterOperatorError(
             f'Operator "{self._operator}" is not allowed for integers.'
@@ -91,6 +108,7 @@ class StrFilter(TypeFilter):
             InvalidFilterOperatorError: if the operator is not allowed for
                 strings.
         """
+        self._value = self._value.replace('%', r'\%')
         super_filters = super().get_filter()
         if super_filters is not None:
             return super_filters
@@ -191,7 +209,7 @@ class FilterGenerator:
                 if field_type in self.registered_type_filters:
                     filter_class = self.registered_type_filters[field_type]
                     extra_filter = filter_class(
-                        self._model, field, operator, value
+                        self._model, field, operator, value, field_type
                     ).get_filter()
                     if extra_filter is not None:
                         filters.append(extra_filter)

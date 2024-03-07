@@ -396,7 +396,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 resources_to_update = resource_manager.retrieve(flt=flt)
 
                 if len(resources_to_update) == 0:
-                    raise NoResourcesFoundError
+                    raise NoResourcesFoundError('No resources found to update')
 
                 # Update the resources
                 for resource in resources_to_update:
@@ -447,7 +447,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 resources_to_delete = resource_manager.retrieve(flt=flt)
 
                 if len(resources_to_delete) == 0:
-                    raise NoResourcesFoundError
+                    raise NoResourcesFoundError('No resources found to delete')
 
                 deletion_result = [
                     int(resource.id)
