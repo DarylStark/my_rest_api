@@ -5,16 +5,13 @@ from fastapi.testclient import TestClient
 from pyotp import TOTP
 
 
-def test_login_with_a_valid_api_token_set(
-    api_client: TestClient, random_api_token_normal_user: str
-) -> None:
+def test_login_with_a_valid_api_token_set(api_client: TestClient) -> None:
     """Test logging in with a API token set.
 
     Should result in a error response.
 
     Args:
         api_client: the test client for making API requests.
-        random_api_token_normal_user: a token for the request.
     """
     result = api_client.post(
         '/auth/login',
@@ -246,9 +243,7 @@ def test_logout_with_valid_token(api_client: TestClient) -> None:
     assert result.status_code == 200
 
 
-def test_logout_with_long_lived_token(
-    api_client: TestClient, random_api_token_normal_user_long_lived: str
-) -> None:
+def test_logout_with_long_lived_token(api_client: TestClient) -> None:
     """Test logging out with a valid long-lived token.
 
     Should not be succesfull. A long-lived token cannot be logged out. These
@@ -256,11 +251,10 @@ def test_logout_with_long_lived_token(
 
     Args:
         api_client: the test client for making API requests.
-        random_api_token_normal_user_long_lived: a token for the logout.
     """
     result = api_client.get(
         '/auth/logout',
-        headers={'X-API-Token': random_api_token_normal_user_long_lived},
+        headers={'X-API-Token': 'MHxHL4HrmmJHbAR1b0gV4OkpuEsxxmRL'},
     )
     result.json()
     assert result.status_code == 401
