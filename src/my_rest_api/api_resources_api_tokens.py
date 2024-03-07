@@ -26,8 +26,8 @@ crud_operations = ResourceCRUDOperations(
     output_model=APIAPIToken,
     context_attribute='api_tokens',
     needed_scopes=AuthorizationDetails(
-        retrieve='apitokens.retrieve',
-        delete='apitokens.delete',
+        retrieve='api_tokens.retrieve',
+        delete='api_tokens.delete',
     ),
     filter_fields=['id', 'title', 'api_client_id'],
     sort_fields=['id', 'title', 'created', 'expires'],

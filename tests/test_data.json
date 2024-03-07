@@ -59,6 +59,16 @@
             "id": 12,
             "module": "user_settings",
             "subject": "delete"
+        },
+        {
+            "id": 13,
+            "module": "api_tokens",
+            "subject": "retrieve"
+        },
+        {
+            "id": 14,
+            "module": "api_tokens",
+            "subject": "delete"
         }
     ],
     "users": [
@@ -247,6 +257,14 @@
         {
             "api_token_id": 1,
             "api_scope_id": 12
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 13
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 14
         }
     ]
 }
