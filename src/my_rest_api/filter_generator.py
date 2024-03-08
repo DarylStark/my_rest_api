@@ -64,9 +64,9 @@ class TypeFilter(ABC):
         if self._operator == '!=' and self._value != 'null':
             return getattr(self._model, self._field_name) != self._value
         if self._operator == '==' and self._value == 'null':
-            return getattr(self._model, self._field_name) is None  # type: ignore
+            return getattr(self._model, self._field_name) == None  # noqa: E711
         if self._operator == '!=' and self._value == 'null':
-            return getattr(self._model, self._field_name) is not None  # type: ignore
+            return getattr(self._model, self._field_name) != None  # noqa: E711
 
         return None
 
