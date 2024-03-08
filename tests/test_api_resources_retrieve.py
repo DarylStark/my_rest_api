@@ -343,6 +343,8 @@ def test_retrieval_invalid_token(
         ('api_tokens', 1, 'title=!contains=long_lived'),
         ('api_tokens', 1, 'api_client_id==1'),
         ('api_tokens', 0, 'api_client_id!=1'),
+        ('api_tokens', 1, 'api_client_id==null'),
+        ('api_tokens', 1, 'api_client_id!=null'),
     ),
 )
 def test_retrieval_short_lived_with_valid_filters(

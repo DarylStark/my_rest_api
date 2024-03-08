@@ -48,7 +48,9 @@ class TypeFilter(ABC):
         Returns:
             The generated filter.
         """
-        if not isinstance(self._value, self._field_type):
+        if self._value != 'null' and not isinstance(
+            self._value, self._field_type
+        ):
             try:
                 self._value = self._field_type(self._value)
             except ValueError as exc:
@@ -57,10 +59,15 @@ class TypeFilter(ABC):
                     + f'"{self._field_type}"'
                 ) from exc
 
-        if self._operator == '==':
+        if self._operator == '==' and self._value != 'null':
             return getattr(self._model, self._field_name) == self._value
-        if self._operator == '!=':
+        if self._operator == '!=' and self._value != 'null':
             return getattr(self._model, self._field_name) != self._value
+        if self._operator == '==' and self._value == 'null':
+            return getattr(self._model, self._field_name) is None  # type: ignore
+        if self._operator == '!=' and self._value == 'null':
+            return getattr(self._model, self._field_name) is not None  # type: ignore
+
         return None
 
 
