@@ -6,7 +6,13 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import User
 
 from .app_config import AppConfig
-from .model import APIUser, APIUserIn, DeletionResult
+from .model import (
+    APIUser,
+    APIUserIn,
+    DeletionResult,
+    PaginationResult,
+    RetrieveResult,
+)
 from .resource_crud_operations import (
     AuthorizationDetails,
     ResourceCRUDOperations,
@@ -40,7 +46,7 @@ def retrieve(
     page: int = 1,
     sort: str | None = None,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIUser]:
+) -> RetrieveResult[APIUser]:
     """Get all the users.
 
     Args:
@@ -66,7 +72,9 @@ def retrieve(
     if link_header_string:
         response.headers['Link'] = link_header_string
 
-    return resources
+    return RetrieveResult(
+        pagination=PaginationResult(**pagination.__dict__), resources=resources
+    )
 
 
 @api_router.post('/users', name='Users - Create')
