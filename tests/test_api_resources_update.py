@@ -79,7 +79,7 @@ def test_update_short_lived_root(
         f'/resources/{endpoint}?filter=id=={id}',
         headers={'X-API-Token': _token},
     )
-    original_data = result.json()[0]
+    original_data = result.json()['resources'][0]
     original_data_dict = {
         key: original_data[key] for key in object if key in original_data
     }
@@ -184,7 +184,7 @@ def test_update_short_lived_normal_user_self(
         f'/resources/{endpoint}?filter=id=={id}',
         headers={'X-API-Token': _token},
     )
-    original_data = result.json()[0]
+    original_data = result.json()['resources'][0]
     original_data_dict = {
         key: original_data[key] for key in object if key in original_data
     }
@@ -317,7 +317,7 @@ def test_update_long_lived_root(
         f'/resources/{endpoint}?filter=id=={id}',
         headers={'X-API-Token': _token},
     )
-    original_data = result.json()[0]
+    original_data = result.json()['resources'][0]
     original_data_dict = {
         key: original_data[key] for key in object if key in original_data
     }

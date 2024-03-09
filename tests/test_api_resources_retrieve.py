@@ -64,7 +64,7 @@ def test_retrieval_short_lived(
 
     # Validate the answer
     assert result.status_code == 200
-    assert len(response) == expected_count
+    assert len(response['resources']) == expected_count
 
 
 @pytest.mark.parametrize('endpoint, expected_count', (('users', 1),))
@@ -99,8 +99,8 @@ def test_retrieval_short_lived_normal_user(
 
     # Validate the answer
     assert result.status_code == 200
-    assert len(response) == expected_count
-    assert response[0]['username'] == 'normal.user'
+    assert len(response['resources']) == expected_count
+    assert response['resources'][0]['username'] == 'normal.user'
 
 
 @pytest.mark.parametrize(
@@ -141,7 +141,7 @@ def test_retrieval_long_lived(
 
     # Validate the answer
     assert result.status_code == 200
-    assert len(response) == expected_count
+    assert len(response['resources']) == expected_count
 
 
 @pytest.mark.parametrize(
@@ -383,7 +383,7 @@ def test_retrieval_short_lived_with_valid_filters(
 
     # Validate the answer
     assert result.status_code == 200
-    assert len(response) == expected_count
+    assert len(response['resources']) == expected_count
 
 
 @pytest.mark.parametrize(
@@ -484,7 +484,7 @@ def test_retrieval_short_lived_with_valid_sort_field(
 
     # Validate the answer
     assert result.status_code == 200
-    assert len(response) == 1
+    assert len(response['resources']) == 1
 
 
 @pytest.mark.parametrize(
@@ -598,7 +598,7 @@ def test_retrieval_short_lived_with_pagination(
 
     # Validate the answer
     assert result.status_code == 200
-    assert len(response) == expected_count
+    assert len(response['resources']) == expected_count
     assert ('next' in result.links) == next_link
     assert ('prev' in result.links) == prev_link
     assert 'first' in result.links
