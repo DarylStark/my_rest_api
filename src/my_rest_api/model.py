@@ -83,12 +83,27 @@ class APIAuthStatusToken(str, Enum):
     SHORT_LIVED = 'short-lived'
 
 
+class APIRefreshStatus(BaseModel):
+    """Result of the API token refresh.
+
+    Attributes:
+        title: the title of the token.
+        expires: the new expiration date of the token.
+    """
+
+    title: Optional[str]
+    expires: Optional[datetime]
+    new_token: Optional[str] = None
+
+
 class APIAuthStatus(BaseModel):
     """Result of the API authentication status.
 
     Attributes:
-        token: information about the token.
+        token_type: the type of the token (see APIAuthStatusToken).
         title: the title of the token.
+        created: the creation datetime of the token.
+        expires: the expiration datetime of the token.
     """
 
     token_type: APIAuthStatusToken

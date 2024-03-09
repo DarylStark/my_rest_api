@@ -22,6 +22,7 @@ class AppConfig(BaseSettings):
 
     # Authentication-session configuration
     session_timeout_in_seconds: int = Field(default=3600 * 24 * 7)
+    session_refresh_in_seconds: int = Field(default=3600 * 24 * 2)
 
     # Paginating configuration
     default_page_size: int = 25

@@ -351,3 +351,40 @@ def test_authentication_status_invalid_token(api_client: TestClient) -> None:
     )
     result.json()
     assert result.status_code == 401
+
+
+def test_refresh_short_lived_token(
+    api_client: TestClient,
+) -> None:
+    """Test refreshing a short lived token.
+
+    Should be succesfull.
+
+    Args:
+        api_client: the test client for making API requests.
+    """
+    api_token = 'SbtMQ81IHb5BdoOEk1cZPCaERCrf646z'
+    result = api_client.get(
+        '/auth/status',
+        headers={'X-API-Token': api_token},
+    )
+    expiration_date = result.json()['expires']
+
+    result = api_client.get(
+        '/auth/refresh?renew_token=false',
+        headers={'X-API-Token': api_token},
+    )
+    response = result.json()
+    assert response['expires'] == expiration_date
+    assert response['new_token'] is None
+    assert result.status_code == 200
+
+    # Now we set a new token
+    result = api_client.get(
+        '/auth/refresh?renew_token=true',
+        headers={'X-API-Token': api_token},
+    )
+    response = result.json()
+    assert response['expires'] == expiration_date
+    assert response['new_token'] is not None
+    assert result.status_code == 200
