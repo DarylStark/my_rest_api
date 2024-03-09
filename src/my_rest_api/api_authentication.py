@@ -1,5 +1,5 @@
 """API endpoints for authentication."""
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Header
@@ -17,6 +17,7 @@ from .dependencies import my_data_object
 from .model import (
     APIAuthStatus,
     APIAuthStatusToken,
+    APIRefreshStatus,
     AuthenticationDetails,
     AuthenticationResult,
     AuthenticationResultStatus,
@@ -138,5 +139,51 @@ def status(
         token_type=token_type,
         title=auth.api_token.title if auth.api_token else None,
         created=auth.api_token.created if auth.api_token else None,
+        expires=auth.api_token.expires if auth.api_token else None,
+    )
+
+
+@api_router.get('/refresh')
+def refresh(
+    x_api_token: Annotated[str | None, Header()] = None,
+    my_data: MyData = Depends(my_data_object),
+) -> APIRefreshStatus:
+    """Refresh a short-lived token.
+
+    Refreshing a short live token make sure the token is valid longer. The user
+    has to do this before the token expires. The new expiration date is
+    calculated from the current date and the session_refresh_in_seconds
+    configuration value. If the token is already valid longer, the expiration
+    date is not changed.
+
+    Args:
+        x_api_token: The API token to use for authentication.
+        my_data: a global MyData object.
+
+    Returns:
+        The new token.
+    """
+    auth = APITokenAuthorizer(
+        my_data_object=my_data,
+        api_token=x_api_token,
+        authorizer=ShortLivedTokenAuthorizer(),
+    )
+    auth.authorize()
+
+    new_expiration_date = datetime.now() + timedelta(
+        seconds=AppConfig().session_refresh_in_seconds
+    )
+
+    user = auth.user
+    if user:
+        with my_data.get_context(user=user) as context:
+            if auth.api_token:
+                if new_expiration_date < auth.api_token.expires:
+                    new_expiration_date = auth.api_token.expires
+                api_token = auth.api_token
+                api_token.expires = new_expiration_date
+                context.api_tokens.update(api_token)
+    return APIRefreshStatus(
+        title=auth.api_token.title if auth.api_token else None,
         expires=auth.api_token.expires if auth.api_token else None,
     )
