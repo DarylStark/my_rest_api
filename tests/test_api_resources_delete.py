@@ -340,8 +340,8 @@ def test_delete_api_token(api_client: TestClient, token: str) -> None:
     )
     response = result.json()
     assert result.status_code == 200
-    assert len(response) == 1
-    _token = response[0]
+    assert len(response['resources']) == 1
+    _token = response['resources'][0]
 
     # Do the request
     result = api_client.delete(

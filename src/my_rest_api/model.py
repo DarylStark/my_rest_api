@@ -2,12 +2,14 @@
 
 from datetime import datetime
 from enum import Enum
-from typing import Optional
+from typing import Generic, Optional, TypeVar
 
 from my_model import UserRole
 from pydantic import BaseModel, Field
 
 from my_rest_api.app_config import AppConfig
+
+T = TypeVar('T')
 
 
 class Version(BaseModel):
@@ -263,3 +265,31 @@ class APIAPIToken(BaseModel):
     api_client_id: int | None = Field(default=None)
     enabled: bool = True
     title: str = Field(max_length=64)
+
+
+class PaginationResult(BaseModel):
+    """Pagination details for a retrieval result.
+
+    Attributes:
+        page: the current page.
+        page_size: the maximum number of items on a page.
+        total_pages: the total number of pages.
+        total_items: the total number of items.
+    """
+
+    page: int
+    page_size: int
+    total_pages: int
+    total_items: int
+
+
+class RetrieveResult(BaseModel, Generic[T]):
+    """Model for the result of a retrieval operation.
+
+    Attributes:
+        pagination: the pagination information.
+        resources: the resources retrieved.
+    """
+
+    pagination: PaginationResult
+    resources: list[T]

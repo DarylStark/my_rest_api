@@ -6,7 +6,13 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import APIClient
 
 from .app_config import AppConfig
-from .model import APIAPIClient, APIAPIClientIn, DeletionResult
+from .model import (
+    APIAPIClient,
+    APIAPIClientIn,
+    DeletionResult,
+    PaginationResult,
+    RetrieveResult,
+)
 from .resource_crud_operations import (
     AuthorizationDetails,
     ResourceCRUDOperations,
@@ -35,7 +41,7 @@ def retrieve(
     page: int = 1,
     sort: str | None = None,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIAPIClient]:
+) -> RetrieveResult[APIAPIClient]:
     """Get all the API clients.
 
     Args:
@@ -61,7 +67,9 @@ def retrieve(
     if link_header_string:
         response.headers['Link'] = link_header_string
 
-    return resources
+    return RetrieveResult(
+        pagination=PaginationResult(**pagination.__dict__), resources=resources
+    )
 
 
 @api_router.post('/api_clients', name='API Clients - Create')

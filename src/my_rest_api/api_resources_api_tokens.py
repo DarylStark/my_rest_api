@@ -11,7 +11,12 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import APIToken
 
 from .app_config import AppConfig
-from .model import APIAPIToken, DeletionResult
+from .model import (
+    APIAPIToken,
+    DeletionResult,
+    PaginationResult,
+    RetrieveResult,
+)
 from .resource_crud_operations import (
     AuthorizationDetails,
     ResourceCRUDOperations,
@@ -43,7 +48,7 @@ def retrieve(
     page: int = 1,
     sort: str | None = None,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIAPIToken]:
+) -> RetrieveResult[APIAPIToken]:
     """Get all the api tokens.
 
     Args:
@@ -69,7 +74,9 @@ def retrieve(
     if link_header_string:
         response.headers['Link'] = link_header_string
 
-    return resources
+    return RetrieveResult(
+        pagination=PaginationResult(**pagination.__dict__), resources=resources
+    )
 
 
 @api_router.delete('/api_tokens/{apitoken_id}', name='API Tokens - Delete')

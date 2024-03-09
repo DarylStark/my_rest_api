@@ -90,7 +90,7 @@ class PaginationGenerator:
         """
         if self.page_size < 1 or self.page_size > AppConfig().max_page_size:
             raise InvalidPageSizeError(
-                'Invalid page size. Maximum page size is'
+                'Invalid page size. Maximum page size is '
                 + f'{AppConfig().max_page_size}'
             )
 
