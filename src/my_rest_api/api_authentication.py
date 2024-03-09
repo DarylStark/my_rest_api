@@ -2,7 +2,7 @@
 from datetime import datetime, timedelta
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Header
+from fastapi import APIRouter, Depends, Header, Query
 from my_data.authenticator import CredentialsAuthenticator, UserAuthenticator
 from my_data.authorizer import (
     APITokenAuthorizer,
@@ -146,6 +146,7 @@ def status(
 @api_router.get('/refresh')
 def refresh(
     x_api_token: Annotated[str | None, Header()] = None,
+    renew_token: Annotated[bool, Query()] = True,
     my_data: MyData = Depends(my_data_object),
 ) -> APIRefreshStatus:
     """Refresh a short-lived token.
@@ -157,7 +158,9 @@ def refresh(
     date is not changed.
 
     Args:
-        x_api_token: The API token to use for authentication.
+        x_api_token: the API token to use for authentication.
+        renew_token: specifies if a new token should be created. This increases
+            security.
         my_data: a global MyData object.
 
     Returns:
@@ -175,15 +178,24 @@ def refresh(
     )
 
     user = auth.user
+    new_token: str | None = None
     if user:
         with my_data.get_context(user=user) as context:
             if auth.api_token:
-                if new_expiration_date < auth.api_token.expires:
-                    new_expiration_date = auth.api_token.expires
                 api_token = auth.api_token
+
+                # Set the new expiration date to the maximum of the current
+                if new_expiration_date < api_token.expires:
+                    new_expiration_date = api_token.expires
                 api_token.expires = new_expiration_date
+
+                # Create a new token if requested
+                if renew_token:
+                    new_token = api_token.set_random_token(force=True)
+
                 context.api_tokens.update(api_token)
     return APIRefreshStatus(
         title=auth.api_token.title if auth.api_token else None,
         expires=auth.api_token.expires if auth.api_token else None,
+        new_token=new_token,
     )

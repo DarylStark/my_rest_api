@@ -93,6 +93,7 @@ class APIRefreshStatus(BaseModel):
 
     title: Optional[str]
     expires: Optional[datetime]
+    new_token: Optional[str] = None
 
 
 class APIAuthStatus(BaseModel):
