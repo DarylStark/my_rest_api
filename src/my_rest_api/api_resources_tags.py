@@ -7,11 +7,11 @@ from my_model import Tag
 
 from .app_config import AppConfig
 from .model import (
-    APITag,
-    APITagIn,
     DeletionResult,
     PaginationResult,
     RetrieveResult,
+    TagResource,
+    TagResourceIn,
 )
 from .resource_crud_operations import (
     AuthorizationDetails,
@@ -23,8 +23,8 @@ api_router = APIRouter()
 
 crud_operations = ResourceCRUDOperations(
     model=Tag,
-    input_model=APITagIn,
-    output_model=APITag,
+    input_model=TagResourceIn,
+    output_model=TagResource,
     context_attribute='tags',
     needed_scopes=AuthorizationDetails(
         create='tags.create',
@@ -46,7 +46,7 @@ def retrieve(
     page: int = 1,
     sort: str | None = None,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> RetrieveResult[APITag]:
+) -> RetrieveResult[TagResource]:
     """Get all the tags.
 
     Args:
@@ -79,9 +79,9 @@ def retrieve(
 
 @api_router.post('/tags', name='Tags - Create')
 def create(
-    resources: list[APITagIn],
+    resources: list[TagResourceIn],
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APITag]:
+) -> list[TagResource]:
     """Create new tags.
 
     Args:
@@ -97,9 +97,9 @@ def create(
 @api_router.put('/tags/{tag_id}', name='Tags - Update')
 def update(
     tag_id: Annotated[int, Path()],
-    new_tag: APITagIn,
+    new_tag: TagResourceIn,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APITag]:
+) -> list[TagResource]:
     """Update a tag by replacing the object.
 
     Args:

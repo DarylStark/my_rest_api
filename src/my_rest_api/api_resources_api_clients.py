@@ -7,8 +7,8 @@ from my_model import APIClient
 
 from .app_config import AppConfig
 from .model import (
-    APIAPIClient,
-    APIAPIClientIn,
+    APIClientResource,
+    APIClientResourceIn,
     DeletionResult,
     PaginationResult,
     RetrieveResult,
@@ -23,8 +23,8 @@ api_router = APIRouter()
 
 crud_operations = ResourceCRUDOperations(
     model=APIClient,
-    input_model=APIAPIClientIn,
-    output_model=APIAPIClient,
+    input_model=APIClientResourceIn,
+    output_model=APIClientResource,
     context_attribute='api_clients',
     needed_scopes=AuthorizationDetails(allow_only_short_lived=True),
     filter_fields=['id', 'app_name', 'app_publisher'],
@@ -41,7 +41,7 @@ def retrieve(
     page: int = 1,
     sort: str | None = None,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> RetrieveResult[APIAPIClient]:
+) -> RetrieveResult[APIClientResource]:
     """Get all the API clients.
 
     Args:
@@ -74,9 +74,9 @@ def retrieve(
 
 @api_router.post('/api_clients', name='API Clients - Create')
 def create(
-    resources: list[APIAPIClientIn],
+    resources: list[APIClientResourceIn],
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIAPIClient]:
+) -> list[APIClientResource]:
     """Create new API clients.
 
     Args:
@@ -92,9 +92,9 @@ def create(
 @api_router.put('/api_clients/{client_id}', name='API Clients - Update')
 def update(
     client_id: Annotated[int, Path()],
-    new_client: APIAPIClientIn,
+    new_client: APIClientResourceIn,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIAPIClient]:
+) -> list[APIClientResource]:
     """Update a API client by replacing the object.
 
     Args:

@@ -100,7 +100,7 @@ class APIAuthStatus(BaseModel):
     expires: Optional[datetime]
 
 
-class APIUserIn(BaseModel):
+class UserResourceIn(BaseModel):
     """User object for the REST API.
 
     Attributes:
@@ -118,7 +118,7 @@ class APIUserIn(BaseModel):
     role: UserRole = Field(default=UserRole.USER)
 
 
-class APIUser(APIUserIn):
+class UserResource(UserResourceIn):
     """User object for the REST API.
 
     Adds the `id` and `created` fields to the User model.
@@ -132,7 +132,7 @@ class APIUser(APIUserIn):
     created: datetime = Field(default_factory=datetime.utcnow)
 
 
-class APITagIn(BaseModel):
+class TagResourceIn(BaseModel):
     """Tag object for the REST API.
 
     Attributes:
@@ -146,7 +146,7 @@ class APITagIn(BaseModel):
     )
 
 
-class APITag(APITagIn):
+class TagResource(TagResourceIn):
     """Tag object for the REST API.
 
     Adds the `id` field to the Tag model.
@@ -168,7 +168,7 @@ class DeletionResult(BaseModel):
     deleted: list[int]
 
 
-class APIUserSettingIn(BaseModel):
+class UserSettingResourceIn(BaseModel):
     """UserSetting object for the REST API body.
 
     Attributes:
@@ -180,7 +180,7 @@ class APIUserSettingIn(BaseModel):
     value: str = Field(max_length=32)
 
 
-class APIUserSetting(APIUserSettingIn):
+class UserSettingResource(UserSettingResourceIn):
     """UserSetting object for the REST API response.
 
     Adds the `id` field to the UserSetting model.
@@ -192,7 +192,7 @@ class APIUserSetting(APIUserSettingIn):
     id: int | None = None
 
 
-class APIAPIClientIn(BaseModel):
+class APIClientResourceIn(BaseModel):
     """Client object for the REST API.
 
     Attributes:
@@ -214,7 +214,7 @@ class APIAPIClientIn(BaseModel):
     )
 
 
-class APIAPIClient(APIAPIClientIn):
+class APIClientResource(APIClientResourceIn):
     """APIClient object for the REST API response.
 
     Adds the `id` field to the APIClient model.
@@ -226,7 +226,7 @@ class APIAPIClient(APIAPIClientIn):
     id: int | None = None
 
 
-class APIAPIToken(BaseModel):
+class APITokenResource(BaseModel):
     """API Token object for the REST API.
 
     Attributes:
