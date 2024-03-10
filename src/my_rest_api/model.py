@@ -7,8 +7,6 @@ from typing import Generic, Optional, TypeVar
 from my_model import UserRole
 from pydantic import BaseModel, Field
 
-from my_rest_api.app_config import AppConfig
-
 T = TypeVar('T')
 
 
@@ -54,16 +52,6 @@ class AuthenticationResult(BaseModel):
 
     status: AuthenticationResultStatus
     api_token: str | None = Field(default=None, pattern=r'^[a-zA-Z0-9]{32}$')
-
-
-class ErrorModel(BaseModel):
-    """Error model for the REST API.
-
-    Attributes:
-        error: The error message.
-    """
-
-    error: str = 'Unknown error'
 
 
 class LogoutResult(BaseModel):
@@ -168,30 +156,6 @@ class APITag(APITagIn):
     """
 
     id: int | None = None
-
-
-class PaginationError(BaseModel):
-    """Model for errors that indicate a pagination error.
-
-    Attributes:
-        message: The detail of the error.
-        max_page_size: The maximum page size allowed.
-    """
-
-    message: str
-    max_page_size: int = AppConfig().max_page_size
-    max_page: int | None = None
-
-
-class SortError(BaseModel):
-    """Model for errors that indicate a sort error.
-
-    Attributes:
-        message: The detail of the error.
-    """
-
-    message: str
-    allowed_sort_fields: list[str]
 
 
 class DeletionResult(BaseModel):
