@@ -7,11 +7,11 @@ from my_model import UserSetting
 
 from .app_config import AppConfig
 from .model import (
-    APIUserSetting,
-    APIUserSettingIn,
     DeletionResult,
     PaginationResult,
     RetrieveResult,
+    UserSettingResource,
+    UserSettingResourceIn,
 )
 from .resource_crud_operations import (
     AuthorizationDetails,
@@ -23,8 +23,8 @@ api_router = APIRouter()
 
 crud_operations = ResourceCRUDOperations(
     model=UserSetting,
-    input_model=APIUserSettingIn,
-    output_model=APIUserSetting,
+    input_model=UserSettingResourceIn,
+    output_model=UserSettingResource,
     context_attribute='user_settings',
     needed_scopes=AuthorizationDetails(
         create='user_settings.create',
@@ -46,7 +46,7 @@ def retrieve(
     page: int = 1,
     sort: str | None = None,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> RetrieveResult[APIUserSetting]:
+) -> RetrieveResult[UserSettingResource]:
     """Get all the user setings.
 
     Args:
@@ -79,9 +79,9 @@ def retrieve(
 
 @api_router.post('/user_settings', name='User Settings - Create')
 def create(
-    resources: list[APIUserSettingIn],
+    resources: list[UserSettingResourceIn],
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIUserSetting]:
+) -> list[UserSettingResource]:
     """Create new user settings.
 
     Args:
@@ -99,9 +99,9 @@ def create(
 )
 def update(
     user_setting_id: Annotated[int, Path()],
-    net_user_setting: APIUserSettingIn,
+    net_user_setting: UserSettingResourceIn,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIUserSetting]:
+) -> list[UserSettingResource]:
     """Update a user setting by replacing the object.
 
     Args:

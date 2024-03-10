@@ -7,11 +7,11 @@ from my_model import User
 
 from .app_config import AppConfig
 from .model import (
-    APIUser,
-    APIUserIn,
     DeletionResult,
     PaginationResult,
     RetrieveResult,
+    UserResource,
+    UserResourceIn,
 )
 from .resource_crud_operations import (
     AuthorizationDetails,
@@ -23,8 +23,8 @@ api_router = APIRouter()
 
 crud_operations = ResourceCRUDOperations(
     model=User,
-    input_model=APIUserIn,
-    output_model=APIUser,
+    input_model=UserResourceIn,
+    output_model=UserResource,
     context_attribute='users',
     needed_scopes=AuthorizationDetails(
         create='users.create',
@@ -46,7 +46,7 @@ def retrieve(
     page: int = 1,
     sort: str | None = None,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> RetrieveResult[APIUser]:
+) -> RetrieveResult[UserResource]:
     """Get all the users.
 
     Args:
@@ -79,9 +79,9 @@ def retrieve(
 
 @api_router.post('/users', name='Users - Create')
 def create(
-    resources: list[APIUserIn],
+    resources: list[UserResourceIn],
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIUser]:
+) -> list[UserResource]:
     """Create new users.
 
     Args:
@@ -97,9 +97,9 @@ def create(
 @api_router.put('/users/{user_id}', name='Users - Update')
 def update(
     user_id: Annotated[int, Path()],
-    new_user: APIUserIn,
+    new_user: UserResourceIn,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> list[APIUser]:
+) -> list[UserResource]:
     """Update a user by replacing the object.
 
     Args:

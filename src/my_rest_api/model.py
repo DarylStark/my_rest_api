@@ -7,8 +7,6 @@ from typing import Generic, Optional, TypeVar
 from my_model import UserRole
 from pydantic import BaseModel, Field
 
-from my_rest_api.app_config import AppConfig
-
 T = TypeVar('T')
 
 
@@ -54,16 +52,6 @@ class AuthenticationResult(BaseModel):
 
     status: AuthenticationResultStatus
     api_token: str | None = Field(default=None, pattern=r'^[a-zA-Z0-9]{32}$')
-
-
-class ErrorModel(BaseModel):
-    """Error model for the REST API.
-
-    Attributes:
-        error: The error message.
-    """
-
-    error: str = 'Unknown error'
 
 
 class LogoutResult(BaseModel):
@@ -112,7 +100,7 @@ class APIAuthStatus(BaseModel):
     expires: Optional[datetime]
 
 
-class APIUserIn(BaseModel):
+class UserResourceIn(BaseModel):
     """User object for the REST API.
 
     Attributes:
@@ -130,7 +118,7 @@ class APIUserIn(BaseModel):
     role: UserRole = Field(default=UserRole.USER)
 
 
-class APIUser(APIUserIn):
+class UserResource(UserResourceIn):
     """User object for the REST API.
 
     Adds the `id` and `created` fields to the User model.
@@ -144,7 +132,7 @@ class APIUser(APIUserIn):
     created: datetime = Field(default_factory=datetime.utcnow)
 
 
-class APITagIn(BaseModel):
+class TagResourceIn(BaseModel):
     """Tag object for the REST API.
 
     Attributes:
@@ -158,7 +146,7 @@ class APITagIn(BaseModel):
     )
 
 
-class APITag(APITagIn):
+class TagResource(TagResourceIn):
     """Tag object for the REST API.
 
     Adds the `id` field to the Tag model.
@@ -168,30 +156,6 @@ class APITag(APITagIn):
     """
 
     id: int | None = None
-
-
-class PaginationError(BaseModel):
-    """Model for errors that indicate a pagination error.
-
-    Attributes:
-        message: The detail of the error.
-        max_page_size: The maximum page size allowed.
-    """
-
-    message: str
-    max_page_size: int = AppConfig().max_page_size
-    max_page: int | None = None
-
-
-class SortError(BaseModel):
-    """Model for errors that indicate a sort error.
-
-    Attributes:
-        message: The detail of the error.
-    """
-
-    message: str
-    allowed_sort_fields: list[str]
 
 
 class DeletionResult(BaseModel):
@@ -204,7 +168,7 @@ class DeletionResult(BaseModel):
     deleted: list[int]
 
 
-class APIUserSettingIn(BaseModel):
+class UserSettingResourceIn(BaseModel):
     """UserSetting object for the REST API body.
 
     Attributes:
@@ -216,7 +180,7 @@ class APIUserSettingIn(BaseModel):
     value: str = Field(max_length=32)
 
 
-class APIUserSetting(APIUserSettingIn):
+class UserSettingResource(UserSettingResourceIn):
     """UserSetting object for the REST API response.
 
     Adds the `id` field to the UserSetting model.
@@ -228,7 +192,7 @@ class APIUserSetting(APIUserSettingIn):
     id: int | None = None
 
 
-class APIAPIClientIn(BaseModel):
+class APIClientResourceIn(BaseModel):
     """Client object for the REST API.
 
     Attributes:
@@ -250,7 +214,7 @@ class APIAPIClientIn(BaseModel):
     )
 
 
-class APIAPIClient(APIAPIClientIn):
+class APIClientResource(APIClientResourceIn):
     """APIClient object for the REST API response.
 
     Adds the `id` field to the APIClient model.
@@ -262,7 +226,7 @@ class APIAPIClient(APIAPIClientIn):
     id: int | None = None
 
 
-class APIAPIToken(BaseModel):
+class APITokenResource(BaseModel):
     """API Token object for the REST API.
 
     Attributes:

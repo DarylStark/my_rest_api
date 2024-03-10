@@ -12,7 +12,7 @@ from my_model import APIToken
 
 from .app_config import AppConfig
 from .model import (
-    APIAPIToken,
+    APITokenResource,
     DeletionResult,
     PaginationResult,
     RetrieveResult,
@@ -27,8 +27,8 @@ api_router = APIRouter()
 
 crud_operations = ResourceCRUDOperations(
     model=APIToken,
-    input_model=APIAPIToken,
-    output_model=APIAPIToken,
+    input_model=APITokenResource,
+    output_model=APITokenResource,
     context_attribute='api_tokens',
     needed_scopes=AuthorizationDetails(
         retrieve='api_tokens.retrieve',
@@ -48,7 +48,7 @@ def retrieve(
     page: int = 1,
     sort: str | None = None,
     x_api_token: Annotated[str | None, Header()] = None,
-) -> RetrieveResult[APIAPIToken]:
+) -> RetrieveResult[APITokenResource]:
     """Get all the api tokens.
 
     Args:
