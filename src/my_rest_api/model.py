@@ -272,3 +272,13 @@ class RetrieveResult(BaseModel, Generic[T]):
 
     pagination: PaginationResult
     resources: list[T]
+
+
+class APIError(BaseModel):
+    """Model for error messages.
+
+    Attributes:
+        error: the error message.
+    """
+
+    error: str

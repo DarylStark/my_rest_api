@@ -6,6 +6,7 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import APIClient
 
 from .app_config import AppConfig
+from .endpoint_details import default_responses
 from .model import (
     APIClientResource,
     APIClientResourceIn,
@@ -32,7 +33,12 @@ crud_operations = ResourceCRUDOperations(
 )
 
 
-@api_router.get('/api_clients', name='API Clients - Retrieve')
+@api_router.get(
+    '/api_clients',
+    name='API Clients - Retrieve',
+    status_code=200,
+    responses=default_responses,
+)
 def retrieve(
     request: Request,
     response: Response,
@@ -72,7 +78,12 @@ def retrieve(
     )
 
 
-@api_router.post('/api_clients', name='API Clients - Create')
+@api_router.post(
+    '/api_clients',
+    name='API Clients - Create',
+    status_code=201,
+    responses=default_responses,
+)
 def create(
     resources: list[APIClientResourceIn],
     x_api_token: Annotated[str | None, Header()] = None,
@@ -89,7 +100,12 @@ def create(
     return crud_operations.create(resources, x_api_token)
 
 
-@api_router.put('/api_clients/{client_id}', name='API Clients - Update')
+@api_router.put(
+    '/api_clients/{client_id}',
+    name='API Clients - Update',
+    status_code=200,
+    responses=default_responses,
+)
 def update(
     client_id: Annotated[int, Path()],
     new_client: APIClientResourceIn,
@@ -112,7 +128,12 @@ def update(
     )
 
 
-@api_router.delete('/api_clients/{client_id}', name='API Clients - Delete')
+@api_router.delete(
+    '/api_clients/{client_id}',
+    name='API Clients - Delete',
+    status_code=200,
+    responses=default_responses,
+)
 def delete(
     client_id: Annotated[int, Path()],
     x_api_token: Annotated[str | None, Header()] = None,

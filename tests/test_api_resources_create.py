@@ -157,7 +157,7 @@ def test_create_short_lived_root(
     response = result.json()
 
     # Validate the answer
-    assert result.status_code == 200
+    assert result.status_code == 201
     assert len(response) == len(objects)
 
     # Remove the created resources
@@ -337,7 +337,7 @@ def test_create_long_lived(
     response = result.json()
 
     # Validate the answer
-    assert result.status_code == 200
+    assert result.status_code == 201
     assert len(response) == len(objects)
 
     # Remove the created resources

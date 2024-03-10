@@ -3,6 +3,7 @@ from fastapi import Request
 from fastapi.responses import JSONResponse
 
 from .exceptions import MyRESTAPIError
+from .model import APIError
 
 
 async def myrestapi_error_handler(
@@ -20,7 +21,7 @@ async def myrestapi_error_handler(
     """
     return JSONResponse(
         status_code=exc.status_code,
-        content={'error': exc.message},
+        content=APIError(error=exc.message).model_dump(),
     )
 
 
@@ -39,7 +40,7 @@ async def authentication_error_handler(
     """
     return JSONResponse(
         status_code=403,
-        content={'error': 'Authentication failed'},
+        content=APIError(error='Authentication failed').model_dump(),
     )
 
 
@@ -58,5 +59,5 @@ async def authorization_error_handler(
     """
     return JSONResponse(
         status_code=401,
-        content={'error': 'Authorization failed'},
+        content=APIError(error='Authorization failed').model_dump(),
     )
