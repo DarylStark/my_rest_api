@@ -11,6 +11,7 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import APIToken
 
 from .app_config import AppConfig
+from .endpoint_details import default_responses
 from .model import (
     APITokenResource,
     DeletionResult,
@@ -39,7 +40,12 @@ crud_operations = ResourceCRUDOperations(
 )
 
 
-@api_router.get('/api_tokens', name='API Tokens - Retrieve')
+@api_router.get(
+    '/api_tokens',
+    name='API Tokens - Retrieve',
+    status_code=200,
+    responses=default_responses,
+)
 def retrieve(
     request: Request,
     response: Response,
@@ -79,7 +85,12 @@ def retrieve(
     )
 
 
-@api_router.delete('/api_tokens/{apitoken_id}', name='API Tokens - Delete')
+@api_router.delete(
+    '/api_tokens/{apitoken_id}',
+    name='API Tokens - Delete',
+    status_code=200,
+    responses=default_responses,
+)
 def delete(
     apitoken_id: Annotated[int, Path()],
     x_api_token: Annotated[str | None, Header()] = None,

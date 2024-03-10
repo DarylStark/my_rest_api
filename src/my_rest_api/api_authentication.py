@@ -14,6 +14,7 @@ from my_data.my_data import MyData
 
 from .app_config import AppConfig
 from .dependencies import my_data_object
+from .endpoint_details import authentication_responses, default_responses
 from .model import (
     APIAuthStatus,
     APIAuthStatusToken,
@@ -27,7 +28,11 @@ from .model import (
 api_router = APIRouter()
 
 
-@api_router.post('/login')
+@api_router.post(
+    '/login',
+    status_code=200,
+    responses=authentication_responses,
+)
 def login(
     authentication: AuthenticationDetails,
     x_api_token: Annotated[str | None, Header()] = None,
@@ -79,7 +84,11 @@ def login(
     )
 
 
-@api_router.get('/logout')
+@api_router.get(
+    '/logout',
+    status_code=200,
+    responses=default_responses,
+)
 def logout(
     x_api_token: Annotated[str | None, Header()] = None,
     my_data: MyData = Depends(my_data_object),
@@ -108,7 +117,11 @@ def logout(
     return LogoutResult(status=AuthenticationResultStatus.SUCCESS)
 
 
-@api_router.get('/status')
+@api_router.get(
+    '/status',
+    status_code=200,
+    responses=default_responses,
+)
 def status(
     x_api_token: Annotated[str | None, Header()] = None,
     my_data: MyData = Depends(my_data_object),
@@ -143,7 +156,11 @@ def status(
     )
 
 
-@api_router.get('/refresh')
+@api_router.get(
+    '/refresh',
+    status_code=200,
+    responses=default_responses,
+)
 def refresh(
     x_api_token: Annotated[str | None, Header()] = None,
     renew_token: Annotated[bool, Query()] = True,

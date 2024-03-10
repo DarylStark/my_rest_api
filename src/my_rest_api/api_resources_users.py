@@ -6,6 +6,7 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import User
 
 from .app_config import AppConfig
+from .endpoint_details import default_responses
 from .model import (
     DeletionResult,
     PaginationResult,
@@ -37,7 +38,12 @@ crud_operations = ResourceCRUDOperations(
 )
 
 
-@api_router.get('/users', name='Users - Retrieve')
+@api_router.get(
+    '/users',
+    name='Users - Retrieve',
+    status_code=200,
+    responses=default_responses,
+)
 def retrieve(
     request: Request,
     response: Response,
@@ -77,7 +83,12 @@ def retrieve(
     )
 
 
-@api_router.post('/users', name='Users - Create')
+@api_router.post(
+    '/users',
+    name='Users - Create',
+    status_code=201,
+    responses=default_responses,
+)
 def create(
     resources: list[UserResourceIn],
     x_api_token: Annotated[str | None, Header()] = None,
@@ -94,7 +105,12 @@ def create(
     return crud_operations.create(resources, x_api_token)
 
 
-@api_router.put('/users/{user_id}', name='Users - Update')
+@api_router.put(
+    '/users/{user_id}',
+    name='Users - Update',
+    status_code=200,
+    responses=default_responses,
+)
 def update(
     user_id: Annotated[int, Path()],
     new_user: UserResourceIn,
@@ -117,7 +133,12 @@ def update(
     )
 
 
-@api_router.delete('/users/{user_id}', name='Users - Delete')
+@api_router.delete(
+    '/users/{user_id}',
+    name='Users - Delete',
+    status_code=200,
+    responses=default_responses,
+)
 def delete(
     user_id: Annotated[int, Path()],
     x_api_token: Annotated[str | None, Header()] = None,
