@@ -7,6 +7,14 @@ from .generic_endpoint_details import (
 )
 from .model import APIError
 
+# REST API
+
+description_version: DocumentationDict = {
+    'summary': 'Retrieve version information.',
+    'description': ('Get version information of the API.'),
+    'response_description': ('The version of the API.'),
+}
+
 # API Authentication
 
 authentication_responses: ResponsesDict = {
@@ -187,6 +195,42 @@ description_users_delete: DocumentationDict = {
     'summary': 'Delete users',
     'description': (
         'Delete users. Specify the unique ID of the user to delete.'
+    ),
+    'response_description': ('A response indicating what IDs are deleted'),
+}
+
+# User settings
+
+description_user_settings_retrieve: DocumentationDict = {
+    'summary': 'Retrieve user settings',
+    'description': ('Retrieve all user settings for the user.'),
+    'response_description': (
+        'A list of all user settings configured by the user. Includes all the '
+        + 'details of the setting.'
+    ),
+}
+
+description_user_settings_create: DocumentationDict = {
+    'summary': 'Create user settings',
+    'description': (
+        'Create user settings by giving a list of user settings to create.'
+    ),
+    'response_description': ('The given user settings that are created.'),
+}
+
+description_user_settings_update: DocumentationDict = {
+    'summary': 'Update user settings',
+    'description': (
+        'Update user settings. Specify the unique ID of the setting and the  '
+        + 'new user setting object.'
+    ),
+    'response_description': ('The updated user setting object.'),
+}
+
+description_user_settings_delete: DocumentationDict = {
+    'summary': 'Delete user settings',
+    'description': (
+        'Delete user settings. Specify the unique ID of the setting to delete.'
     ),
     'response_description': ('A response indicating what IDs are deleted'),
 }

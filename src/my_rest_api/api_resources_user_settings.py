@@ -7,6 +7,12 @@ from my_model import UserSetting
 
 from .app_config import AppConfig
 from .generic_endpoint_details import default_responses
+from .local_endpoint_details import (
+    description_user_settings_create,
+    description_user_settings_delete,
+    description_user_settings_retrieve,
+    description_user_settings_update,
+)
 from .model import (
     DeletionResult,
     PaginationResult,
@@ -43,6 +49,7 @@ crud_operations = ResourceCRUDOperations(
     name='User Settings - Retrieve',
     status_code=200,
     responses=default_responses,
+    **description_user_settings_retrieve,
 )
 def retrieve(
     request: Request,
@@ -88,6 +95,7 @@ def retrieve(
     name='User Settings - Create',
     status_code=201,
     responses=default_responses,
+    **description_user_settings_create,
 )
 def create(
     resources: list[UserSettingResourceIn],
@@ -110,6 +118,7 @@ def create(
     name='User Settings - Update',
     status_code=200,
     responses=default_responses,
+    **description_user_settings_update,
 )
 def update(
     user_setting_id: Annotated[int, Path()],
@@ -138,6 +147,7 @@ def update(
     name='User Settings - Delete',
     status_code=200,
     responses=default_responses,
+    **description_user_settings_delete,
 )
 def delete(
     user_setting_id: Annotated[int, Path()],
