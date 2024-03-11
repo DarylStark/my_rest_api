@@ -15,9 +15,9 @@ from my_data.my_data import MyData
 from .app_config import AppConfig
 from .dependencies import my_data_object
 from .generic_endpoint_details import (
-    authentication_responses,
     default_responses,
 )
+from .local_endpoint_details import authentication_responses
 from .model import (
     APIAuthStatus,
     APIAuthStatusToken,
