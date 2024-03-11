@@ -17,7 +17,13 @@ from .dependencies import my_data_object
 from .generic_endpoint_details import (
     default_responses,
 )
-from .local_endpoint_details import authentication_responses
+from .local_endpoint_details import (
+    authentication_responses,
+    description_login,
+    description_logout,
+    description_refresh,
+    description_status,
+)
 from .model import (
     APIAuthStatus,
     APIAuthStatusToken,
@@ -35,6 +41,7 @@ api_router = APIRouter()
     '/login',
     status_code=200,
     responses=authentication_responses,
+    **description_login,
 )
 def login(
     authentication: AuthenticationDetails,
@@ -91,6 +98,7 @@ def login(
     '/logout',
     status_code=200,
     responses=default_responses,
+    **description_logout,
 )
 def logout(
     x_api_token: Annotated[str | None, Header()] = None,
@@ -124,6 +132,7 @@ def logout(
     '/status',
     status_code=200,
     responses=default_responses,
+    **description_status,
 )
 def status(
     x_api_token: Annotated[str | None, Header()] = None,
@@ -163,6 +172,7 @@ def status(
     '/refresh',
     status_code=200,
     responses=default_responses,
+    **description_refresh,
 )
 def refresh(
     x_api_token: Annotated[str | None, Header()] = None,

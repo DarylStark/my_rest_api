@@ -5,6 +5,7 @@ from typing import Any
 from .model import APIError
 
 ResponsesDict = dict[int | str, dict[str, Any]]
+DocumentationDict = dict[str, Any]
 
 default_responses: ResponsesDict = {
     400: {'description': 'A parameter is invalid.', 'model': APIError},
