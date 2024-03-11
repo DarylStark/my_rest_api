@@ -155,3 +155,38 @@ description_tags_delete: DocumentationDict = {
     'description': ('Delete tags. Specify the unique ID of the tag to delete'),
     'response_description': ('A response indicating what IDs are deleted'),
 }
+
+
+# Users
+
+description_users_retrieve: DocumentationDict = {
+    'summary': 'Retrieve users',
+    'description': ('Retrieve all users visible for the user.'),
+    'response_description': (
+        'A list of all API users configured by the user. Includes all the '
+        + 'details of the users.'
+    ),
+}
+
+description_users_create: DocumentationDict = {
+    'summary': 'Create users',
+    'description': ('Create users by giving a list of users to create.'),
+    'response_description': ('The given users that are created.'),
+}
+
+description_users_update: DocumentationDict = {
+    'summary': 'Update users',
+    'description': (
+        'Update users. Specify the unique ID of the user and the new '
+        + 'user object.'
+    ),
+    'response_description': ('The updated users object.'),
+}
+
+description_users_delete: DocumentationDict = {
+    'summary': 'Delete users',
+    'description': (
+        'Delete users. Specify the unique ID of the user to delete.'
+    ),
+    'response_description': ('A response indicating what IDs are deleted'),
+}
