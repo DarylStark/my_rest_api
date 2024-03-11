@@ -5,7 +5,9 @@ from fastapi.testclient import TestClient
 
 
 def create_endpoint_url(
-    endpoint: str, arguments: dict[str, str | int] | None = None
+    endpoint: str,
+    arguments: dict[str, str | int] | None = None,
+    id: int | None = None,
 ) -> str:
     """Create the endpoint URL.
 
@@ -13,6 +15,7 @@ def create_endpoint_url(
         endpoint: the endpoint.
         arguments: the arguments for the endpoint. Can be omitted if there are
             no arguments.
+        id: a ID to grab.
 
     Returns:
         The endpoint URL.
@@ -22,7 +25,85 @@ def create_endpoint_url(
         args_string = '&'.join(
             [f'{argument}={value}' for argument, value in arguments.items()]
         )
+    if id:
+        endpoint += f'/{id}'
     return f'/resources/{endpoint}?{args_string}'
+
+
+@pytest.mark.parametrize(
+    'endpoint, id',
+    (
+        ('users', 1),
+        ('tags', 1),
+        ('user_settings', 1),
+        ('api_clients', 1),
+        ('api_tokens', 1),
+    ),
+)
+def test_retrieve_by_id(
+    api_client: TestClient,
+    endpoint: str,
+    id: int,
+) -> None:
+    """Test retrieving resources by id.
+
+    Happy path test; should always be a success and return one item.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        id: the ID to grab.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+    # Set the endpoint
+    endpoint = create_endpoint_url(endpoint, id=id)
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 200
+
+
+@pytest.mark.parametrize(
+    'endpoint, id',
+    (
+        ('users', 999),
+        ('tags', 999),
+        ('user_settings', 999),
+        ('api_clients', 999),
+        ('api_tokens', 999),
+    ),
+)
+def test_retrieve_by_wrong_id(
+    api_client: TestClient,
+    endpoint: str,
+    id: int,
+) -> None:
+    """Test retrieving resources by wrong id.
+
+    Unhappy path test; should always return a 404.
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        id: the ID to grab.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+    # Set the endpoint
+    endpoint = create_endpoint_url(endpoint, id=id)
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+
+    # Validate the answer
+    assert result.status_code == 404
 
 
 @pytest.mark.parametrize(

@@ -305,6 +305,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         page: int = 1,
         sort: str | None = None,
         api_token: str | None = None,
+        id: int | None = None,
     ) -> tuple[PaginationGenerator | None, list[OutputModel]]:
         """Retrieve the resources.
 
@@ -313,6 +314,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             page_size: the number of items to return in a page.
             page: the page number to return.
             sort: the field to sort on.
+            id: a specific ID for the object to retrieve.
             api_token: the API token to use for authorization.
 
         Returns:
@@ -328,6 +330,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         # Get the filters and sort field
         filters = self._get_filters(flt)
         sort_field = self._get_sort_field(sort)
+
+        if id:
+            filters.append(self._model.id == id)  # type: ignore
 
         # Default return values
         resources: list[OutputModel] = []

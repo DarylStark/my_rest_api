@@ -5,12 +5,15 @@ from typing import Annotated
 from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import UserSetting
 
+from my_rest_api.exceptions import NoResourcesFoundError
+
 from .app_config import AppConfig
 from .generic_endpoint_details import default_responses
 from .local_endpoint_details import (
     description_user_settings_create,
     description_user_settings_delete,
     description_user_settings_retrieve,
+    description_user_settings_retrieve_by_id,
     description_user_settings_update,
 )
 from .model import (
@@ -88,6 +91,35 @@ def retrieve(
     return RetrieveResult(
         pagination=PaginationResult(**pagination.__dict__), resources=resources
     )
+
+
+@api_router.get(
+    '/user_settings/{id}',
+    name='User Settings - Retrieve by id',
+    status_code=200,
+    responses=default_responses,
+    **description_user_settings_retrieve_by_id,
+)
+def retrieve_by_id(
+    id: int,
+    x_api_token: Annotated[str | None, Header()] = None,
+) -> UserSettingResource:
+    """Get a specific User Setting.
+
+    Args:
+        id: the setting ID.
+        x_api_token: the API client.
+
+    Returns:
+        The given User Setting.
+
+    Raises:
+        NoResourcesFoundError: if the User Setting is not found.
+    """
+    _, resources = crud_operations.retrieve(api_token=x_api_token, id=id)
+    if len(resources) == 0:
+        raise NoResourcesFoundError(message='Item not found')
+    return resources[0]
 
 
 @api_router.post(
