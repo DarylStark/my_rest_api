@@ -6,7 +6,7 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import APIClient
 
 from .app_config import AppConfig
-from .endpoint_details import default_responses
+from .generic_endpoint_details import default_responses
 from .model import (
     APIClientResource,
     APIClientResourceIn,
