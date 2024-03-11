@@ -71,3 +71,39 @@ description_refresh: DocumentationDict = {
         + 'token.'
     ),
 }
+
+# API Clients
+
+description_api_clients_retrieve: DocumentationDict = {
+    'summary': 'Retrieve API clients',
+    'description': ('Retrieve all API clients configured by the user.'),
+    'response_description': (
+        'A list of all API clients configured by the user. Includes the date '
+        + 'of creation, the status, the name, published and the callback URL.'
+    ),
+}
+
+description_api_clients_create: DocumentationDict = {
+    'summary': 'Create API clients',
+    'description': (
+        'Create API clients by giving a list of API clients to create.'
+    ),
+    'response_description': ('The given API clients that are created.'),
+}
+
+description_api_clients_update: DocumentationDict = {
+    'summary': 'Update API clients',
+    'description': (
+        'Update API clients. Specify the unique ID of the client and the new '
+        + 'client object.'
+    ),
+    'response_description': ('The updated API client object.'),
+}
+
+description_api_clients_delete: DocumentationDict = {
+    'summary': 'Delete API clients',
+    'description': (
+        'Delete API clients. Specify the unique ID of the client to delete'
+    ),
+    'response_description': ('A response indicating what IDs are deleted'),
+}
