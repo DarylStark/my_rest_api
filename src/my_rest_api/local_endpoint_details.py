@@ -123,3 +123,35 @@ description_api_tokens_delete: DocumentationDict = {
     ),
     'response_description': ('A response indicating what IDs are deleted'),
 }
+
+# Tags
+
+description_tags_retrieve: DocumentationDict = {
+    'summary': 'Retrieve tags',
+    'description': ('Retrieve all tags configured by the user.'),
+    'response_description': (
+        'A list of all API tags configured by the user. Includes the title '
+        + 'and optionally the color of the tag.'
+    ),
+}
+
+description_tags_create: DocumentationDict = {
+    'summary': 'Create tags',
+    'description': ('Create tags by giving a list of tag to create.'),
+    'response_description': ('The given tags that are created.'),
+}
+
+description_tags_update: DocumentationDict = {
+    'summary': 'Update tags',
+    'description': (
+        'Update tags. Specify the unique ID of the tag and the new '
+        + 'tag object.'
+    ),
+    'response_description': ('The updated tag object.'),
+}
+
+description_tags_delete: DocumentationDict = {
+    'summary': 'Delete tags',
+    'description': ('Delete tags. Specify the unique ID of the tag to delete'),
+    'response_description': ('A response indicating what IDs are deleted'),
+}
