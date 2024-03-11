@@ -10,11 +10,14 @@ from typing import Annotated
 from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import APIToken
 
+from my_rest_api.exceptions import NoResourcesFoundError
+
 from .app_config import AppConfig
 from .generic_endpoint_details import default_responses
 from .local_endpoint_details import (
     description_api_tokens_delete,
     description_api_tokens_retrieve,
+    description_api_tokens_retrieve_by_id,
 )
 from .model import (
     APITokenResource,
@@ -88,6 +91,35 @@ def retrieve(
     return RetrieveResult(
         pagination=PaginationResult(**pagination.__dict__), resources=resources
     )
+
+
+@api_router.get(
+    '/api_tokens/{id}',
+    name='API Tokens - Retrieve by id',
+    status_code=200,
+    responses=default_responses,
+    **description_api_tokens_retrieve_by_id,
+)
+def retrieve_by_id(
+    id: int,
+    x_api_token: Annotated[str | None, Header()] = None,
+) -> APITokenResource:
+    """Get a specific API token.
+
+    Args:
+        id: the token ID.
+        x_api_token: the API token.
+
+    Returns:
+        The given API token.
+
+    Raises:
+        NoResourcesFoundError: if the API token is not found.
+    """
+    _, resources = crud_operations.retrieve(api_token=x_api_token, id=id)
+    if len(resources) == 0:
+        raise NoResourcesFoundError(message='Item not found')
+    return resources[0]
 
 
 @api_router.delete(

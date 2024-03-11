@@ -5,12 +5,15 @@ from typing import Annotated
 from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import User
 
+from my_rest_api.exceptions import NoResourcesFoundError
+
 from .app_config import AppConfig
 from .generic_endpoint_details import default_responses
 from .local_endpoint_details import (
     description_users_create,
     description_users_delete,
     description_users_retrieve,
+    description_users_retrieve_by_id,
     description_users_update,
 )
 from .model import (
@@ -88,6 +91,35 @@ def retrieve(
     return RetrieveResult(
         pagination=PaginationResult(**pagination.__dict__), resources=resources
     )
+
+
+@api_router.get(
+    '/users/{id}',
+    name='Users - Retrieve by id',
+    status_code=200,
+    responses=default_responses,
+    **description_users_retrieve_by_id,
+)
+def retrieve_by_id(
+    id: int,
+    x_api_token: Annotated[str | None, Header()] = None,
+) -> UserResource:
+    """Get a specific user resource.
+
+    Args:
+        id: the user ID.
+        x_api_token: the API token.
+
+    Returns:
+        The given user.
+
+    Raises:
+        NoResourcesFoundError: if the user is not found.
+    """
+    _, resources = crud_operations.retrieve(api_token=x_api_token, id=id)
+    if len(resources) == 0:
+        raise NoResourcesFoundError(message='Item not found')
+    return resources[0]
 
 
 @api_router.post(

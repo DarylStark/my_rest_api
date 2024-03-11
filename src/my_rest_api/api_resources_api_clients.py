@@ -5,12 +5,15 @@ from typing import Annotated
 from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import APIClient
 
+from my_rest_api.exceptions import NoResourcesFoundError
+
 from .app_config import AppConfig
 from .generic_endpoint_details import default_responses
 from .local_endpoint_details import (
     description_api_clients_create,
     description_api_clients_delete,
     description_api_clients_retrieve,
+    description_api_clients_retrieve_by_id,
     description_api_clients_update,
 )
 from .model import (
@@ -83,6 +86,35 @@ def retrieve(
     return RetrieveResult(
         pagination=PaginationResult(**pagination.__dict__), resources=resources
     )
+
+
+@api_router.get(
+    '/api_clients/{id}',
+    name='API Clients - Retrieve by id',
+    status_code=200,
+    responses=default_responses,
+    **description_api_clients_retrieve_by_id,
+)
+def retrieve_by_id(
+    id: int,
+    x_api_token: Annotated[str | None, Header()] = None,
+) -> APIClientResource:
+    """Get a specific API client.
+
+    Args:
+        id: the client ID.
+        x_api_token: the API client.
+
+    Returns:
+        The given API client.
+
+    Raises:
+        NoResourcesFoundError: if the API client is not found.
+    """
+    _, resources = crud_operations.retrieve(api_token=x_api_token, id=id)
+    if len(resources) == 0:
+        raise NoResourcesFoundError(message='Item not found')
+    return resources[0]
 
 
 @api_router.post(

@@ -91,6 +91,12 @@ description_api_clients_retrieve: DocumentationDict = {
     ),
 }
 
+description_api_clients_retrieve_by_id: DocumentationDict = {
+    'summary': 'Retrieve API clients by ID',
+    'description': ('Retrieve a specific API client configured by the user.'),
+    'response_description': ('The API client object with the given ID.'),
+}
+
 description_api_clients_create: DocumentationDict = {
     'summary': 'Create API clients',
     'description': (
@@ -124,6 +130,12 @@ description_api_tokens_retrieve: DocumentationDict = {
     'response_description': ('A list of all API tokens created by the user'),
 }
 
+description_api_tokens_retrieve_by_id: DocumentationDict = {
+    'summary': 'Retrieve API tokens by ID',
+    'description': ('Retrieve a specific API token configured by the user.'),
+    'response_description': ('The API token object with the given ID.'),
+}
+
 description_api_tokens_delete: DocumentationDict = {
     'summary': 'Delete API tokens',
     'description': (
@@ -141,6 +153,12 @@ description_tags_retrieve: DocumentationDict = {
         'A list of all API tags configured by the user. Includes the title '
         + 'and optionally the color of the tag.'
     ),
+}
+
+description_tags_retrieve_by_id: DocumentationDict = {
+    'summary': 'Retrieve tags by ID',
+    'description': ('Retrieve a specific tag configured by the user.'),
+    'response_description': ('The tag object with the given ID.'),
 }
 
 description_tags_create: DocumentationDict = {
@@ -176,6 +194,12 @@ description_users_retrieve: DocumentationDict = {
     ),
 }
 
+description_users_retrieve_by_id: DocumentationDict = {
+    'summary': 'Retrieve users by ID',
+    'description': ('Retrieve a specific user.'),
+    'response_description': ('The user object with the given ID.'),
+}
+
 description_users_create: DocumentationDict = {
     'summary': 'Create users',
     'description': ('Create users by giving a list of users to create.'),
@@ -208,6 +232,14 @@ description_user_settings_retrieve: DocumentationDict = {
         'A list of all user settings configured by the user. Includes all the '
         + 'details of the setting.'
     ),
+}
+
+description_user_settings_retrieve_by_id: DocumentationDict = {
+    'summary': 'Retrieve user settings by ID',
+    'description': (
+        'Retrieve a specific user setting configured by the user.'
+    ),
+    'response_description': ('The user setting object with the given ID.'),
 }
 
 description_user_settings_create: DocumentationDict = {
