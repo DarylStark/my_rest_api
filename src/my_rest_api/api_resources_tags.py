@@ -6,7 +6,13 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import Tag
 
 from .app_config import AppConfig
-from .endpoint_details import default_responses
+from .generic_endpoint_details import default_responses
+from .local_endpoint_details import (
+    description_tags_create,
+    description_tags_delete,
+    description_tags_retrieve,
+    description_tags_update,
+)
 from .model import (
     DeletionResult,
     PaginationResult,
@@ -43,6 +49,7 @@ crud_operations = ResourceCRUDOperations(
     name='Tags - Retrieve',
     status_code=200,
     responses=default_responses,
+    **description_tags_retrieve,
 )
 def retrieve(
     request: Request,
@@ -88,6 +95,7 @@ def retrieve(
     name='Tags - Create',
     status_code=201,
     responses=default_responses,
+    **description_tags_create,
 )
 def create(
     resources: list[TagResourceIn],
@@ -110,6 +118,7 @@ def create(
     name='Tags - Update',
     status_code=200,
     responses=default_responses,
+    **description_tags_update,
 )
 def update(
     tag_id: Annotated[int, Path()],
@@ -138,6 +147,7 @@ def update(
     name='Tags - Delete',
     status_code=200,
     responses=default_responses,
+    **description_tags_delete,
 )
 def delete(
     tag_id: Annotated[int, Path()],

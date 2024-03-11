@@ -6,7 +6,13 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import APIClient
 
 from .app_config import AppConfig
-from .endpoint_details import default_responses
+from .generic_endpoint_details import default_responses
+from .local_endpoint_details import (
+    description_api_clients_create,
+    description_api_clients_delete,
+    description_api_clients_retrieve,
+    description_api_clients_update,
+)
 from .model import (
     APIClientResource,
     APIClientResourceIn,
@@ -38,6 +44,7 @@ crud_operations = ResourceCRUDOperations(
     name='API Clients - Retrieve',
     status_code=200,
     responses=default_responses,
+    **description_api_clients_retrieve,
 )
 def retrieve(
     request: Request,
@@ -83,6 +90,7 @@ def retrieve(
     name='API Clients - Create',
     status_code=201,
     responses=default_responses,
+    **description_api_clients_create,
 )
 def create(
     resources: list[APIClientResourceIn],
@@ -105,6 +113,7 @@ def create(
     name='API Clients - Update',
     status_code=200,
     responses=default_responses,
+    **description_api_clients_update,
 )
 def update(
     client_id: Annotated[int, Path()],
@@ -133,6 +142,7 @@ def update(
     name='API Clients - Delete',
     status_code=200,
     responses=default_responses,
+    **description_api_clients_delete,
 )
 def delete(
     client_id: Annotated[int, Path()],

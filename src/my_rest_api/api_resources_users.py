@@ -6,7 +6,13 @@ from fastapi import APIRouter, Header, Path, Query, Request, Response
 from my_model import User
 
 from .app_config import AppConfig
-from .endpoint_details import default_responses
+from .generic_endpoint_details import default_responses
+from .local_endpoint_details import (
+    description_users_create,
+    description_users_delete,
+    description_users_retrieve,
+    description_users_update,
+)
 from .model import (
     DeletionResult,
     PaginationResult,
@@ -43,6 +49,7 @@ crud_operations = ResourceCRUDOperations(
     name='Users - Retrieve',
     status_code=200,
     responses=default_responses,
+    **description_users_retrieve,
 )
 def retrieve(
     request: Request,
@@ -88,6 +95,7 @@ def retrieve(
     name='Users - Create',
     status_code=201,
     responses=default_responses,
+    **description_users_create,
 )
 def create(
     resources: list[UserResourceIn],
@@ -110,6 +118,7 @@ def create(
     name='Users - Update',
     status_code=200,
     responses=default_responses,
+    **description_users_update,
 )
 def update(
     user_id: Annotated[int, Path()],
@@ -138,6 +147,7 @@ def update(
     name='Users - Delete',
     status_code=200,
     responses=default_responses,
+    **description_users_delete,
 )
 def delete(
     user_id: Annotated[int, Path()],
