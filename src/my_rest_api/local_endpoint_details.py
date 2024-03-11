@@ -107,3 +107,19 @@ description_api_clients_delete: DocumentationDict = {
     ),
     'response_description': ('A response indicating what IDs are deleted'),
 }
+
+# API Tokens
+
+description_api_tokens_retrieve: DocumentationDict = {
+    'summary': 'Retrieve API tokens',
+    'description': ('Retrieve all API tokens configured by the user.'),
+    'response_description': ('A list of all API tokens created by the user'),
+}
+
+description_api_tokens_delete: DocumentationDict = {
+    'summary': 'Delete API tokens',
+    'description': (
+        'Delete API tokens. Specify the unique ID of the token to delete'
+    ),
+    'response_description': ('A response indicating what IDs are deleted'),
+}

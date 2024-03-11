@@ -12,6 +12,10 @@ from my_model import APIToken
 
 from .app_config import AppConfig
 from .generic_endpoint_details import default_responses
+from .local_endpoint_details import (
+    description_api_tokens_delete,
+    description_api_tokens_retrieve,
+)
 from .model import (
     APITokenResource,
     DeletionResult,
@@ -45,6 +49,7 @@ crud_operations = ResourceCRUDOperations(
     name='API Tokens - Retrieve',
     status_code=200,
     responses=default_responses,
+    **description_api_tokens_retrieve,
 )
 def retrieve(
     request: Request,
@@ -90,6 +95,7 @@ def retrieve(
     name='API Tokens - Delete',
     status_code=200,
     responses=default_responses,
+    **description_api_tokens_delete,
 )
 def delete(
     apitoken_id: Annotated[int, Path()],
