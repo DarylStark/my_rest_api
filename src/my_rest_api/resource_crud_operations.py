@@ -15,7 +15,7 @@ from my_data.authorizer import (
 )
 from my_data.context import Context
 from my_data.resource_manager import ResourceManager
-from my_model import MyModel, User
+from my_model import Resource, User
 from pydantic import BaseModel
 from sqlalchemy.sql.elements import ColumnElement
 
@@ -31,7 +31,7 @@ from .filter_generator import FilterGenerator
 from .my_rest_api import MyRESTAPI
 from .sorting_generator import SortingGenerator
 
-Model = TypeVar('Model', bound=MyModel)
+Model = TypeVar('Model', bound=Resource)
 OutputModel = TypeVar('OutputModel', bound=BaseModel)
 InputModel = TypeVar('InputModel', bound=BaseModel)
 
