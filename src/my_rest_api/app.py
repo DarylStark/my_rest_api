@@ -18,9 +18,9 @@ import logging
 
 from fastapi import FastAPI
 from my_data.exceptions import (
-    AuthenticationFailed,
-    AuthorizationFailed,
-    PermissionDeniedException,
+    AuthenticationFailedError,
+    AuthorizationFailedError,
+    PermissionDeniedError,
 )
 
 from .api_authentication import api_router as auth_api_router
@@ -58,9 +58,11 @@ app = FastAPI(debug=config.debug, title='My REST API')
 
 # Add customer exception handlers
 app.exception_handlers[MyRESTAPIError] = myrestapi_error_handler
-app.exception_handlers[AuthenticationFailed] = authentication_error_handler
-app.exception_handlers[AuthorizationFailed] = authorization_error_handler
-app.exception_handlers[PermissionDeniedException] = authorization_error_handler
+app.exception_handlers[
+    AuthenticationFailedError
+] = authentication_error_handler
+app.exception_handlers[AuthorizationFailedError] = authorization_error_handler
+app.exception_handlers[PermissionDeniedError] = authorization_error_handler
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
