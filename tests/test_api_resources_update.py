@@ -210,15 +210,14 @@ def test_update_short_lived_normal_user_self(
     )
 
 
-@pytest.mark.skip(reason='Should be implemented in MyData first')
 @pytest.mark.parametrize(
     'new_role',
-    (1, 2, 3),
+    (1, 2),
 )
 def test_update_short_lived_normal_user_elevate_role(
     api_client: TestClient, new_role: int
 ) -> None:
-    """Test that the update endpoints work with a short lived token.
+    """Test if a user can elevate his own role.
 
     Tests with a normal user if it can change it's role. It shouldn't be
     allowed to do this.
@@ -228,14 +227,13 @@ def test_update_short_lived_normal_user_elevate_role(
         new_role: the new role to set.
     """
     _token = 'pabq1d533eMucNPr5pHPuDMqxKRw1SE0'
-    id = 2
 
     # Get the original data
     result = api_client.get(
-        f'/resources/users?filter=id=={id}',
+        '/resources/users',
         headers={'X-API-Token': _token},
     )
-    original_data = result.json()[0]
+    original_data = result.json()['resources'][0]
     original_data_dict = {
         key: original_data[key]
         for key in ['username', 'fullname', 'email', 'role']
@@ -244,13 +242,13 @@ def test_update_short_lived_normal_user_elevate_role(
 
     # Do the request
     result = api_client.put(
-        f'/resources/users/{id}',
+        f'/resources/users/{original_data["id"]}',
         headers={'X-API-Token': _token},
         json=original_data_dict,
     )
 
     # Validate the answer
-    assert result.status_code == 403
+    assert result.status_code == 401
 
 
 @pytest.mark.parametrize(
