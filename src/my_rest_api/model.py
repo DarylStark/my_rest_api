@@ -28,6 +28,7 @@ class Resource(BaseModel):
     """
 
     id: int
+    uri: str
     created: datetime
     updated: datetime
 

@@ -73,6 +73,7 @@ def test_retrieve_by_id(
     assert data['id'] == id
     assert data['created'] is not None
     assert data['updated'] is not None
+    assert data['uri'] is not None
 
 
 @pytest.mark.parametrize(

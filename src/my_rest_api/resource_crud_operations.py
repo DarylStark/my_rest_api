@@ -69,6 +69,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         needed_scopes: AuthorizationDetails,
         filter_fields: list[str],
         sort_fields: list[str],
+        resource_uri: str,
     ) -> None:
         """Set the needed values for the CRUD operators.
 
@@ -82,6 +83,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
                 tuple with the create, retrieve, update and delete scopes.
             filter_fields: the fields that can be used for filtering.
             sort_fields: the fields that can be used for sorting.
+            resource_uri: the URI for the resource.
         """
         self._model: Type[Model] = model
         self._input_model: Type[InputModel] = input_model
@@ -90,6 +92,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         self._needed_scopes: AuthorizationDetails = needed_scopes
         self._filter_fields: list[str] = filter_fields
         self._sort_fields: list[str] = sort_fields
+        self._resource_uri: str = resource_uri
 
         # Set the MyData object
         self._my_data = MyRESTAPI.get_instance().my_data
@@ -214,6 +217,20 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
 
         return resource_manager
 
+    def _get_uri_for_model(self, resource: Model) -> str:
+        """Get the URI for a resource.
+
+        Returns the URI for a resource. It bases it on the ID of the given
+        resource and the resource URI.
+
+        Args:
+            resource: the resource to get the URI for.
+
+        Returns:
+            The URI for the resource.
+        """
+        return f'/resources/{self._resource_uri}/{resource.id}'
+
     def _convert_model_to_output_model(
         self, models: list[Model]
     ) -> list[OutputModel]:
@@ -233,7 +250,10 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             The output model.
         """
         return [
-            self._output_model(**resource.model_dump()) for resource in models
+            self._output_model(
+                **resource.model_dump(), uri=self._get_uri_for_model(resource)
+            )
+            for resource in models
         ]
 
     def get_link_header_string(

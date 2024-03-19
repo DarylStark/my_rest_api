@@ -39,6 +39,7 @@ crud_operations = ResourceCRUDOperations(
     needed_scopes=AuthorizationDetails(allow_only_short_lived=True),
     filter_fields=['id', 'app_name', 'app_publisher'],
     sort_fields=['id', 'app_name', 'app_publisher'],
+    resource_uri='api_clients',
 )
 
 
