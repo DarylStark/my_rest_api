@@ -67,6 +67,13 @@ def test_retrieve_by_id(
     # Validate the answer
     assert result.status_code == 200
 
+    # Check if we have the three required fields: `id`, `created`, and
+    # `updated`
+    data = result.json()
+    assert data['id'] == id
+    assert data['created'] is not None
+    assert data['updated'] is not None
+
 
 @pytest.mark.parametrize(
     'endpoint, id',
