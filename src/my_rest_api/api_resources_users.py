@@ -44,6 +44,7 @@ crud_operations = ResourceCRUDOperations(
     ),
     filter_fields=['id', 'username', 'fullname', 'email'],
     sort_fields=['id', 'username', 'fullname', 'email', 'role', 'created'],
+    resource_uri='users',
 )
 
 

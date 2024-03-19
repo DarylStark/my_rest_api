@@ -44,6 +44,7 @@ crud_operations = ResourceCRUDOperations(
     ),
     filter_fields=['id', 'setting', 'value'],
     sort_fields=['id', 'setting', 'value'],
+    resource_uri='user_settings',
 )
 
 

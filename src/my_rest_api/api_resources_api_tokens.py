@@ -44,6 +44,7 @@ crud_operations = ResourceCRUDOperations(
     ),
     filter_fields=['id', 'title', 'api_client_id'],
     sort_fields=['id', 'title', 'created', 'expires'],
+    resource_uri='api_tokens',
 )
 
 

@@ -20,6 +20,19 @@ class Version(BaseModel):
     version: str | None
 
 
+class Resource(BaseModel):
+    """Base model for all resources.
+
+    Contains all fields that models from the database have, like a unique id,
+    a creation date and a last update date.
+    """
+
+    id: int
+    uri: str
+    created: datetime
+    updated: datetime
+
+
 class AuthenticationDetails(BaseModel):
     """Authentication details for the REST API.
 
@@ -118,18 +131,8 @@ class UserResourceIn(BaseModel):
     role: UserRole = Field(default=UserRole.USER)
 
 
-class UserResource(UserResourceIn):
-    """User object for the REST API.
-
-    Adds the `id` and `created` fields to the User model.
-
-    Attributes:
-        id: the id of the user.
-        created: the creation datetime of the object
-    """
-
-    id: int | None = None
-    created: datetime = Field(default_factory=datetime.utcnow)
+class UserResource(UserResourceIn, Resource):
+    """User object for the REST API."""
 
 
 class TagResourceIn(BaseModel):
@@ -146,16 +149,8 @@ class TagResourceIn(BaseModel):
     )
 
 
-class TagResource(TagResourceIn):
-    """Tag object for the REST API.
-
-    Adds the `id` field to the Tag model.
-
-    Attributes:
-        id: the id of the tag.
-    """
-
-    id: int | None = None
+class TagResource(TagResourceIn, Resource):
+    """Tag object for the REST API."""
 
 
 class DeletionResult(BaseModel):
@@ -180,16 +175,8 @@ class UserSettingResourceIn(BaseModel):
     value: str = Field(max_length=32)
 
 
-class UserSettingResource(UserSettingResourceIn):
-    """UserSetting object for the REST API response.
-
-    Adds the `id` field to the UserSetting model.
-
-    Attributes:
-        id: the id of the tag.
-    """
-
-    id: int | None = None
+class UserSettingResource(UserSettingResourceIn, Resource):
+    """UserSetting object for the REST API response."""
 
 
 class APIClientResourceIn(BaseModel):
@@ -214,32 +201,20 @@ class APIClientResourceIn(BaseModel):
     )
 
 
-class APIClientResource(APIClientResourceIn):
-    """APIClient object for the REST API response.
-
-    Adds the `id` field to the APIClient model.
-
-    Attributes:
-        id: the id of the api_client.
-    """
-
-    id: int | None = None
+class APIClientResource(APIClientResourceIn, Resource):
+    """APIClient object for the REST API response."""
 
 
-class APITokenResource(BaseModel):
+class APITokenResource(Resource):
     """API Token object for the REST API.
 
     Attributes:
-        id: the id of the api_token.
-        created: the creation datetime of the object.
         expires: the expiration datetime of the object.
         api_client_id: the id of the api client.
         enabled: whether the token is enabled.
         title: the title of the token.
     """
 
-    id: int | None = None
-    created: datetime = Field(default_factory=datetime.utcnow)
     expires: datetime = Field(default_factory=datetime.utcnow)
     api_client_id: int | None = Field(default=None)
     enabled: bool = True

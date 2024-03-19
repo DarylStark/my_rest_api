@@ -51,6 +51,7 @@ crud_operations = ResourceCRUDOperations(
     ),
     filter_fields=['id', 'title', 'color'],
     sort_fields=['id', 'color', 'title'],
+    resource_uri='tags',
 )
 
 

@@ -32,6 +32,7 @@ def test_retrieve_invalid_context_attribute(
         ),
         filter_fields=['title'],
         sort_fields=['title'],
+        resource_uri='tags',
     )
     with pytest.raises(InvalidContextAttributeError):
         operations.retrieve(api_token='pabq1d533eMucNPr5pHPuDMqxKRw1SE0')
@@ -58,6 +59,7 @@ def test_get_link_header_string_without_pagination(
         ),
         filter_fields=['title'],
         sort_fields=['title'],
+        resource_uri='tags',
     )
     assert (
         operations.get_link_header_string(
@@ -88,6 +90,7 @@ def test_get_link_header_string_with_pagination(
         ),
         filter_fields=['title'],
         sort_fields=['title'],
+        resource_uri='tags',
     )
 
     pagination = PaginationGenerator(10, 5, 500)
