@@ -5,6 +5,7 @@ from typing import Generic, Type, TypeVar
 
 from pydantic import BaseModel
 from sqlalchemy import ColumnElement
+from sqlmodel.sql.expression import asc, desc
 
 from .exceptions import InvalidSortFieldError
 
@@ -46,10 +47,15 @@ class SortingGenerator(Generic[T]):
         """
         sort_field: ColumnElement[T] | None = None
         if self.sort_value:
+            sort_function = asc
+            if self.sort_value.startswith('^'):
+                self.sort_value = self.sort_value[1:]
+                sort_function = desc
+
             attribute = getattr(self.model, self.sort_value, None)
             allowed = self.sort_value in self.allowed_sort_fields
             if attribute and allowed:
-                sort_field = attribute
+                sort_field = sort_function(attribute)
             else:
                 raise InvalidSortFieldError(
                     f'Invalid sort field: "{self.sort_value}"'

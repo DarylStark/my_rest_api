@@ -577,6 +577,52 @@ def test_retrieval_short_lived_with_valid_sort_field(
 
 
 @pytest.mark.parametrize(
+    'endpoint, sort_field, first_id',
+    (
+        ('users', '^id', 4),
+        ('tags', '^id', 3),
+        ('user_settings', '^id', 3),
+        ('api_tokens', '^id', 2),
+        ('users', 'id', 1),
+        ('tags', 'id', 1),
+        ('user_settings', 'id', 1),
+        ('api_tokens', 'id', 1),
+    ),
+)
+def test_retrieval_short_lived_with_valid_descending_sort_field(
+    api_client: TestClient, endpoint: str, sort_field: str, first_id: int
+) -> None:
+    """Test that the retrieval endpoint works with valid sort field.
+
+    Happy test path: should return one item with the correct id
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        sort_field: the field to sort on.
+        first_id: the first id to expect.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+
+    # Create the endpoint string
+    endpoint = create_endpoint_url(
+        endpoint, {'sort': sort_field, 'page_size': 1, 'page': 1}
+    )
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+    response = result.json()
+
+    # Validate the answer
+    assert result.status_code == 200
+    assert len(response['resources']) == 1
+    assert response['resources'][0]['id'] == first_id
+
+
+@pytest.mark.parametrize(
     'endpoint, sort_field',
     (
         ('users', 'uname'),
