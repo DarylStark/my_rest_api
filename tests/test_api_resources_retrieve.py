@@ -622,6 +622,39 @@ def test_retrieval_short_lived_with_valid_descending_sort_field(
     assert response['resources'][0]['id'] == first_id
 
 
+def test_retrieval_short_lived_with_valid_sort_fields(
+    api_client: TestClient,
+) -> None:
+    """Test that the retrieval endpoint works with valid sort fields.
+
+    Happy test path: should return in the correct order
+
+    Args:
+        api_client: the test client.
+        endpoint: the endpoint to test.
+        sort_field: the field to sort on.
+        first_id: the first id to expect.
+    """
+    _token = 'Cbxfv44aNlWRMu4bVqawWu9vofhFWmED'
+
+    # Create the endpoint string
+    endpoint = create_endpoint_url('tags', {'sort': 'color,^id'})
+
+    # Do the request
+    result = api_client.get(
+        endpoint,
+        headers={'X-API-Token': _token},
+    )
+    response = result.json()
+
+    # Validate the answer
+    assert result.status_code == 200
+    assert len(response['resources']) == 3
+    assert response['resources'][0]['id'] == 3
+    assert response['resources'][1]['id'] == 1
+    assert response['resources'][2]['id'] == 2
+
+
 @pytest.mark.parametrize(
     'endpoint, sort_field',
     (

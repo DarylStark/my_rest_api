@@ -154,7 +154,9 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
         filters = filter_generator.get_filters()
         return filters
 
-    def _get_sort_field(self, sort: str | None) -> ColumnElement[Model] | None:
+    def _get_sort_field(
+        self, sort: str | None
+    ) -> list[ColumnElement[Model]] | None:
         """Parse the given sort string.
 
         Args:

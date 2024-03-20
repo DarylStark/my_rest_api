@@ -35,7 +35,7 @@ class SortingGenerator(Generic[T]):
         self.sort_value: str | None = sort_value
 
     @property
-    def sort_field(self) -> ColumnElement[T] | None:
+    def sort_field(self) -> list[ColumnElement[T]] | None:
         """Return the sort field.
 
         Returns:
@@ -45,19 +45,21 @@ class SortingGenerator(Generic[T]):
         Raises:
             InvalidSortFieldError: if the sort field is invalid.
         """
-        sort_field: ColumnElement[T] | None = None
+        sort_fields: list[ColumnElement[T]] = []
         if self.sort_value:
-            sort_function = asc
-            if self.sort_value.startswith('^'):
-                self.sort_value = self.sort_value[1:]
-                sort_function = desc
+            for field in self.sort_value.split(','):
+                sort_function = asc
+                field_name = field
+                if field.startswith('^'):
+                    field_name = field[1:]
+                    sort_function = desc
 
-            attribute = getattr(self.model, self.sort_value, None)
-            allowed = self.sort_value in self.allowed_sort_fields
-            if attribute and allowed:
-                sort_field = sort_function(attribute)
-            else:
-                raise InvalidSortFieldError(
-                    f'Invalid sort field: "{self.sort_value}"'
-                )
-        return sort_field
+                attribute = getattr(self.model, field_name, None)
+                allowed = field_name in self.allowed_sort_fields
+                if attribute and allowed:
+                    sort_fields.append(sort_function(attribute))
+                else:
+                    raise InvalidSortFieldError(
+                        f'Invalid sort field: "{field_name}"'
+                    )
+        return sort_fields if len(sort_fields) else None
