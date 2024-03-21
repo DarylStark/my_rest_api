@@ -69,6 +69,11 @@
             "id": 14,
             "module": "api_tokens",
             "subject": "delete"
+        },
+        {
+            "id": 15,
+            "module": "account",
+            "subject": "reset_password"
         }
     ],
     "users": [
@@ -271,6 +276,10 @@
         {
             "api_token_id": 1,
             "api_scope_id": 14
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 15
         }
     ]
 }

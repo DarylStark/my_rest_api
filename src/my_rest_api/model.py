@@ -257,3 +257,24 @@ class APIError(BaseModel):
     """
 
     error: str
+
+
+class PasswordResetTokenRequest(BaseModel):
+    """Model for request a password reset token.
+
+    Attributes:
+        password: the password for the user.
+    """
+
+    password: str
+    second_factor: str | None = None
+
+
+class PasswordResetToken(BaseModel):
+    """Model with a token for password reset.
+
+    Attributes:
+        token: the token that is generated for this request.
+    """
+
+    token: str

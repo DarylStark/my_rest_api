@@ -23,6 +23,7 @@ from my_data.exceptions import (
     PermissionDeniedError,
 )
 
+from .api_account import api_router as api_router_account
 from .api_authentication import api_router as auth_api_router
 from .api_errors import (
     authentication_error_handler,
@@ -67,6 +68,9 @@ app.exception_handlers[PermissionDeniedError] = authorization_error_handler
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
 app.include_router(auth_api_router, tags=['Authentication'], prefix='/auth')
+
+# Add the account endpoints to the application.
+app.include_router(api_router_account, tags=['Account'], prefix='/account')
 
 # Add the resources endpoints to the application.
 app.include_router(
