@@ -90,4 +90,10 @@ class NoResourcesFoundError(MyRESTAPIError):
 class PasswordIncorrectError(MyRESTAPIError):
     """Exception for incorrect password."""
 
-    __error_code__: int = 422
+    __error_code__: int = 401
+
+
+class TokenIncorrectError(MyRESTAPIError):
+    """Exception for incorrect password."""
+
+    __error_code__: int = 401

@@ -278,3 +278,32 @@ class PasswordResetToken(BaseModel):
     """
 
     token: str
+
+
+class PasswordResetRequest(BaseModel):
+    """Model to set a new password for a user.
+
+    Attributes:
+        new_password: the password for the user.
+        reset_token: the token that is generated for this request.
+    """
+
+    new_password: str
+    reset_token: str
+
+
+class PasswordResetStatus(str, Enum):
+    """Enum for the status of the password reset result."""
+
+    SUCCESS = 'success'
+    FAILURE = 'failure'
+
+
+class PasswordResetResult(BaseModel):
+    """Result of a password reset.
+
+    Attributes:
+        status: The status of the reset.
+    """
+
+    status: PasswordResetStatus
