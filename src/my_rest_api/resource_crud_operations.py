@@ -6,6 +6,7 @@ be used to retrieve a list of resources, with pagination, filtering and
 sorting.
 """
 
+import logging
 from typing import Generic, Optional, Type, TypeVar
 
 from my_data.authorizer import (
@@ -85,6 +86,7 @@ class ResourceCRUDOperations(Generic[Model, InputModel, OutputModel]):
             sort_fields: the fields that can be used for sorting.
             resource_uri: the URI for the resource.
         """
+        self._logging = logging.getLogger('ResourceCRUDOperations')
         self._model: Type[Model] = model
         self._input_model: Type[InputModel] = input_model
         self._output_model: Type[OutputModel] = output_model

@@ -16,7 +16,7 @@ class AppConfig(BaseSettings):
 
     # Database configuration
     database_str: str = 'sqlite:////database.sqlite'
-    database_args: dict[str, Any] | None = {'echo': True}
+    database_args: dict[str, Any] | None = {'echo': False}
     service_user: str = Field(default='service.user')
     service_password: str = Field(default='service_password')
 
@@ -27,3 +27,6 @@ class AppConfig(BaseSettings):
     # Paginating configuration
     default_page_size: int = 25
     max_page_size: int = 250
+
+    # Logging configuration
+    log_level: int = Field(default=30)
