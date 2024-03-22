@@ -1,5 +1,6 @@
 """Module with filter generators."""
 
+import logging
 import re
 from abc import ABC, abstractmethod
 from typing import Type, get_args
@@ -158,6 +159,10 @@ class FilterGenerator:
         self._model = model
         self._given_filters = given_filters
         self._included_fields = included_fields
+        self._logger = logging.getLogger('FilterGenerator')
+        self._logger.debug('FilterGenerator initialized:')
+        self._logger.debug('- Model: %s', self._model)
+        self._logger.debug('- Given filters: %s', self._given_filters)
 
     def get_filters(self) -> list[ColumnElement[bool]]:
         """Generate the filter.
@@ -214,6 +219,9 @@ class FilterGenerator:
             # Add the needed filters
             for field_type in types:
                 if field_type in self.registered_type_filters:
+                    self._logger.debug(
+                        'Field type for "%s": "%s"', field, field_type
+                    )
                     filter_class = self.registered_type_filters[field_type]
                     extra_filter = filter_class(
                         self._model, field, operator, value, field_type

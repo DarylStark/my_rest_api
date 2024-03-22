@@ -8,6 +8,8 @@ as arguments to the endpoint function. For example:
         ...
 """
 
+import logging
+
 from my_data.my_data import MyData
 
 from .my_rest_api import MyRESTAPI
@@ -23,4 +25,6 @@ def my_data_object() -> MyData:
     Returns:
         The global My Data object.
     """
+    logger = logging.getLogger('my_data_object')
+    logger.debug('Requesting MyData object.')
     return MyRESTAPI.get_instance().my_data

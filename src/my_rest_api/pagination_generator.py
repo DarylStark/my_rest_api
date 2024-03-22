@@ -1,5 +1,6 @@
 """Module that contains a class to generate pagination details."""
 
+import logging
 from math import ceil
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
@@ -63,11 +64,17 @@ class PaginationGenerator:
         self.page_size = page_size
         self.page = page
         self.total_items = total_items
+        self._logger = logging.getLogger('PaginationGenerator')
 
         # Calculate the total pages
         self.total_pages = 0
         if self.page_size > 0:
             self.total_pages = ceil(total_items / page_size)
+
+        self._logger.debug('PaginationGenerator initialized:')
+        self._logger.debug('- page: %s', self.page)
+        self._logger.debug('- total_items: %s', self.total_items)
+        self._logger.debug('- total_pages: %s', self.total_pages)
 
     def validate_page(self) -> None:
         """Validate the page number.

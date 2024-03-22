@@ -45,17 +45,20 @@ from .api_rest_api import api_router as rest_api_router
 from .app_config import AppConfig
 from .exceptions import MyRESTAPIError
 
-# Configure logging
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-)
-
 # Get the configuration
 config = AppConfig()
 
+# Configure logging
+logging.basicConfig(
+    level=config.log_level,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+)
+logger = logging.getLogger(__name__)
+logger.debug('Logging configured, application is starting')
+
 # Create the FastAPI application.
 app = FastAPI(debug=config.debug, title='My REST API')
+logger.debug('FastAPI application is created')
 
 # Add customer exception handlers
 app.exception_handlers[MyRESTAPIError] = myrestapi_error_handler
@@ -64,6 +67,7 @@ app.exception_handlers[
 ] = authentication_error_handler
 app.exception_handlers[AuthorizationFailedError] = authorization_error_handler
 app.exception_handlers[PermissionDeniedError] = authorization_error_handler
+logger.debug('Added custom exception handlers to the application')
 
 # Add the REST API endpoints to the application.
 app.include_router(rest_api_router, tags=['REST API information'])
@@ -89,4 +93,8 @@ app.include_router(
     api_router_resources_user_settings,
     tags=['Resources'],
     prefix='/resources',
+)
+
+logger.debug(
+    'Aded all routers to the application. Application should be usable now.'
 )
