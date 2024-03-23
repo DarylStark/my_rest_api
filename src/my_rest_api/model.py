@@ -357,7 +357,9 @@ class SecondFactorChangeRequestResult(BaseModel):
     """Result of a second factor change.
 
     Attributes:
-        status: The status of the reset.
+        status: the status of the reset.
+        secret: the second factor secret (in case of enabling 2FA).
     """
 
     status: SecondFactorChangeRequestStatus
+    secret: str | None = None

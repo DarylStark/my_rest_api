@@ -94,6 +94,12 @@ class PasswordIncorrectError(MyRESTAPIError):
 
 
 class TokenIncorrectError(MyRESTAPIError):
-    """Exception for incorrect password."""
+    """Exception for incorrect token."""
+
+    __error_code__: int = 401
+
+
+class SecondFactorAlreadyOnSetValueError(MyRESTAPIError):
+    """Exception for second factor already set on requested value."""
 
     __error_code__: int = 401
