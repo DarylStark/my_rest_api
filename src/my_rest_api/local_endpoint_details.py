@@ -266,3 +266,26 @@ description_user_settings_delete: DocumentationDict = {
     ),
     'response_description': ('A response indicating what IDs are deleted'),
 }
+
+
+# Account
+
+description_request_password_reset_token: DocumentationDict = {
+    'summary': 'Request a password reset token',
+    'description': (
+        'Retrieve a temporary token to reset the password for the user.'
+    ),
+    'response_description': (
+        'A token that the user can use to reset the password.'
+    ),
+}
+
+description_password_reset: DocumentationDict = {
+    'summary': 'Reset the password for a user',
+    'description': (
+        'Resets the password for the user with the given new password.'
+    ),
+    'response_description': (
+        'A status that indicates if everything went right.'
+    ),
+}

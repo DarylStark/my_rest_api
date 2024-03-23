@@ -9,9 +9,10 @@ from my_model.model import TemporaryToken, TemporaryTokenType
 
 from .dependencies import my_data_object
 from .exceptions import PasswordIncorrectError, TokenIncorrectError
+from .generic_endpoint_details import default_responses
 from .local_endpoint_details import (
-    authentication_responses,
-    description_login,
+    description_password_reset,
+    description_request_password_reset_token,
 )
 from .model import (
     PasswordResetRequest,
@@ -27,8 +28,8 @@ api_router = APIRouter()
 @api_router.post(
     '/request_password_reset_token',
     status_code=200,
-    responses=authentication_responses,
-    **description_login,
+    responses=default_responses,
+    **description_request_password_reset_token,
 )
 def request_password_reset_token(
     token_request: PasswordResetTokenRequest,
@@ -88,8 +89,8 @@ def request_password_reset_token(
 @api_router.post(
     '/password_reset',
     status_code=200,
-    responses=authentication_responses,
-    **description_login,
+    responses=default_responses,
+    **description_password_reset,
 )
 def password_reset(
     password_reset: PasswordResetRequest,
