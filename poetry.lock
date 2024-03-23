@@ -434,13 +434,13 @@ files = [
 
 [[package]]
 name = "ds-my-data"
-version = "1.2.4"
+version = "1.2.5"
 description = "The data methods for the My project"
 optional = false
-python-versions = ">=3.10,<4.0"
+python-versions = "<4.0,>=3.10"
 files = [
-    {file = "ds_my_data-1.2.4-py3-none-any.whl", hash = "sha256:ab77889461c8fbb61575783c057f0125e9bdc8cce73a8e7776b2ab71ca03d4e4"},
-    {file = "ds_my_data-1.2.4.tar.gz", hash = "sha256:c5b7640b3fb281494c8c824d48f09cd764c375f5ebfca681c018cda85e3aa4d0"},
+    {file = "ds_my_data-1.2.5-py3-none-any.whl", hash = "sha256:436a69f6aa4951b21da885814444fd0fc8684385118d00b62e5c44e1a02c8a30"},
+    {file = "ds_my_data-1.2.5.tar.gz", hash = "sha256:1632fad98a14b047b36b44bbcb8095d58e47c531131c27e56ed02f75c5275040"},
 ]
 
 [package.dependencies]
@@ -1761,4 +1761,4 @@ test = ["covdefaults (>=2.3)", "coverage (>=7.2.7)", "coverage-enable-subprocess
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "f805dbc102646f971b7ef902ade1630db5c52d19264fa04481cce22e3c5adc77"
+content-hash = "03e7a88350451e8d161cf973bf57ff8f2f03280c912b5aae547be08e56b390fa"
