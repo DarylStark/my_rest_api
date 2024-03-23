@@ -264,6 +264,7 @@ class PasswordResetTokenRequest(BaseModel):
 
     Attributes:
         password: the password for the user.
+        second_factor: the second factor for the user.
     """
 
     password: str
@@ -307,3 +308,56 @@ class PasswordResetResult(BaseModel):
     """
 
     status: PasswordResetStatus
+
+
+class SecondFactorChangeTokenRequest(BaseModel):
+    """Model for request a token to update the second factor settings.
+
+    Attributes:
+        password: the password for the user.
+        second_factor: the second factor for the user.
+        new_status: the new status for the second factor authentication.
+    """
+
+    password: str
+    second_factor: str | None = None
+    new_status: bool
+
+
+class SecondFactorChangeToken(BaseModel):
+    """Model with a token for second factor change.
+
+    Attributes:
+        token: the token that is generated for this request.
+    """
+
+    token: str
+
+
+class SecondFactorChangeRequest(BaseModel):
+    """Model to update the second factor settings for a user.
+
+    Attributes:
+        new_status: the new status for the second factor authentication.
+        reset_token: the token that is generated for this request.
+    """
+
+    new_status: bool
+    reset_token: str
+
+
+class SecondFactorChangeRequestStatus(str, Enum):
+    """Enum for the status of the second factor change result."""
+
+    SUCCESS = 'success'
+    FAILURE = 'failure'
+
+
+class SecondFactorChangeRequestResult(BaseModel):
+    """Result of a second factor change.
+
+    Attributes:
+        status: The status of the reset.
+    """
+
+    status: SecondFactorChangeRequestStatus

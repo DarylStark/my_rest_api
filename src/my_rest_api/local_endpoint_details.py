@@ -289,3 +289,11 @@ description_password_reset: DocumentationDict = {
         'A status that indicates if everything went right.'
     ),
 }
+
+description_request_change_second_factor_token: DocumentationDict = {
+    'summary': 'Request a token to update the 2FA settings',
+    'description': ('Retrieve a temporary token to update the 2FA settings.'),
+    'response_description': (
+        'A token that the user can use to update the 2FA settings'
+    ),
+}

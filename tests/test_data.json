@@ -74,6 +74,11 @@
             "id": 15,
             "module": "account",
             "subject": "reset_password"
+        },
+        {
+            "id": 16,
+            "module": "account",
+            "subject": "update_second_factor"
         }
     ],
     "users": [
@@ -280,6 +285,10 @@
         {
             "api_token_id": 1,
             "api_scope_id": 15
+        },
+        {
+            "api_token_id": 1,
+            "api_scope_id": 16
         }
     ]
 }
